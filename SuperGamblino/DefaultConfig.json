@@ -1,0 +1,11 @@
+﻿{
+	"bot": {
+		"token": "<TokenHere>",
+		"prefix": "!"
+	},
+	"color": {
+		"info": "#439ff0",
+		"success": "#4beb50",
+		"warning": "#bf1004"
+	}
+}
