@@ -34,8 +34,9 @@ namespace SuperGamblino
 
             client.Ready += eventHandler.OnReady;
 
+            //Initialize commands
             commands.RegisterCommands<HelpCommand>();
-
+            commands.RegisterCommands<CoinflipCommand>();
 
             await client.ConnectAsync();
             Console.WriteLine("Bot is ready!");
