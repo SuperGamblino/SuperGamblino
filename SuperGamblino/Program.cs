@@ -35,13 +35,14 @@ namespace SuperGamblino
             EventHandler eventHandler = new EventHandler(client);
 
             client.Ready += eventHandler.OnReady;
+            client.ClientErrored += eventHandler.OnClientError;
             Console.WriteLine("Initializing commands.");
             //Initialize commands
             commands.RegisterCommands<RouletteCommand>();
             commands.RegisterCommands<CoinflipCommand>();
             commands.RegisterCommands<SearchCommand>();
             commands.RegisterCommands<CreditsCommand>();
-
+            commands.CommandErrored += eventHandler.OnCommandError;
             Console.WriteLine("Connecting to database...");
             Database.SetConnectionString(Config.dbAddress, Config.dbPort, Config.dbName, Config.dbUsername, Config.dbPass);
             Database.SetupTables();
