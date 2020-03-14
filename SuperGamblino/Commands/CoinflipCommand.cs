@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using System.Reflection;
 
 namespace SuperGamblino.Commands
 {

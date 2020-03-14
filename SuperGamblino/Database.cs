@@ -27,13 +27,36 @@ namespace SuperGamblino
 			{
 				MySqlCommand createUser = new MySqlCommand(
 					"CREATE TABLE IF NOT EXISTS user(" +
-					"id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT," +
-					"created_time DATETIME NOT NULL," +
-					"user_id BIGINT UNSIGNED NOT NULL)",
+					"user_id BIGINT UNSIGNED NOT NULL PRIMARY KEY," +
+					"currency INT)",
 					c);
 				c.Open();
 				createUser.ExecuteNonQuery();
 			}
+		}
+		
+		public static void CommandSearch(ulong userId, int currency)
+		{
+			try
+			{
+				using (MySqlConnection c = GetConnection())
+				{
+					MySqlCommand searchCoins = new MySqlCommand(
+						@"INSERT INTO user (user_id, currency) VALUES(@userId, @currency) ON DUPLICATE KEY UPDATE currency = currency + 10",
+						c);
+					c.Open();
+					searchCoins.Parameters.AddWithValue("@userId", userId);
+					searchCoins.Parameters.AddWithValue("@currency", currency);
+
+					Console.WriteLine(searchCoins.CommandText);
+					searchCoins.ExecuteNonQuery();
+				}
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
+
 		}
 
 	}

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SuperGamblino.Commands
 {
-    class HelpCommand
+    class RouletteCommand
     {
         [Command("roulette")]
         [Cooldown(1, 5, CooldownBucketType.User)]

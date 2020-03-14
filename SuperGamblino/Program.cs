@@ -35,8 +35,9 @@ namespace SuperGamblino
             client.Ready += eventHandler.OnReady;
 
             //Initialize commands
-            commands.RegisterCommands<HelpCommand>();
+            commands.RegisterCommands<RouletteCommand>();
             commands.RegisterCommands<CoinflipCommand>();
+            commands.RegisterCommands<SearchCommand>();
 
             Console.WriteLine("Connecting to database...");
             Database.SetConnectionString(Config.dbAddress, Config.dbPort, Config.dbName, Config.dbUsername, Config.dbPass);
