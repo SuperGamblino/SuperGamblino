@@ -18,42 +18,57 @@ namespace SuperGamblino.Commands
         {
             try
             {
-                string argument = "";
-                argument = command.RawArgumentString.ToUpper().Trim();
-
-                if (argument == "HEAD" || argument == "TAIL" && !String.IsNullOrWhiteSpace(argument))
+                string[] argument = command.RawArgumentString.ToUpper().TrimStart().Split(' ');
+                string option = argument[0] == "HEAD" || argument[0] == "TAIL" ? argument[0] : "";
+                if (!String.IsNullOrWhiteSpace(option) && argument.Length == 2)
                 {
-                    Random rnd = new Random();
-                    string result = Convert.ToBoolean(rnd.Next(0, 2)) ? "HEAD" : "TAIL";
 
-                    DiscordEmbed resultMsg = new DiscordEmbedBuilder
+                    int bet = Convert.ToInt32(argument[1]);
+                    if (Database.CommandSubsctractCredits(command.User.Id, bet))
                     {
-                        Color = new DiscordColor(Config.colorInfo),
-                        Description = result
-                    };
-                    await command.RespondAsync("", false, resultMsg);
 
+                        Random rnd = new Random();
+                        string result = Convert.ToBoolean(rnd.Next(0, 2)) ? "HEAD" : "TAIL";
 
-                    if (result == argument)
-                    {
-                        DiscordEmbed message = new DiscordEmbedBuilder
+                        DiscordEmbed resultMsg = new DiscordEmbedBuilder
                         {
-                            Color = new DiscordColor(Config.colorSuccess),
-                            Description = "You've won!"
+                            Color = new DiscordColor(Config.colorInfo),
+                            Description = result
                         };
-                        await command.RespondAsync("", false, message);
+                        await command.RespondAsync("", false, resultMsg);
+
+
+                        if (result == option)
+                        {
+                            DiscordEmbed message = new DiscordEmbedBuilder
+                            {
+                                Color = new DiscordColor(Config.colorSuccess),
+                                Description = "You've won!"
+                            };
+                            Database.CommandGiveCredits(command.User.Id, bet * 2);
+                            await command.RespondAsync("", false, message);
+                        }
+                        else
+                        {
+                            DiscordEmbed message = new DiscordEmbedBuilder
+                            {
+                                Color = new DiscordColor(Config.colorWarning),
+                                Description = "You've lost..."
+
+                            };
+                            await command.RespondAsync("", false, message);
+                        }
                     }
                     else
                     {
                         DiscordEmbed message = new DiscordEmbedBuilder
                         {
                             Color = new DiscordColor(Config.colorWarning),
-                            Description = "You've lost..."
+                            Description = "This is a casino, not a bank!"
 
                         };
                         await command.RespondAsync("", false, message);
                     }
-
 
                 }
                 else
@@ -74,6 +89,15 @@ namespace SuperGamblino.Commands
                     {
                         Color = new DiscordColor(Config.colorWarning),
                         Description = "Invalid arugment.\nValid arguments are: 'Head' & 'Tail'"
+                    };
+                    await command.RespondAsync("", false, message);
+                }
+                else if (ex.Message == "Input string was not in a correct format.")
+                {
+                    DiscordEmbed message = new DiscordEmbedBuilder
+                    {
+                        Color = new DiscordColor(Config.colorWarning),
+                        Description = "Bets can only be whole numbers."
                     };
                     await command.RespondAsync("", false, message);
                 }

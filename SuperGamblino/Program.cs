@@ -14,6 +14,7 @@ namespace SuperGamblino
         }
         private async Task MainAsync()
         {
+            Console.WriteLine("Loading configs.");
             Config.LoadConfig();
             DiscordConfiguration cfg = new DiscordConfiguration
             {
@@ -23,17 +24,18 @@ namespace SuperGamblino
                 AutoReconnect = true,
                 UseInternalLogHandler = true
             };
+            Console.WriteLine("Starting client");
             DiscordClient client = new DiscordClient(cfg);
 
             CommandsNextModule commands = client.UseCommandsNext(new CommandsNextConfiguration
             {
                 StringPrefix = Config.prefix
             });
-
+            Console.WriteLine("Loading Eventhandlers.");
             EventHandler eventHandler = new EventHandler(client);
 
             client.Ready += eventHandler.OnReady;
-
+            Console.WriteLine("Initializing commands.");
             //Initialize commands
             commands.RegisterCommands<RouletteCommand>();
             commands.RegisterCommands<CoinflipCommand>();

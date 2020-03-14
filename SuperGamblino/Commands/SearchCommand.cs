@@ -14,12 +14,12 @@ namespace SuperGamblino.Commands
         [Cooldown(1, 5, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {
-            Database.CommandSearch(command.Member.Id, 10);
+            int moneyFound = Database.CommandSearch(command.Member.Id);
 
             DiscordEmbed message = new DiscordEmbedBuilder
             {
                 Color = new DiscordColor(Config.colorSuccess),
-                Description = "You've gained: " + 10 + " coins!"
+                Description = "You've gained: " + moneyFound + " coins!"
             };
             await command.RespondAsync("", false, message);
         }
