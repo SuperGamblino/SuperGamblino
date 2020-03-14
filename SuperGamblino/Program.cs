@@ -40,6 +40,7 @@ namespace SuperGamblino
             commands.RegisterCommands<RouletteCommand>();
             commands.RegisterCommands<CoinflipCommand>();
             commands.RegisterCommands<SearchCommand>();
+            commands.RegisterCommands<CreditsCommand>();
 
             Console.WriteLine("Connecting to database...");
             Database.SetConnectionString(Config.dbAddress, Config.dbPort, Config.dbName, Config.dbUsername, Config.dbPass);

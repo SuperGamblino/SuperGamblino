@@ -40,20 +40,21 @@ namespace SuperGamblino.Commands
 
                         if (result == option)
                         {
+                            int currentCred = Database.CommandGiveCredits(command.User.Id, bet * 2);
                             DiscordEmbed message = new DiscordEmbedBuilder
                             {
                                 Color = new DiscordColor(Config.colorSuccess),
-                                Description = "You've won!"
+                                Description = "You've won!\n\nCurrent credits: " + currentCred
                             };
-                            Database.CommandGiveCredits(command.User.Id, bet * 2);
                             await command.RespondAsync("", false, message);
                         }
                         else
                         {
+                            int currentCred = Database.CommandGetUserCredits(command.User.Id);
                             DiscordEmbed message = new DiscordEmbedBuilder
                             {
                                 Color = new DiscordColor(Config.colorWarning),
-                                Description = "You've lost..."
+                                Description = "You've lost...\n\nCurrent credits: " + currentCred
 
                             };
                             await command.RespondAsync("", false, message);

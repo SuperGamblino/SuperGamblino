@@ -35,8 +35,8 @@ namespace SuperGamblino
 				createUser.ExecuteNonQuery();
 			}
 		}
-		
-		public static bool CommandSubsctractCredits(ulong userId, int credits)
+
+		public static int CommandGetUserCredits(ulong userId)
 		{
 			using (MySqlConnection c = GetConnection())
 			{
@@ -46,24 +46,28 @@ namespace SuperGamblino
 				selection.Prepare();
 				MySqlDataReader results = selection.ExecuteReader();
 
-				// Check if staff exists in the database
 				if (!results.Read())
 				{
-					return false;
+					return 0;
 				}
 
 				Object currentCredits = results.GetValue(0);
 				results.Close();
-				if (Convert.ToInt32(currentCredits) >= credits)
+				return Convert.ToInt32(currentCredits);
+			}
+		}
+		
+		public static bool CommandSubsctractCredits(ulong userId, int credits)
+		{
+				if (CommandGetUserCredits(userId) >= credits)
 				{
 					CommandGiveCredits(userId, credits * -1);
 					return true;
 				}
-
 				return false;
-			}
 		}
-		public static void CommandGiveCredits(ulong userId, int credits)
+
+		public static int CommandGiveCredits(ulong userId, int credits)
 		{
 			try
 			{
@@ -77,11 +81,13 @@ namespace SuperGamblino
 					searchCoins.Parameters.AddWithValue("@credits", credits);
 					Console.WriteLine(searchCoins.CommandText);
 					searchCoins.ExecuteNonQuery();
+					return CommandGetUserCredits(userId);
 				}
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex.Message);
+				return -1;
 			}
 		}
 
