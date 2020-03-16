@@ -23,7 +23,8 @@ namespace SuperGamblino.Commands
                 if (!String.IsNullOrWhiteSpace(option) && argument.Length == 2)
                 {
 
-                    int bet = Convert.ToInt32(argument[1]);
+                    bool isNumeric = int.TryParse(argument[1], out int bet);
+
                     if (Database.CommandSubsctractCredits(command.User.Id, bet))
                     {
 
@@ -40,58 +41,29 @@ namespace SuperGamblino.Commands
 
                         if (result == option)
                         {
-                            int currentCred = Database.CommandGiveCredits(command.User.Id, bet * 2);
-                            DiscordEmbed message = new DiscordEmbedBuilder
-                            {
-                                Color = new DiscordColor(Config.colorSuccess),
-                                Description = "You've won!\n\nCurrent credits: " + currentCred
-                            };
-                            await command.RespondAsync("", false, message);
+                            await Messages.Won(command, bet);
                         }
                         else
                         {
-                            int currentCred = Database.CommandGetUserCredits(command.User.Id);
-                            DiscordEmbed message = new DiscordEmbedBuilder
-                            {
-                                Color = new DiscordColor(Config.colorWarning),
-                                Description = "You've lost...\n\nCurrent credits: " + currentCred
-
-                            };
-                            await command.RespondAsync("", false, message);
+                            await Messages.Lost(command);
                         }
                     }
                     else
                     {
-                        DiscordEmbed message = new DiscordEmbedBuilder
-                        {
-                            Color = new DiscordColor(Config.colorWarning),
-                            Description = "This is a casino, not a bank!"
-
-                        };
-                        await command.RespondAsync("", false, message);
+                        await Messages.NotEnoughCredits(command);
                     }
 
                 }
                 else
                 {
-                    DiscordEmbed message = new DiscordEmbedBuilder
-                    {
-                        Color = new DiscordColor(Config.colorWarning),
-                        Description = "Invalid arugment.\nValid arguments are: 'Head' & 'Tail'"
-                    };
-                    await command.RespondAsync("", false, message);
+                    await Messages.InvalidArgument(command, new string[] {"<Head|Tail>", "<Bet>"});
                 }
             }
             catch (Exception ex)
             {
                 if (ex.Message == "Object reference not set to an instance of an object.")
                 {
-                    DiscordEmbed message = new DiscordEmbedBuilder
-                    {
-                        Color = new DiscordColor(Config.colorWarning),
-                        Description = "Invalid arugment.\nValid arguments are: 'Head' & 'Tail'"
-                    };
-                    await command.RespondAsync("", false, message);
+                    await Messages.InvalidArgument(command, new string[] { "<Head|Tail>", "<Bet>" });
                 }
                 else if (ex.Message == "Input string was not in a correct format.")
                 {
