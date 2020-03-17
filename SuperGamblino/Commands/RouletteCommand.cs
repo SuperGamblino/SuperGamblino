@@ -13,6 +13,7 @@ namespace SuperGamblino.Commands
     {
         [Command("roulette")]
         [Cooldown(1, 5, CooldownBucketType.User)]
+        [Description("<Red|Black|Odd|Even|Number> <Bet>\n\nEx. roulette Red 100")]
         public async Task OnExecute(CommandContext command)
         {
             string[] argument = command.RawArgumentString.ToUpper().TrimStart().Split(' ');
@@ -116,7 +117,8 @@ namespace SuperGamblino.Commands
                     else
                         title = "Roulette - You've lost!";
 
-                    DiscordEmbed message = new DiscordEmbedBuilder
+
+                    DiscordEmbedBuilder message = new DiscordEmbedBuilder
                     {
                         Color = new DiscordColor(color),
                         Title = title,
@@ -124,7 +126,7 @@ namespace SuperGamblino.Commands
                     };
                     if (!invalid)
                     {
-                        await command.RespondAsync("", false, message);
+                        await command.RespondAsync("", false, message.WithFooter("Current credits: " + Database.CommandGetUserCredits(command.User.Id).ToString()));
                     }
                 }
             }
