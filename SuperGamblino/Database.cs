@@ -1,8 +1,11 @@
-﻿using MySql.Data.MySqlClient;
+﻿using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
+using MySql.Data.MySqlClient;
 using SuperGamblino.GameObjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SuperGamblino
 {
@@ -30,6 +33,25 @@ namespace SuperGamblino
 					"CREATE TABLE IF NOT EXISTS user(" +
 					"user_id BIGINT UNSIGNED NOT NULL PRIMARY KEY," +
 					"currency INT)",
+					c);
+				c.Open();
+				createUser.ExecuteNonQuery();
+			}
+		}
+	
+		public static void SetupProcedures()
+		{
+			using (MySqlConnection c = GetConnection())
+			{
+				MySqlCommand createUser = new MySqlCommand(
+					"DROP procedure IF EXISTS `get_top_users`; " +
+					"CREATE PROCEDURE `get_top_users`() " +
+					"BEGIN " +
+					"SELECT * " +
+					"FROM user " +
+					"ORDER BY currency DESC " + 
+					"LIMIT 10; " + 
+					"END",
 					c);
 				c.Open();
 				createUser.ExecuteNonQuery();
@@ -65,6 +87,31 @@ namespace SuperGamblino
 					return true;
 				}
 				return false;
+		}
+
+		public static async Task<List<User>> CommandGetGlobalTop(CommandContext command)
+		{
+			List<User> discordUsers = new List<User>();
+			//CALL `supergamblino`.`get_top_users`();
+			using (MySqlConnection c = GetConnection())
+			{
+				c.Open();
+				MySqlCommand selection = new MySqlCommand(@"CALL `get_top_users`()", c);
+				MySqlDataReader results = selection.ExecuteReader();
+
+				
+
+				while (results.Read())
+				{
+					ulong uid = results.GetUInt64(0);
+					int cur = results.GetInt32(1);
+					discordUsers.Add(new User { discordUser = await command.Client.GetUserAsync(uid), currency = cur});
+				}
+
+				//Object currentCredits = results.GetValue(0);
+				results.Close();
+			}
+			return discordUsers;
 		}
 
 		public static int CommandGiveCredits(ulong userId, int credits)

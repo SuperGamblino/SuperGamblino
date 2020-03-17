@@ -117,7 +117,6 @@ namespace SuperGamblino.Commands
                     else
                         title = "Roulette - You've lost!";
 
-
                     DiscordEmbedBuilder message = new DiscordEmbedBuilder
                     {
                         Color = new DiscordColor(color),

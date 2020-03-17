@@ -42,10 +42,12 @@ namespace SuperGamblino
             commands.RegisterCommands<CoinflipCommand>();
             commands.RegisterCommands<SearchCommand>();
             commands.RegisterCommands<CreditsCommand>();
+            commands.RegisterCommands<GlobalTopCommand>();
             commands.CommandErrored += eventHandler.OnCommandError;
             Console.WriteLine("Connecting to database...");
             Database.SetConnectionString(Config.dbAddress, Config.dbPort, Config.dbName, Config.dbUsername, Config.dbPass);
             Database.SetupTables();
+            Database.SetupProcedures();
 
             await client.ConnectAsync();
             Console.WriteLine("Bot is ready!");
