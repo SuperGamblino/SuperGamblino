@@ -13,3 +13,6 @@ Contributing to this project is really simple.
   - If you don't find an issue you'd like to work on, you can simply create one.
  - When you've found an issue to work on, you fork this repository, create your feature, fix your bug, or whatever the issue is. 
  - Then you create a pull request, and if it's accepted it'll end up on the master branch.
+ 
+ ## Discussion and question
+ For easier discussion, questions and feedback, please join our [Discord] (https://discord.gg/fG3FJDW "SuperGamblino Discord").
