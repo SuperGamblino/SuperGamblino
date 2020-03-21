@@ -32,7 +32,9 @@ namespace SuperGamblino
 				MySqlCommand createUser = new MySqlCommand(
 					"CREATE TABLE IF NOT EXISTS user(" +
 					"user_id BIGINT UNSIGNED NOT NULL PRIMARY KEY," +
-					"currency INT)",
+					"currency INT," +
+					"last_hourly_reward DateTime," +
+					"last_daily_reward DateTime)",
 					c);
 				c.Open();
 				createUser.ExecuteNonQuery();
@@ -163,7 +165,106 @@ namespace SuperGamblino
 				Console.WriteLine(ex.Message);
 				return -1;
 			}
+		}
+		
+		public static async Task EnsureUserCreated(ulong userId)
+		{
+			await using var connection = GetConnection();
+			try
+			{
+				await connection.OpenAsync();
+				var checkCmd = new MySqlCommand($@"SELECT EXISTS(SELECT * FROM user WHERE user_id = {userId})",connection);
+				var checkResult = await checkCmd.ExecuteReaderAsync();
+				await checkResult.ReadAsync();
+				var doExists = checkResult.GetBoolean(0);
+				await checkResult.CloseAsync();
+				if (!doExists)
+				{
+					var command = new MySqlCommand($@"INSERT INTO user (user_id, currency, last_daily_reward, last_hourly_reward) VALUES ({userId}, 0, null, null)",connection);
+					await command.ExecuteNonQueryAsync();
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
+			finally
+			{
+				await connection.CloseAsync();
+			}
+		}
 
+		public class DateTimeResult
+		{
+			public DateTimeResult(bool successful, DateTime? dateTime)
+			{
+				Successful = successful;
+				DateTime = dateTime;
+			}
+			public bool Successful { get; set; }
+			public DateTime? DateTime { get; set; }
+		}
+
+		public static async Task<DateTimeResult> GetDateTime(ulong userId, string fieldName)
+		{
+			await EnsureUserCreated(userId);
+			await using var connection = GetConnection();
+			try
+			{
+				var command = new MySqlCommand(@$"SELECT {fieldName} from user where user_id = {userId}", connection);
+				Console.WriteLine(command.CommandText);
+				await connection.OpenAsync();
+				var reader = await command.ExecuteReaderAsync();
+				if (!await reader.ReadAsync())
+				{
+					return new DateTimeResult(false, null);
+				}
+				else
+				{
+					var value = reader.GetValue(0);
+					if (value is DateTime dateTime)
+					{
+						return new DateTimeResult(true, dateTime);
+					}
+					else
+					{
+						return new DateTimeResult(true, null);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				return new DateTimeResult(false, null);
+			}
+			finally
+			{
+				await connection.CloseAsync();
+			}
+		}
+
+		public static async Task<bool> SetDateTime(ulong userId, string fieldName, DateTime time)
+		{
+			//Here is no need to use EnsureUserCreated because this method is always called after GetDateTime
+			await using var connection = GetConnection();
+			try
+			{
+				var command = new MySqlCommand($"UPDATE user set {fieldName} = \'{time:yyyy-MM-dd HH:mm:ss}\' where user_id = {userId}",
+					connection);
+				Console.WriteLine(command.CommandText);
+				await connection.OpenAsync();
+				await command.ExecuteNonQueryAsync();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				return false;
+			}
+			finally
+			{
+				await connection.CloseAsync();
+			}
 		}
 
 	}

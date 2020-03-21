@@ -66,5 +66,27 @@ namespace SuperGamblino
             };
             await command.RespondAsync("",false, message);
         }
+
+        public static async Task TooEarly(CommandContext command, TimeSpan timeLeft)
+        {
+            DiscordEmbed message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(Config.colorInfo),
+                Description = "Sorry but it looks like you've used this command recently! To use it again please wait: "
+                              + timeLeft.ToString(@"hh\:mm\:ss") + "."
+            };
+            await command.RespondAsync("",false, message);
+        }
+
+        public static async Task Error(CommandContext command, string description)
+        {
+            DiscordEmbed message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(Config.colorWarning),
+                Title = "Something went wrong!!!",
+                Description = description
+            };
+            await command.RespondAsync("",false, message);
+        }
     }
 }
