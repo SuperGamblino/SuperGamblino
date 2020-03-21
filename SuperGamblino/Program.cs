@@ -43,6 +43,8 @@ namespace SuperGamblino
             commands.RegisterCommands<SearchCommand>();
             commands.RegisterCommands<CreditsCommand>();
             commands.RegisterCommands<GlobalTopCommand>();
+            commands.RegisterCommands<HourlyReward>();
+            commands.RegisterCommands<DailyReward>();
             commands.CommandErrored += eventHandler.OnCommandError;
             Console.WriteLine("Connecting to database...");
             Database.SetConnectionString(Config.dbAddress, Config.dbPort, Config.dbName, Config.dbUsername, Config.dbPass);
