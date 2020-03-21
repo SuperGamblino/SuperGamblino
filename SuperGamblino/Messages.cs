@@ -57,5 +57,14 @@ namespace SuperGamblino
             await command.RespondAsync("", false, message);
         }
 
+        public static async Task CoinsGain(CommandContext command, int ammount)
+        {
+            DiscordEmbed message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(Config.colorSuccess),
+                Description = "You've gained: " + ammount + " coins!"
+            };
+            await command.RespondAsync("",false, message);
+        }
     }
 }

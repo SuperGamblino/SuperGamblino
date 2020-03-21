@@ -15,12 +15,7 @@ namespace SuperGamblino.Commands
         {
             const int reward = 500;
             Database.CommandGiveCredits(command.User.Id, reward);
-            var message = new DiscordEmbedBuilder()
-            {
-                Color = new DiscordColor(Config.colorSuccess),
-                Description = "You've gained: " + reward + " coins!"
-            };
-            await command.RespondAsync("", false, message);
+            await Messages.CoinsGain(command, reward);
         }
     }
 }
