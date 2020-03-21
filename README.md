@@ -15,4 +15,4 @@ Contributing to this project is really simple.
  - Then you create a pull request, and if it's accepted it'll end up on the master branch.
  
  ## Discussion and question
- For easier discussion, questions and feedback, please join our [Discord] (https://discord.gg/fG3FJDW "SuperGamblino Discord").
+ For easier discussion, questions and feedback, please join our [Discord](https://discord.gg/fG3FJDW "SuperGamblino Discord").
