@@ -132,7 +132,7 @@ namespace SuperGamblino.Commands
                     };
                     if (!invalid)
                     {
-                        await command.RespondAsync("", false, message.WithFooter("Current credits: " + Database.CommandGetUserCredits(command.User.Id).ToString()));
+                        await command.RespondAsync("", false, message.WithFooter("Current credits: " + await Database.CommandGetUserCredits(command.User.Id)));
                     }
                 }
             }
