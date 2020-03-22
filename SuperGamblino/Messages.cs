@@ -11,7 +11,7 @@ namespace SuperGamblino
     {
         public static async Task Won (CommandContext command, int bet)
         {
-            int currentCred = Database.CommandGiveCredits(command.User.Id, bet * 2);
+            int currentCred = await Database.CommandGiveCredits(command.User.Id, bet * 2);
             DiscordEmbed message = new DiscordEmbedBuilder
             {
                 Color = new DiscordColor(Config.colorSuccess),
@@ -21,7 +21,7 @@ namespace SuperGamblino
         }
         public static async Task Lost (CommandContext command)
         {
-            int currentCred = Database.CommandGetUserCredits(command.User.Id);
+            int currentCred = await Database.CommandGetUserCredits(command.User.Id);
             DiscordEmbed message = new DiscordEmbedBuilder
             {
                 Color = new DiscordColor(Config.colorWarning),
