@@ -1,18 +1,20 @@
 ﻿{
-	"bot": {
-		"token": "<TokenHere>",
-		"prefix": "!"
-	},
-	"color": {
-		"info": "#439ff0",
-		"success": "#4beb50",
-		"warning": "#bf1004"
-	},
-	"database": {
-		"address": "127.0.0.1",
-		"port": 3306,
-		"name": "supergamblino",
-		"username": "",
-		"password": ""
+	"Settings" : {
+		"BotSettings": {
+			"Token": "<TokenHere>",
+			"Prefix": "!"
+		},
+		"ColorSettings": {
+			"Info": "#439ff0",
+			"Success": "#4beb50",
+			"Warning": "#bf1004"
+		},
+		"DatabaseSettings": {
+			"Address": "127.0.0.1",
+			"Port": 3306,
+			"Name": "supergamblino",
+			"Username": "",
+			"Password": ""
+		}	
 	}
 }

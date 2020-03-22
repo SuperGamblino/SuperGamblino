@@ -13,14 +13,18 @@ namespace SuperGamblino
 {
 	class EventHandler
 	{
-		private DiscordClient discordClient;
-		public EventHandler(DiscordClient client)
+		private readonly DiscordClient _discordClient;
+		private readonly Config _config;
+		
+		public EventHandler(DiscordClient client, Config config)
 		{
-			discordClient = client;
+			_discordClient = client;
+			_config = config;
 		}
+		
 		internal Task OnReady(ReadyEventArgs e)
 		{
-			this.discordClient.UpdateStatusAsync(new DiscordGame("Gambling House"), UserStatus.Online);
+			this._discordClient.UpdateStatusAsync(new DiscordGame("Gambling House"), UserStatus.Online);
 			return Task.CompletedTask;
 		}
 
@@ -40,7 +44,7 @@ namespace SuperGamblino
 						{
 							DiscordEmbed error = new DiscordEmbedBuilder
 							{
-								Color = new DiscordColor(Config.colorWarning),
+								Color = new DiscordColor(_config.ColorSettings.Warning),
 								Description = this.ParseFailedCheck(attr)
 							};
 							e.Context?.Channel?.SendMessageAsync("", false, error);
@@ -53,7 +57,7 @@ namespace SuperGamblino
 						e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "SuperGamblino", $"Exception occured: {e.Exception.GetType()}: {e.Exception}", DateTime.UtcNow);
 						DiscordEmbed error = new DiscordEmbedBuilder
 						{
-							Color = new DiscordColor(Config.colorWarning),
+							Color = new DiscordColor(_config.ColorSettings.Warning),
 							Description = "Internal error occured, please report this to the developer."
 						};
 						e.Context?.Channel?.SendMessageAsync("", false, error);

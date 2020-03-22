@@ -2,7 +2,13 @@
 using DSharpPlus.CommandsNext;
 using SuperGamblino.Commands;
 using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using SuperGamblino.Properties;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace SuperGamblino
 {
@@ -10,33 +16,70 @@ namespace SuperGamblino
     {
         static void Main(string[] args)
         {
-            new Program().MainAsync().GetAwaiter().GetResult();
-        }
-        private async Task MainAsync()
-        {
-            Console.WriteLine("Loading configs.");
-            Config.LoadConfig();
-            DiscordConfiguration cfg = new DiscordConfiguration
+            var logger = LoggerFactory.Create(builder => builder
+                .AddFilter("Microsoft", LogLevel.Warning)
+                .AddFilter("System", LogLevel.Warning)
+                .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
+                .AddConsole()).CreateLogger<Program>();
+            
+            
+            if (!File.Exists("./config.json"))
             {
-                Token = Config.token,
+                logger.LogError("There was no config.json file found so we created new default one. Please fill it up with info and start this bot again!");
+                File.WriteAllText("./config.json", Encoding.UTF8.GetString(Resources.DefaultConfig));
+                Environment.Exit(1);
+            }
+
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("config.json", false, true)
+                .Build();
+            
+            Config config = new Config();
+            
+            configuration.Bind("Settings", config);
+            
+            var dependencies = new DependencyCollectionBuilder()
+                .AddInstance(logger)
+                .AddInstance(config)
+                .Add<Database>()
+                .Add<Messages>()
+                .Build();
+            
+            new Program().MainAsync(dependencies).GetAwaiter().GetResult();   
+        }
+        private async Task MainAsync(DependencyCollection dependencyCollection)
+        {
+            var logger = dependencyCollection.GetDependency<ILogger>();
+            var conf = dependencyCollection.GetDependency<Config>();
+            var db = dependencyCollection.GetDependency<Database>();
+
+            var cfg = new DiscordConfiguration
+            {
+                Token = conf.BotSettings.Token,
                 TokenType = TokenType.Bot,
 
                 AutoReconnect = true,
                 UseInternalLogHandler = true
             };
-            Console.WriteLine("Starting client");
+            
+            logger.LogInformation("Starting discord bot...");
             DiscordClient client = new DiscordClient(cfg);
 
             CommandsNextModule commands = client.UseCommandsNext(new CommandsNextConfiguration
             {
-                StringPrefix = Config.prefix
+                StringPrefix = conf.BotSettings.Prefix,
+                Dependencies = dependencyCollection
             });
-            Console.WriteLine("Loading Eventhandlers.");
-            EventHandler eventHandler = new EventHandler(client);
+
+            logger.LogInformation("Registering event handlers...");
+            EventHandler eventHandler = new EventHandler(client, conf);
 
             client.Ready += eventHandler.OnReady;
             client.ClientErrored += eventHandler.OnClientError;
-            Console.WriteLine("Initializing commands.");
+            logger.LogInformation("Event handlers were registered successfully.");
+            
+            
+            logger.LogInformation("Registering commands...");
             //Initialize commands
             commands.RegisterCommands<RouletteCommand>();
             commands.RegisterCommands<CoinflipCommand>();
@@ -46,13 +89,16 @@ namespace SuperGamblino
             commands.RegisterCommands<HourlyReward>();
             commands.RegisterCommands<DailyReward>();
             commands.CommandErrored += eventHandler.OnCommandError;
-            Console.WriteLine("Connecting to database...");
-            Database.SetConnectionString(Config.dbAddress, Config.dbPort, Config.dbName, Config.dbUsername, Config.dbPass);
-            await Database.SetupTables();
-            await Database.SetupProcedures();
-
+            logger.LogInformation("All commands registered successfully.");
+            
+            logger.LogInformation("Starting the DB...");
+            db.SetConnectionString(conf.DatabaseSettings.Address, conf.DatabaseSettings.Port, conf.DatabaseSettings.Name, conf.DatabaseSettings.Username, conf.DatabaseSettings.Password);
+            await db.SetupTables();
+            await db.SetupProcedures();
+            logger.LogInformation("DB loaded successfully.");
+            
             await client.ConnectAsync();
-            Console.WriteLine("Bot is ready!");
+            logger.LogInformation("Discord bot loaded.");
             await Task.Delay(-1);
         }
     }
