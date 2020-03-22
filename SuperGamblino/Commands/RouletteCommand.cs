@@ -11,6 +11,17 @@ namespace SuperGamblino.Commands
 {
     class RouletteCommand
     {
+        private readonly Database _database;
+        private readonly Messages _messages;
+        private readonly Config _config;
+
+        public RouletteCommand(Database database, Messages messages, Config config)
+        {
+            _database = database;
+            _messages = messages;
+            _config = config;
+        }
+
         [Command("roulette")]
         [Cooldown(1, 5, CooldownBucketType.User)]
         [Description("<Red|Black|Odd|Even|Number> <Bet>\n\nEx. roulette Red 100")]
@@ -30,15 +41,15 @@ namespace SuperGamblino.Commands
 
             if (betIsNmb)
             {
-                int curCred = await Database.CommandGetUserCredits(command.User.Id);
+                int curCred = await _database.CommandGetUserCredits(command.User.Id);
                 if (curCred < nmbBet)
                 {
                     enoughCredits = false;
-                    await Messages.NotEnoughCredits(command);
+                    await _messages.NotEnoughCredits(command);
                 }
                 else
                 {
-                    await Database.CommandSubsctractCredits(command.User.Id, nmbBet);
+                    await _database.CommandSubsctractCredits(command.User.Id, nmbBet);
                 }
                 if (enoughCredits)
                 {
@@ -92,7 +103,7 @@ namespace SuperGamblino.Commands
                                 }
                                 break;
                             default:
-                                await Messages.InvalidArgument(command, new string[] { "<Red|Black|Odd|Even|Number> <Bet>" });
+                                await _messages.InvalidArgument(command, new string[] { "<Red|Black|Odd|Even|Number> <Bet>" });
                                 invalid = true;
                                 break;
                         }
@@ -103,13 +114,13 @@ namespace SuperGamblino.Commands
                     switch (result.Color)
                     {
                         case "Red":
-                            color = Config.colorWarning;
+                            color = _config.ColorSettings.Warning;
                             break;
                         case "Black":
                             color = "#000000";
                             break;
                         case "Green":
-                            color = Config.colorSuccess;
+                            color = _config.ColorSettings.Success;
                             break;
                         default:
                             break;
@@ -119,7 +130,7 @@ namespace SuperGamblino.Commands
                     {
                         title = "Roulette - You've won!";
                         credWon = Convert.ToInt32(argument[1]) * rewardMulti;
-                        await Database.CommandGiveCredits(command.User.Id, credWon);
+                        await _database.CommandGiveCredits(command.User.Id, credWon);
                     }
                     else
                         title = "Roulette - You've lost!";
@@ -128,16 +139,17 @@ namespace SuperGamblino.Commands
                     {
                         Color = new DiscordColor(color),
                         Title = title,
-                        Description = string.Format("You rolled {0} {1}.\nThe result is {2}\n\nProfit: {3}", result.Color, result.Number, result.OddOrEven, credWon)
+                        Description =
+                            $"You rolled {result.Color} {result.Number}.\nThe result is {result.OddOrEven}\n\nProfit: {credWon}"
                     };
                     if (!invalid)
                     {
-                        await command.RespondAsync("", false, message.WithFooter("Current credits: " + await Database.CommandGetUserCredits(command.User.Id)));
+                        await command.RespondAsync("", false, message.WithFooter("Current credits: " + await _database.CommandGetUserCredits(command.User.Id)));
                     }
                 }
             }
             else
-                await Messages.InvalidArgument(command, new string[] { "<Red|Black|Odd|Even|Number> <Bet>" });
+                await _messages.InvalidArgument(command, new string[] { "<Red|Black|Odd|Even|Number> <Bet>" });
         }
     }
 }

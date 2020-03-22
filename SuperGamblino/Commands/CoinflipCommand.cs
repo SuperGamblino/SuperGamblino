@@ -11,6 +11,17 @@ namespace SuperGamblino.Commands
 {
     class CoinflipCommand
     {
+        private readonly Database _database;
+        private readonly Config _config;
+        private readonly Messages _messages;
+
+        public CoinflipCommand(Database database, Config config, Messages messages)
+        {
+            _database = database;
+            _config = config;
+            _messages = messages;
+        }
+
         [Command("coinflip")]
         [Aliases("cf")]
         [Cooldown(1, 3, CooldownBucketType.User)]
@@ -25,7 +36,7 @@ namespace SuperGamblino.Commands
 
                     bool isNumeric = int.TryParse(argument[1], out int bet);
 
-                    if (await Database.CommandSubsctractCredits(command.User.Id, bet))
+                    if (await _database.CommandSubsctractCredits(command.User.Id, bet))
                     {
 
                         Random rnd = new Random();
@@ -33,7 +44,7 @@ namespace SuperGamblino.Commands
 
                         DiscordEmbed resultMsg = new DiscordEmbedBuilder
                         {
-                            Color = new DiscordColor(Config.colorInfo),
+                            Color = new DiscordColor(_config.ColorSettings.Info),
                             Description = result
                         };
                         await command.RespondAsync("", false, resultMsg);
@@ -41,35 +52,35 @@ namespace SuperGamblino.Commands
 
                         if (result == option)
                         {
-                            await Messages.Won(command, bet);
+                            await _messages.Won(command, bet);
                         }
                         else
                         {
-                            await Messages.Lost(command);
+                            await _messages.Lost(command);
                         }
                     }
                     else
                     {
-                        await Messages.NotEnoughCredits(command);
+                        await _messages.NotEnoughCredits(command);
                     }
 
                 }
                 else
                 {
-                    await Messages.InvalidArgument(command, new string[] {"<Head|Tail>", "<Bet>"});
+                    await _messages.InvalidArgument(command, new string[] {"<Head|Tail>", "<Bet>"});
                 }
             }
             catch (Exception ex)
             {
                 if (ex.Message == "Object reference not set to an instance of an object.")
                 {
-                    await Messages.InvalidArgument(command, new string[] { "<Head|Tail>", "<Bet>" });
+                    await _messages.InvalidArgument(command, new string[] { "<Head|Tail>", "<Bet>" });
                 }
                 else if (ex.Message == "Input string was not in a correct format.")
                 {
                     DiscordEmbed message = new DiscordEmbedBuilder
                     {
-                        Color = new DiscordColor(Config.colorWarning),
+                        Color = new DiscordColor(_config.ColorSettings.Warning),
                         Description = "Bets can only be whole numbers."
                     };
                     await command.RespondAsync("", false, message);
@@ -78,7 +89,7 @@ namespace SuperGamblino.Commands
                 {
                     DiscordEmbed message = new DiscordEmbedBuilder
                     {
-                        Color = new DiscordColor(Config.colorWarning),
+                        Color = new DiscordColor(_config.ColorSettings.Warning),
                         Description = "This is unexpected..."
                     };
                     await command.RespondAsync("", false, message);

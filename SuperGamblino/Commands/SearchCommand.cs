@@ -10,12 +10,21 @@ namespace SuperGamblino.Commands
 {
     class SearchCommand
     {
+        private Database _database;
+        private Messages _messages;
+
+        public SearchCommand(Database database, Messages messages)
+        {
+            _database = database;
+            _messages = messages;
+        }
+
         [Command("search")]
         [Cooldown(1, 5, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {
-            int moneyFound = await Database.CommandSearch(command.Member.Id);
-            await Messages.CoinsGain(command, moneyFound);
+            int moneyFound = await _database.CommandSearch(command.Member.Id);
+            await _messages.CoinsGain(command, moneyFound);
         }
     }
 }

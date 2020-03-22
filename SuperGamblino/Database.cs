@@ -6,26 +6,35 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace SuperGamblino
 {
 	class Database
 	{
-		private static string connectionString = "";
-		public static void SetConnectionString(string host, int port, string database, string username, string password)
+		private string _connectionString = "";
+		private readonly ILogger _logger;
+
+		public Database(ILogger logger)
 		{
-			connectionString = "server=" + host +
+			_logger = logger;
+		}
+
+		public void SetConnectionString(string host, int port, string database, string username, string password)
+		{
+			_connectionString = "server=" + host +
 							   ";database=" + database +
 							   ";port=" + port +
 							   ";userid=" + username +
 							   ";password=" + password;
 		}
-		public static MySqlConnection GetConnection()
+
+		private MySqlConnection GetConnection()
 		{
-			return new MySqlConnection(connectionString);
+			return new MySqlConnection(_connectionString);
 		}
 
-		public static async Task SetupTables()
+		public async Task SetupTables()
 		{
 			await using MySqlConnection c = GetConnection();
 			MySqlCommand createUser = new MySqlCommand(
@@ -40,7 +49,7 @@ namespace SuperGamblino
 			await c.CloseAsync();
 		}
 	
-		public static async Task SetupProcedures()
+		public async Task SetupProcedures()
 		{
 			await using MySqlConnection c = GetConnection();
 			MySqlCommand createUser = new MySqlCommand(
@@ -58,7 +67,7 @@ namespace SuperGamblino
 			await c.CloseAsync();
 		}
 
-		public static async Task<int> CommandGetUserCredits(ulong userId)
+		public async Task<int> CommandGetUserCredits(ulong userId)
 		{
 			await using MySqlConnection c = GetConnection();
 			MySqlCommand selection = new MySqlCommand(@"SELECT currency FROM user WHERE user_id = @user_id", c);
@@ -76,7 +85,7 @@ namespace SuperGamblino
 			return currentCredits;
 		}
 		
-		public static async Task<bool> CommandSubsctractCredits(ulong userId, int credits)
+		public async Task<bool> CommandSubsctractCredits(ulong userId, int credits)
 		{
 				if (await CommandGetUserCredits(userId) >= credits)
 				{
@@ -86,7 +95,7 @@ namespace SuperGamblino
 				return false;
 		}
 
-		public static async Task<List<User>> CommandGetGlobalTop(CommandContext command)
+		public async Task<List<User>> CommandGetGlobalTop(CommandContext command)
 		{
 			List<User> discordUsers = new List<User>();
 			//CALL `supergamblino`.`get_top_users`();
@@ -107,7 +116,7 @@ namespace SuperGamblino
 			return discordUsers;
 		}
 
-		public static async Task<int> CommandGiveCredits(ulong userId, int credits)
+		public async Task<int> CommandGiveCredits(ulong userId, int credits)
 		{
 			try
 			{
@@ -117,19 +126,19 @@ namespace SuperGamblino
 					c);
 				searchCoins.Parameters.AddWithValue("@userId", userId);
 				searchCoins.Parameters.AddWithValue("@credits", credits);
-				Console.WriteLine(searchCoins.CommandText);
+				_logger.LogInformation(searchCoins.CommandText);
 				await c.OpenAsync();
 				await searchCoins.ExecuteNonQueryAsync();
 				return await CommandGetUserCredits(userId);
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				_logger.LogError(ex, "Exception occured while executing CommandGiveCredits method in Database class!");
 				return -1;
 			}
 		}
 
-		public static async Task<int> CommandSearch(ulong userId)
+		public async Task<int> CommandSearch(ulong userId)
 		{
 			Random rnd = new Random();
 			int foundMoney = rnd.Next(10, 50);
@@ -142,19 +151,19 @@ namespace SuperGamblino
 				await c.OpenAsync();
 				searchCoins.Parameters.AddWithValue("@userId", userId);
 				searchCoins.Parameters.AddWithValue("@moneyFound", foundMoney);
-				Console.WriteLine(searchCoins.CommandText);
-				Console.WriteLine(foundMoney);
+				_logger.LogInformation(searchCoins.CommandText);
+				_logger.LogInformation($"User {userId} found {foundMoney}");
 				await searchCoins.ExecuteNonQueryAsync();
 				return foundMoney;
 			}
 			catch(Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				_logger.LogError(ex, "Exception occured while executing CommandSearch method in Database class!");
 				return -1;
 			}
 		}
 
-		private static async Task EnsureUserCreated(ulong userId)
+		private async Task EnsureUserCreated(ulong userId)
 		{
 			await using var connection = GetConnection();
 			try
@@ -173,7 +182,7 @@ namespace SuperGamblino
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				_logger.LogError(ex,"Exception occured while executing EnsureUserCreated method in Database class!");
 			}
 			finally
 			{
@@ -182,14 +191,14 @@ namespace SuperGamblino
 		}
 		
 
-		public static async Task<DateTimeResult> GetDateTime(ulong userId, string fieldName)
+		public async Task<DateTimeResult> GetDateTime(ulong userId, string fieldName)
 		{
 			await EnsureUserCreated(userId);
 			await using var connection = GetConnection();
 			try
 			{
 				var command = new MySqlCommand(@$"SELECT {fieldName} from user where user_id = {userId}", connection);
-				Console.WriteLine(command.CommandText);
+				_logger.LogInformation(command.CommandText);
 				await connection.OpenAsync();
 				var reader = await command.ExecuteReaderAsync();
 				if (!await reader.ReadAsync())
@@ -211,7 +220,7 @@ namespace SuperGamblino
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				_logger.LogError(ex,$"Exception occured while executing GetDateTime with fieldName = {fieldName} method in Database class!");
 				return new DateTimeResult(false, null);
 			}
 			finally
@@ -220,7 +229,7 @@ namespace SuperGamblino
 			}
 		}
 
-		public static async Task<bool> SetDateTime(ulong userId, string fieldName, DateTime time)
+		public async Task<bool> SetDateTime(ulong userId, string fieldName, DateTime time)
 		{
 			//Here is no need to use EnsureUserCreated because this method is always called after GetDateTime
 			await using var connection = GetConnection();
@@ -228,14 +237,14 @@ namespace SuperGamblino
 			{
 				var command = new MySqlCommand($"UPDATE user set {fieldName} = \'{time:yyyy-MM-dd HH:mm:ss}\' where user_id = {userId}",
 					connection);
-				Console.WriteLine(command.CommandText);
+				_logger.LogInformation(command.CommandText);
 				await connection.OpenAsync();
 				await command.ExecuteNonQueryAsync();
 				return true;
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				_logger.LogError(ex, $"Exception occured while executing SetDateTime with fieldName = {fieldName} and time = {time} method in Database class!");
 				return false;
 			}
 			finally

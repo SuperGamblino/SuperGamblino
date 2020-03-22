@@ -11,12 +11,21 @@ namespace SuperGamblino.Commands
 {
     class GlobalTopCommand
     {
+        private readonly Database _database;
+        private readonly Config _config;
+
+        public GlobalTopCommand(Database database, Config config)
+        {
+            _database = database;
+            _config = config;
+        }
+
         [Command("globaltop")]
         [Aliases("gt")]
         [Cooldown(1, 3, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {
-           List<User> listUsers = await Database.CommandGetGlobalTop(command);
+           List<User> listUsers = await _database.CommandGetGlobalTop(command);
 
             string desc = "";
             foreach (User user in listUsers)
@@ -26,7 +35,7 @@ namespace SuperGamblino.Commands
 
             DiscordEmbedBuilder message = new DiscordEmbedBuilder
             {
-                Color = new DiscordColor(Config.colorInfo),
+                Color = new DiscordColor(_config.ColorSettings.Info),
                 Title = "Top 10 users",
                 Description = desc
 
