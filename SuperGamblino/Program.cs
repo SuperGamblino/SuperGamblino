@@ -93,11 +93,28 @@ namespace SuperGamblino
             
             logger.LogInformation("Starting the DB...");
             db.SetConnectionString(conf.DatabaseSettings.Address, conf.DatabaseSettings.Port, conf.DatabaseSettings.Name, conf.DatabaseSettings.Username, conf.DatabaseSettings.Password);
-            await db.SetupTables();
-            await db.SetupProcedures();
-            logger.LogInformation("DB loaded successfully.");
-            
-            await client.ConnectAsync();
+            try
+            {
+                await db.SetupTables();
+                await db.SetupProcedures();
+                logger.LogInformation("DB loaded successfully.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Exception occured during DB connection creation!");
+                Environment.Exit(1);
+            }
+
+            try
+            {
+                await client.ConnectAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Exception occured during logging in into Discord servers! Check you bot token!");
+                Environment.Exit(1);
+            }
+
             logger.LogInformation("Discord bot loaded.");
             await Task.Delay(-1);
         }

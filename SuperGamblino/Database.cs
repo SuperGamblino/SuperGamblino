@@ -133,7 +133,7 @@ namespace SuperGamblino
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex.Message);
+				_logger.LogError(ex, "Exception occured while executing CommandGiveCredits method in Database class!");
 				return -1;
 			}
 		}
@@ -158,7 +158,7 @@ namespace SuperGamblino
 			}
 			catch(Exception ex)
 			{
-				_logger.LogError(ex.Message);
+				_logger.LogError(ex, "Exception occured while executing CommandSearch method in Database class!");
 				return -1;
 			}
 		}
@@ -182,7 +182,7 @@ namespace SuperGamblino
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex.Message);
+				_logger.LogError(ex,"Exception occured while executing EnsureUserCreated method in Database class!");
 			}
 			finally
 			{
@@ -220,7 +220,7 @@ namespace SuperGamblino
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex.Message);
+				_logger.LogError(ex,$"Exception occured while executing GetDateTime with fieldName = {fieldName} method in Database class!");
 				return new DateTimeResult(false, null);
 			}
 			finally
@@ -244,7 +244,7 @@ namespace SuperGamblino
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex.Message);
+				_logger.LogError(ex, $"Exception occured while executing SetDateTime with fieldName = {fieldName} and time = {time} method in Database class!");
 				return false;
 			}
 			finally
