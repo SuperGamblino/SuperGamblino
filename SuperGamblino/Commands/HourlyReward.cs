@@ -21,7 +21,7 @@ namespace SuperGamblino.Commands
                     var timeSpan = DateTime.Now - result.DateTime.Value;
                     if (timeSpan >= TimeSpan.FromHours(1))
                     {
-                        Database.CommandGiveCredits(command.User.Id, reward);
+                        await Database.CommandGiveCredits(command.User.Id, reward);
                         await Database.SetDateTime(command.User.Id, "last_hourly_reward", DateTime.Now);
                         await Messages.CoinsGain(command, reward);
                     }
@@ -32,7 +32,7 @@ namespace SuperGamblino.Commands
                 }
                 else
                 {
-                    Database.CommandGiveCredits(command.User.Id, reward);
+                    await Database.CommandGiveCredits(command.User.Id, reward);
                     await Database.SetDateTime(command.User.Id, "last_hourly_reward", DateTime.Now);
                     await Messages.CoinsGain(command, reward);
                 }

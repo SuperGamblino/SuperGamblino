@@ -16,14 +16,21 @@ namespace SuperGamblino.Commands
         [Description("<Red|Black|Odd|Even|Number> <Bet>\n\nEx. roulette Red 100")]
         public async Task OnExecute(CommandContext command)
         {
-            string[] argument = command.RawArgumentString.ToUpper().TrimStart().Split(' ');
-            bool isNumber = int.TryParse(argument[0], out int nmbGuess);
-            bool betIsNmb = int.TryParse(argument[1], out int nmbBet);
+            string[] argument = command.RawArgumentString != null ? command.RawArgumentString.ToUpper().TrimStart().Split(' ') : new string[0];
+            bool isNumber = false;
+            bool betIsNmb = false;
+            int nmbBet = 0;
+            int nmbGuess = 0;
+            if (argument.Length >= 2)
+            {
+                isNumber = int.TryParse(argument[0], out nmbGuess);
+                betIsNmb = int.TryParse(argument[1], out nmbBet);
+            }
             bool enoughCredits = true;
 
             if (betIsNmb)
             {
-                int curCred = Database.CommandGetUserCredits(command.User.Id);
+                int curCred = await Database.CommandGetUserCredits(command.User.Id);
                 if (curCred < nmbBet)
                 {
                     enoughCredits = false;
@@ -31,7 +38,7 @@ namespace SuperGamblino.Commands
                 }
                 else
                 {
-                    Database.CommandSubsctractCredits(command.User.Id, nmbBet);
+                    await Database.CommandSubsctractCredits(command.User.Id, nmbBet);
                 }
                 if (enoughCredits)
                 {
@@ -112,7 +119,7 @@ namespace SuperGamblino.Commands
                     {
                         title = "Roulette - You've won!";
                         credWon = Convert.ToInt32(argument[1]) * rewardMulti;
-                        Database.CommandGiveCredits(command.User.Id, credWon);
+                        await Database.CommandGiveCredits(command.User.Id, credWon);
                     }
                     else
                         title = "Roulette - You've lost!";
@@ -125,7 +132,7 @@ namespace SuperGamblino.Commands
                     };
                     if (!invalid)
                     {
-                        await command.RespondAsync("", false, message.WithFooter("Current credits: " + Database.CommandGetUserCredits(command.User.Id).ToString()));
+                        await command.RespondAsync("", false, message.WithFooter("Current credits: " + await Database.CommandGetUserCredits(command.User.Id)));
                     }
                 }
             }

@@ -25,7 +25,7 @@ namespace SuperGamblino.Commands
 
                     bool isNumeric = int.TryParse(argument[1], out int bet);
 
-                    if (Database.CommandSubsctractCredits(command.User.Id, bet))
+                    if (await Database.CommandSubsctractCredits(command.User.Id, bet))
                     {
 
                         Random rnd = new Random();

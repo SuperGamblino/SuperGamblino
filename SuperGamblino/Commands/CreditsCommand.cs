@@ -15,7 +15,7 @@ namespace SuperGamblino.Commands
         [Cooldown(1, 3, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {
-            int currentCredits = Database.CommandGetUserCredits(command.User.Id);
+            int currentCredits = await Database.CommandGetUserCredits(command.User.Id);
 
             DiscordEmbed message = new DiscordEmbedBuilder
             {
