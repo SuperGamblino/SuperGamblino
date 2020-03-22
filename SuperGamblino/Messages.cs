@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SuperGamblino.GameObjects;
 
 namespace SuperGamblino
 {
@@ -77,6 +78,7 @@ namespace SuperGamblino
             await command.RespondAsync("",false, message);
         }
 
+
         public async Task TooEarly(CommandContext command, TimeSpan timeLeft)
         {
             DiscordEmbed message = new DiscordEmbedBuilder
@@ -86,6 +88,23 @@ namespace SuperGamblino
                               + timeLeft.ToString(@"hh\:mm\:ss") + "."
             };
             await command.RespondAsync("",false, message);
+        }
+
+        public async Task ListCooldown(CommandContext command, List<CooldownObject> cooldowns)
+        {
+            string desc = "";
+            foreach (CooldownObject cooldown in cooldowns)
+            {
+                desc += string.Format("{0} : {1}\n", cooldown.Command, cooldown.TimeLeft.ToString(@"hh\:mm\:ss"));
+            }
+
+            DiscordEmbed message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(_config.ColorSettings.Info),
+                Description = "Current commands are on cooldown:\n\n"
+                              + desc
+            };
+            await command.RespondAsync("", false, message);
         }
 
         public async Task Error(CommandContext command, string description)
