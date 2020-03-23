@@ -4,6 +4,7 @@ using SuperGamblino.Commands;
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -44,8 +45,17 @@ namespace SuperGamblino
                 .Add<Database>()
                 .Add<Messages>()
                 .Build();
-            
-            new Program().MainAsync(dependencies).GetAwaiter().GetResult();   
+            try
+            {
+                new Program().MainAsync(dependencies).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Some error occured! Check your configuration file!");
+                Thread.Sleep(30); //Without it logger don't have enough time to display the error to console
+                Environment.Exit(1);
+            }
+ 
         }
         private async Task MainAsync(DependencyCollection dependencyCollection)
         {
@@ -92,7 +102,7 @@ namespace SuperGamblino
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
             
-            logger.LogInformation("Starting the DB...");
+            logger.LogInformation("Starting the DB connection...");
             db.SetConnectionString(conf.DatabaseSettings.Address, conf.DatabaseSettings.Port, conf.DatabaseSettings.Name, conf.DatabaseSettings.Username, conf.DatabaseSettings.Password);
             try
             {
