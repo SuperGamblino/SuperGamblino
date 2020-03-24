@@ -30,6 +30,7 @@ namespace SuperGamblino.Commands
         {
             try
             {
+
                 string[] argument = command.RawArgumentString.ToUpper().TrimStart().Split(' ');
                 string option = argument[0] == "HEAD" || argument[0] == "TAIL" ? argument[0] : "";
                 if (!String.IsNullOrWhiteSpace(option) && argument.Length == 2)
@@ -92,6 +93,7 @@ namespace SuperGamblino.Commands
                 }
                 else
                 {
+                    Console.WriteLine(ex);
                     DiscordEmbed message = new DiscordEmbedBuilder
                     {
                         Color = new DiscordColor(_config.ColorSettings.Warning),

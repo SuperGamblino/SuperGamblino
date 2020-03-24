@@ -110,6 +110,7 @@ namespace SuperGamblino
 
         public async Task<int> CommandGetUserCredits(ulong userId)
         {
+            await EnsureUserCreated(userId);
             await using MySqlConnection c = GetConnection();
             MySqlCommand selection = new MySqlCommand(@"SELECT currency FROM user WHERE user_id = @user_id", c);
             selection.Parameters.AddWithValue("@user_id", userId);
@@ -138,6 +139,7 @@ namespace SuperGamblino
 
         public async Task<AddExpResult> CommandGiveUserExp(CommandContext command, int exp)
         {
+            await EnsureUserCreated(command.User.Id);
             await using (MySqlConnection c = GetConnection())
             {
                 await c.OpenAsync();
@@ -190,6 +192,7 @@ namespace SuperGamblino
         {
             try
             {
+                await EnsureUserCreated(userId);
                 await using MySqlConnection c = GetConnection();
                 MySqlCommand searchCoins = new MySqlCommand(
                     @"UPDATE user SET currency = currency + (@credits) WHERE user_id = @userId",
@@ -216,7 +219,7 @@ namespace SuperGamblino
             {
                 await using MySqlConnection c = GetConnection();
                 MySqlCommand searchCoins = new MySqlCommand(
-                    @"INSERT INTO user (user_id, currency) VALUES(@userId, @moneyFound) ON DUPLICATE KEY UPDATE currency = currency + @moneyFound",
+                    @"INSERT INTO user (user_id, currency, current_exp, current_level) VALUES(@userId, @moneyFound, 0, 1) ON DUPLICATE KEY UPDATE currency = currency + @moneyFound",
                     c);
                 await c.OpenAsync();
                 searchCoins.Parameters.AddWithValue("@userId", userId);
@@ -246,7 +249,7 @@ namespace SuperGamblino
                 await checkResult.CloseAsync();
                 if (!doExists)
                 {
-                    var command = new MySqlCommand($@"INSERT INTO user (user_id, currency, last_daily_reward, last_hourly_reward) VALUES ({userId}, 0, null, null)", connection);
+                    var command = new MySqlCommand($@"INSERT INTO user (user_id, currency, last_daily_reward, last_hourly_reward, current_exp, current_level) VALUES ({userId}, 0, null, null, 0, 1)", connection);
                     await command.ExecuteNonQueryAsync();
                 }
             }
