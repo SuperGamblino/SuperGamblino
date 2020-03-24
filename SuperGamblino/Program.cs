@@ -93,7 +93,7 @@ namespace SuperGamblino
             //Initialize commands
             commands.RegisterCommands<RouletteCommand>();
             commands.RegisterCommands<CoinflipCommand>();
-            commands.RegisterCommands<SearchCommand>();
+           // commands.RegisterCommands<SearchCommand>(); Removed for balance
             commands.RegisterCommands<CreditsCommand>();
             commands.RegisterCommands<GlobalTopCommand>();
             commands.RegisterCommands<HourlyReward>();

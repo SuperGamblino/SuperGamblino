@@ -94,6 +94,7 @@ namespace SuperGamblino
                 "   WHERE user_id = cur_user_id;" +
                 "   IF cur_exp > needed_exp THEN" +
                 "		SET did_level_increase = true;" +
+                "       SET cur_exp = 0;" +
                 "       UPDATE user" +
                 "       SET current_exp = 0, current_level = current_level + 1" +
                 "       WHERE user_id = cur_user_id;" +

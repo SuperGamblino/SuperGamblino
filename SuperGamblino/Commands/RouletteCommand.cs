@@ -59,7 +59,12 @@ namespace SuperGamblino.Commands
                     bool invalid = false;
                     Random random = new Random();
                     int number = random.Next(0, 37);
-
+                    int exp = number * 3 + 25;
+                    AddExpResult expResult = await _database.CommandGiveUserExp(command, exp);
+                    if (expResult.DidUserLevelUp)
+                    {
+                        await _messages.LevelUp(command);
+                    }
                     Roulette.Result result = Roulette.GetResult(number);
 
                     if (isNumber)
@@ -140,11 +145,11 @@ namespace SuperGamblino.Commands
                         Color = new DiscordColor(color),
                         Title = title,
                         Description =
-                            $"You rolled {result.Color} {result.Number}.\nThe result is {result.OddOrEven}\n\nProfit: {credWon}"
+                            $"You rolled {result.Color} {result.Number}.\nThe result is {result.OddOrEven}\n\nProfit: {credWon}\nExp: {exp}"
                     };
                     if (!invalid)
                     {
-                        await command.RespondAsync("", false, message.WithFooter("Current credits: " + await _database.CommandGetUserCredits(command.User.Id)));
+                        await command.RespondAsync("", false, message.WithFooter("Current credits: " + await _database.CommandGetUserCredits(command.User.Id) + "\nCurrent exp: " + expResult.CurrentExp + "/" + expResult.RequiredExp));
                     }
                 }
             }
