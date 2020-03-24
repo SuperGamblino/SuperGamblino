@@ -51,7 +51,7 @@ namespace SuperGamblino.Commands
                 }
                 if (curLDR.DateTime.HasValue)
                 {
-                    var timeSpan = DateTime.Now - curLHR.DateTime.Value;
+                    var timeSpan = DateTime.Now - curLDR.DateTime.Value;
                     if (timeSpan >= TimeSpan.FromDays(1))
                     {
                         cooldownObjects.Add(new CooldownObject("Daily"));
