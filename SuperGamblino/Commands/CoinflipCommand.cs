@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using System.Reflection;
+using SuperGamblino.GameObjects;
 
 namespace SuperGamblino.Commands
 {
@@ -41,7 +42,11 @@ namespace SuperGamblino.Commands
 
                         Random rnd = new Random();
                         string result = Convert.ToBoolean(rnd.Next(0, 2)) ? "HEAD" : "TAIL";
-
+                        AddExpResult expResult = await _database.CommandGiveUserExp(command, 100);
+                        if (expResult.DidUserLevelUp)
+                        {
+                            await _messages.LevelUp(command);
+                        }
                         DiscordEmbed resultMsg = new DiscordEmbedBuilder
                         {
                             Color = new DiscordColor(_config.ColorSettings.Info),
@@ -52,7 +57,7 @@ namespace SuperGamblino.Commands
 
                         if (result == option)
                         {
-                            await _messages.Won(command, bet);
+                            await _messages.Won(command, bet, expResult);
                         }
                         else
                         {

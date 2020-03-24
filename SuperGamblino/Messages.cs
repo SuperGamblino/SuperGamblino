@@ -20,15 +20,15 @@ namespace SuperGamblino
             _config = config;
         }
 
-        public async Task Won (CommandContext command, int bet)
+        public async Task Won (CommandContext command, int bet, AddExpResult result)
         {
             int currentCred = await _database.CommandGiveCredits(command.User.Id, bet * 2);
-            DiscordEmbed message = new DiscordEmbedBuilder
+            DiscordEmbedBuilder message = new DiscordEmbedBuilder
             {
                 Color = new DiscordColor(_config.ColorSettings.Success),
                 Description = "You've won!\n\nCurrent credits: " + currentCred
             };
-            await command.RespondAsync("", false, message);
+            await command.RespondAsync("", false, message.WithFooter(string.Format("EXP: {0}/{1}", result.CurrentExp, result.RequiredExp)));
         }
         public async Task Lost (CommandContext command)
         {
@@ -70,7 +70,7 @@ namespace SuperGamblino
 
         public async Task CoinsGain(CommandContext command, int ammount)
         {
-            DiscordEmbed message = new DiscordEmbedBuilder
+            DiscordEmbedBuilder message = new DiscordEmbedBuilder
             {
                 Color = new DiscordColor(_config.ColorSettings.Success),
                 Description = "You've gained: " + ammount + " coins!"
@@ -116,6 +116,17 @@ namespace SuperGamblino
                 Description = description
             };
             await command.RespondAsync("",false, message);
+        }
+
+        public async Task LevelUp(CommandContext command)
+        {
+            DiscordEmbedBuilder message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(_config.ColorSettings.Success),
+                Title = "Level Up!",
+                Description = "You've gained a level!"
+            };
+            await command.RespondAsync("", false, message);
         }
     }
 }
