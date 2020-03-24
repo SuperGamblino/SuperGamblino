@@ -1,4 +1,4 @@
-# SuperGamblino
+# SuperGamblino [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/fG3FJDW)
 This is a DSharpPlus open source discord gambling bot
 
 ## Setup
