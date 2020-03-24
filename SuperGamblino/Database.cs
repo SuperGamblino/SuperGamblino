@@ -43,7 +43,9 @@ namespace SuperGamblino
                 "user_id BIGINT UNSIGNED NOT NULL PRIMARY KEY," +
                 "currency INT," +
                 "last_hourly_reward DateTime," +
-                "last_daily_reward DateTime)",
+                "last_daily_reward DateTime," +
+                "current_exp INT, " +
+                "current_level INT)",
                 c);
             await c.OpenAsync();
             await createUser.ExecuteNonQueryAsync();
