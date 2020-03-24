@@ -27,7 +27,7 @@ namespace SuperGamblino
             if (!File.Exists("./config.json"))
             {
                 logger.LogError("There was no config.json file found so we created new default one. Please fill it up with info and start this bot again!");
-                File.WriteAllText("./config.json", Encoding.UTF8.GetString(Resources.DefaultConfig));
+                File.WriteAllText("./config.json", Encoding.UTF8.GetString(Resources.defaultconfig));
                 Environment.Exit(1);
             }
 
