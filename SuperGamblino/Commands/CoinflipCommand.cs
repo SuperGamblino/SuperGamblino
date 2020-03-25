@@ -25,7 +25,7 @@ namespace SuperGamblino.Commands
 
         [Command("coinflip")]
         [Aliases("cf")]
-        [Cooldown(1, 3, CooldownBucketType.User)]
+        [Cooldown(1, 2, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {
             try

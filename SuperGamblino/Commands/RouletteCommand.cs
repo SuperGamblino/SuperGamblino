@@ -23,7 +23,7 @@ namespace SuperGamblino.Commands
         }
 
         [Command("roulette")]
-        [Cooldown(1, 5, CooldownBucketType.User)]
+        [Cooldown(1, 2, CooldownBucketType.User)]
         [Description("<Red|Black|Odd|Even|Number> <Bet>\n\nEx. roulette Red 100")]
         public async Task OnExecute(CommandContext command)
         {
