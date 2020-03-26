@@ -2,11 +2,10 @@
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 
 namespace SuperGamblino.Commands
 {
-    class DailyReward
+    internal class DailyReward
     {
         private readonly Database _database;
         private readonly Messages _messages;

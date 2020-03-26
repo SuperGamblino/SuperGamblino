@@ -1,13 +1,10 @@
 ﻿using DSharpPlus.Entities;
-using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SuperGamblino.GameObjects
 {
     public class User
     {
+        public int currency;
         //public ulong userID;
         //public int currency;
         //public User(MySqlDataReader reader)
@@ -17,6 +14,5 @@ namespace SuperGamblino.GameObjects
         //}
 
         public DiscordUser discordUser;
-        public int currency;
     }
 }

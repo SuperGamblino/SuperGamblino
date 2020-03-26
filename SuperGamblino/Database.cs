@@ -1,20 +1,18 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
+using DSharpPlus.CommandsNext;
+using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using SuperGamblino.GameObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using System.Data;
 
 namespace SuperGamblino
 {
-    class Database
+    internal class Database
     {
-        private string _connectionString = "";
         private readonly ILogger _logger;
+        private string _connectionString = "";
 
         public Database(ILogger logger)
         {
@@ -24,10 +22,10 @@ namespace SuperGamblino
         public void SetConnectionString(string host, int port, string database, string username, string password)
         {
             _connectionString = "server=" + host +
-                               ";database=" + database +
-                               ";port=" + port +
-                               ";userid=" + username +
-                               ";password=" + password;
+                                ";database=" + database +
+                                ";port=" + port +
+                                ";userid=" + username +
+                                ";password=" + password;
         }
 
         private MySqlConnection GetConnection()
@@ -37,8 +35,8 @@ namespace SuperGamblino
 
         public async Task SetupTables()
         {
-            await using MySqlConnection c = GetConnection();
-            MySqlCommand createUser = new MySqlCommand(
+            await using var c = GetConnection();
+            var createUser = new MySqlCommand(
                 "CREATE TABLE IF NOT EXISTS user(" +
                 "user_id BIGINT UNSIGNED NOT NULL PRIMARY KEY," +
                 "currency INT," +
@@ -54,8 +52,8 @@ namespace SuperGamblino
 
         public async Task SetupProcedures()
         {
-            await using MySqlConnection c = GetConnection();
-            MySqlCommand createTop = new MySqlCommand(
+            await using var c = GetConnection();
+            var createTop = new MySqlCommand(
                 "DROP procedure IF EXISTS `get_top_users`; " +
                 "CREATE PROCEDURE `get_top_users`() " +
                 "BEGIN " +
@@ -65,7 +63,7 @@ namespace SuperGamblino
                 "LIMIT 10; " +
                 "END",
                 c);
-            MySqlCommand createIncreaseExp = new MySqlCommand(
+            var createIncreaseExp = new MySqlCommand(
                 "DROP procedure IF EXISTS `give_user_exp`;" +
                 "CREATE PROCEDURE `give_user_exp`(	" +
                 "   IN given_exp INT," +
@@ -112,16 +110,13 @@ namespace SuperGamblino
         public async Task<int> CommandGetUserCredits(ulong userId)
         {
             await EnsureUserCreated(userId);
-            await using MySqlConnection c = GetConnection();
-            MySqlCommand selection = new MySqlCommand(@"SELECT currency FROM user WHERE user_id = @user_id", c);
+            await using var c = GetConnection();
+            var selection = new MySqlCommand(@"SELECT currency FROM user WHERE user_id = @user_id", c);
             selection.Parameters.AddWithValue("@user_id", userId);
             await c.OpenAsync();
             await selection.PrepareAsync();
             var results = await selection.ExecuteReaderAsync();
-            if (!await results.ReadAsync())
-            {
-                return 0;
-            }
+            if (!await results.ReadAsync()) return 0;
 
             var currentCredits = await results.GetFieldValueAsync<int>(0);
             await results.CloseAsync();
@@ -135,17 +130,18 @@ namespace SuperGamblino
                 await CommandGiveCredits(userId, credits * -1);
                 return true;
             }
+
             return false;
         }
 
         public async Task<AddExpResult> CommandGiveUserExp(CommandContext command, int exp)
         {
             await EnsureUserCreated(command.User.Id);
-            await using (MySqlConnection c = GetConnection())
+            await using (var c = GetConnection())
             {
                 await c.OpenAsync();
-                
-                MySqlCommand mySqlCommand = new MySqlCommand("give_user_exp;", c);
+
+                var mySqlCommand = new MySqlCommand("give_user_exp;", c);
                 mySqlCommand.CommandType = CommandType.StoredProcedure;
 
                 //Add the input parameters
@@ -163,29 +159,32 @@ namespace SuperGamblino
 
                 await mySqlCommand.ExecuteNonQueryAsync();
 
-                return new AddExpResult(Convert.ToBoolean(mySqlCommand.Parameters["?did_level_increase"].Value), Convert.ToInt32(mySqlCommand.Parameters["?cur_exp_needed"].Value), Convert.ToInt32(mySqlCommand.Parameters["?cur_exp"].Value));
+                return new AddExpResult(Convert.ToBoolean(mySqlCommand.Parameters["?did_level_increase"].Value),
+                    Convert.ToInt32(mySqlCommand.Parameters["?cur_exp_needed"].Value),
+                    Convert.ToInt32(mySqlCommand.Parameters["?cur_exp"].Value));
             }
-            
         }
 
         public async Task<List<User>> CommandGetGlobalTop(CommandContext command)
         {
-            List<User> discordUsers = new List<User>();
+            var discordUsers = new List<User>();
             //CALL `supergamblino`.`get_top_users`();
-            await using (MySqlConnection c = GetConnection())
+            await using (var c = GetConnection())
             {
                 await c.OpenAsync();
-                MySqlCommand selection = new MySqlCommand(@"CALL `get_top_users`()", c);
+                var selection = new MySqlCommand(@"CALL `get_top_users`()", c);
                 var results = await selection.ExecuteReaderAsync();
                 while (results.Read())
                 {
-                    ulong uid = await results.GetFieldValueAsync<ulong>(0);
-                    int cur = await results.GetFieldValueAsync<int>(1);
-                    discordUsers.Add(new User { discordUser = await command.Client.GetUserAsync(uid), currency = cur });
+                    var uid = await results.GetFieldValueAsync<ulong>(0);
+                    var cur = await results.GetFieldValueAsync<int>(1);
+                    discordUsers.Add(new User {discordUser = await command.Client.GetUserAsync(uid), currency = cur});
                 }
+
                 //Object currentCredits = results.GetValue(0);
                 await results.CloseAsync();
             }
+
             return discordUsers;
         }
 
@@ -194,8 +193,8 @@ namespace SuperGamblino
             try
             {
                 await EnsureUserCreated(userId);
-                await using MySqlConnection c = GetConnection();
-                MySqlCommand searchCoins = new MySqlCommand(
+                await using var c = GetConnection();
+                var searchCoins = new MySqlCommand(
                     @"UPDATE user SET currency = currency + (@credits) WHERE user_id = @userId",
                     c);
                 searchCoins.Parameters.AddWithValue("@userId", userId);
@@ -214,12 +213,12 @@ namespace SuperGamblino
 
         public async Task<int> CommandSearch(ulong userId)
         {
-            Random rnd = new Random();
-            int foundMoney = rnd.Next(10, 50);
+            var rnd = new Random();
+            var foundMoney = rnd.Next(10, 50);
             try
             {
-                await using MySqlConnection c = GetConnection();
-                MySqlCommand searchCoins = new MySqlCommand(
+                await using var c = GetConnection();
+                var searchCoins = new MySqlCommand(
                     @"INSERT INTO user (user_id, currency, current_exp, current_level) VALUES(@userId, @moneyFound, 0, 1) ON DUPLICATE KEY UPDATE currency = currency + @moneyFound",
                     c);
                 await c.OpenAsync();
@@ -243,14 +242,18 @@ namespace SuperGamblino
             try
             {
                 await connection.OpenAsync();
-                var checkCmd = new MySqlCommand($@"SELECT EXISTS(SELECT * FROM user WHERE user_id = {userId})", connection);
+                var checkCmd = new MySqlCommand($@"SELECT EXISTS(SELECT * FROM user WHERE user_id = {userId})",
+                    connection);
                 var checkResult = await checkCmd.ExecuteReaderAsync();
                 await checkResult.ReadAsync();
                 var doExists = checkResult.GetBoolean(0);
                 await checkResult.CloseAsync();
                 if (!doExists)
                 {
-                    var command = new MySqlCommand($@"INSERT INTO user (user_id, currency, last_daily_reward, last_hourly_reward, current_exp, current_level) VALUES ({userId}, 0, null, null, 0, 1)", connection);
+                    var command =
+                        new MySqlCommand(
+                            $@"INSERT INTO user (user_id, currency, last_daily_reward, last_hourly_reward, current_exp, current_level) VALUES ({userId}, 0, null, null, 0, 1)",
+                            connection);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -283,18 +286,15 @@ namespace SuperGamblino
                 {
                     var value = reader.GetValue(0);
                     if (value is DateTime dateTime)
-                    {
                         return new DateTimeResult(true, dateTime);
-                    }
                     else
-                    {
                         return new DateTimeResult(true, null);
-                    }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Exception occured while executing GetDateTime with fieldName = {fieldName} method in Database class!");
+                _logger.LogError(ex,
+                    $"Exception occured while executing GetDateTime with fieldName = {fieldName} method in Database class!");
                 return new DateTimeResult(false, null);
             }
             finally
@@ -309,7 +309,8 @@ namespace SuperGamblino
             await using var connection = GetConnection();
             try
             {
-                var command = new MySqlCommand($"UPDATE user set {fieldName} = \'{time:yyyy-MM-dd HH:mm:ss}\' where user_id = {userId}",
+                var command = new MySqlCommand(
+                    $"UPDATE user set {fieldName} = \'{time:yyyy-MM-dd HH:mm:ss}\' where user_id = {userId}",
                     connection);
                 _logger.LogInformation(command.CommandText);
                 await connection.OpenAsync();
@@ -318,7 +319,8 @@ namespace SuperGamblino
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Exception occured while executing SetDateTime with fieldName = {fieldName} and time = {time} method in Database class!");
+                _logger.LogError(ex,
+                    $"Exception occured while executing SetDateTime with fieldName = {fieldName} and time = {time} method in Database class!");
                 return false;
             }
             finally
@@ -326,6 +328,5 @@ namespace SuperGamblino
                 await connection.CloseAsync();
             }
         }
-
     }
 }

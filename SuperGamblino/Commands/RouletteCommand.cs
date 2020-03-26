@@ -1,19 +1,17 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using System;
+using System.Threading.Tasks;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using SuperGamblino.GameObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuperGamblino.Commands
 {
-    class RouletteCommand
+    internal class RouletteCommand
     {
+        private readonly Config _config;
         private readonly Database _database;
         private readonly Messages _messages;
-        private readonly Config _config;
 
         public RouletteCommand(Database database, Messages messages, Config config)
         {
@@ -27,21 +25,24 @@ namespace SuperGamblino.Commands
         [Description("<Red|Black|Odd|Even|Number> <Bet>\n\nEx. roulette Red 100")]
         public async Task OnExecute(CommandContext command)
         {
-            string[] argument = command.RawArgumentString != null ? command.RawArgumentString.ToUpper().TrimStart().Split(' ') : new string[0];
-            bool isNumber = false;
-            bool betIsNmb = false;
-            int nmbBet = 0;
-            int nmbGuess = 0;
+            var argument = command.RawArgumentString != null
+                ? command.RawArgumentString.ToUpper().TrimStart().Split(' ')
+                : new string[0];
+            var isNumber = false;
+            var betIsNmb = false;
+            var nmbBet = 0;
+            var nmbGuess = 0;
             if (argument.Length >= 2)
             {
                 isNumber = int.TryParse(argument[0], out nmbGuess);
                 betIsNmb = int.TryParse(argument[1], out nmbBet);
             }
-            bool enoughCredits = true;
+
+            var enoughCredits = true;
 
             if (betIsNmb)
             {
-                int curCred = await _database.CommandGetUserCredits(command.User.Id);
+                var curCred = await _database.CommandGetUserCredits(command.User.Id);
                 if (curCred < nmbBet)
                 {
                     enoughCredits = false;
@@ -51,21 +52,19 @@ namespace SuperGamblino.Commands
                 {
                     await _database.CommandSubsctractCredits(command.User.Id, nmbBet);
                 }
+
                 if (enoughCredits)
                 {
-                    int rewardMulti = 0;
-                    bool hasWon = false;
-                    int credWon = 0;
-                    bool invalid = false;
-                    Random random = new Random();
-                    int number = random.Next(0, 37);
-                    int exp = number * 3 + 25;
-                    AddExpResult expResult = await _database.CommandGiveUserExp(command, exp);
-                    if (expResult.DidUserLevelUp)
-                    {
-                        await _messages.LevelUp(command);
-                    }
-                    Roulette.Result result = Roulette.GetResult(number);
+                    var rewardMulti = 0;
+                    var hasWon = false;
+                    var credWon = 0;
+                    var invalid = false;
+                    var random = new Random();
+                    var number = random.Next(0, 37);
+                    var exp = number * 3 + 25;
+                    var expResult = await _database.CommandGiveUserExp(command, exp);
+                    if (expResult.DidUserLevelUp) await _messages.LevelUp(command);
+                    var result = Roulette.GetResult(number);
 
                     if (isNumber)
                     {
@@ -85,6 +84,7 @@ namespace SuperGamblino.Commands
                                     hasWon = true;
                                     rewardMulti = 2;
                                 }
+
                                 break;
                             case "BLACK":
                                 if (result.Color.ToUpper() == "BLACK")
@@ -92,6 +92,7 @@ namespace SuperGamblino.Commands
                                     hasWon = true;
                                     rewardMulti = 2;
                                 }
+
                                 break;
                             case "ODD":
                                 if (result.OddOrEven.ToUpper() == "ODD")
@@ -99,6 +100,7 @@ namespace SuperGamblino.Commands
                                     hasWon = true;
                                     rewardMulti = 2;
                                 }
+
                                 break;
                             case "EVEN":
                                 if (result.OddOrEven.ToUpper() == "EVEN")
@@ -106,15 +108,16 @@ namespace SuperGamblino.Commands
                                     hasWon = true;
                                     rewardMulti = 2;
                                 }
+
                                 break;
                             default:
-                                await _messages.InvalidArgument(command, new string[] { "<Red|Black|Odd|Even|Number> <Bet>" });
+                                await _messages.InvalidArgument(command, new[] {"<Red|Black|Odd|Even|Number> <Bet>"});
                                 invalid = true;
                                 break;
                         }
                     }
 
-                    string color = "";
+                    var color = "";
 
                     switch (result.Color)
                     {
@@ -127,10 +130,9 @@ namespace SuperGamblino.Commands
                         case "Green":
                             color = _config.ColorSettings.Success;
                             break;
-                        default:
-                            break;
                     }
-                    string title = "";
+
+                    var title = "";
                     if (hasWon)
                     {
                         title = "Roulette - You've won!";
@@ -138,9 +140,11 @@ namespace SuperGamblino.Commands
                         await _database.CommandGiveCredits(command.User.Id, credWon);
                     }
                     else
+                    {
                         title = "Roulette - You've lost!";
+                    }
 
-                    DiscordEmbedBuilder message = new DiscordEmbedBuilder
+                    var message = new DiscordEmbedBuilder
                     {
                         Color = new DiscordColor(color),
                         Title = title,
@@ -148,13 +152,16 @@ namespace SuperGamblino.Commands
                             $"You rolled {result.Color} {result.Number}.\nThe result is {result.OddOrEven}\n\nProfit: {credWon}\nExp: {exp}"
                     };
                     if (!invalid)
-                    {
-                        await command.RespondAsync("", false, message.WithFooter("Current credits: " + await _database.CommandGetUserCredits(command.User.Id) + "\nCurrent exp: " + expResult.CurrentExp + "/" + expResult.RequiredExp));
-                    }
+                        await command.RespondAsync("", false,
+                            message.WithFooter("Current credits: " +
+                                               await _database.CommandGetUserCredits(command.User.Id) +
+                                               "\nCurrent exp: " + expResult.CurrentExp + "/" + expResult.RequiredExp));
                 }
             }
             else
-                await _messages.InvalidArgument(command, new string[] { "<Red|Black|Odd|Even|Number> <Bet>" });
+            {
+                await _messages.InvalidArgument(command, new[] {"<Red|Black|Odd|Even|Number> <Bet>"});
+            }
         }
     }
 }
