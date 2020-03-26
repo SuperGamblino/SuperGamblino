@@ -1,17 +1,13 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using System.Threading.Tasks;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuperGamblino.Commands
 {
-    class SearchCommand
+    internal class SearchCommand
     {
-        private Database _database;
-        private Messages _messages;
+        private readonly Database _database;
+        private readonly Messages _messages;
 
         public SearchCommand(Database database, Messages messages)
         {
@@ -23,7 +19,7 @@ namespace SuperGamblino.Commands
         [Cooldown(1, 5, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {
-            int moneyFound = await _database.CommandSearch(command.Member.Id);
+            var moneyFound = await _database.CommandSearch(command.Member.Id);
             await _messages.CoinsGain(command, moneyFound);
         }
     }

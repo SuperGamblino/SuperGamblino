@@ -9,6 +9,7 @@ namespace SuperGamblino.GameObjects
             Successful = successful;
             DateTime = dateTime;
         }
+
         public bool Successful { get; set; }
         public DateTime? DateTime { get; set; }
     }

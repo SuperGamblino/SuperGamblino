@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SuperGamblino.GameObjects
+﻿namespace SuperGamblino.GameObjects
 {
-    class AddExpResult
+    internal class AddExpResult
     {
         public AddExpResult(bool didUserLevelUp, int requiredExp, int currentExp)
         {
@@ -12,6 +8,7 @@ namespace SuperGamblino.GameObjects
             RequiredExp = requiredExp;
             CurrentExp = currentExp;
         }
+
         public bool DidUserLevelUp { get; set; }
         public int RequiredExp { get; set; }
         public int CurrentExp { get; set; }

@@ -1,13 +1,14 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using SuperGamblino.Commands;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SuperGamblino.Commands;
+using SuperGamblino.Helpers;
 using SuperGamblino.Properties;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -15,18 +16,19 @@ namespace SuperGamblino
 {
     internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var logger = LoggerFactory.Create(builder => builder
                 .AddFilter("Microsoft", LogLevel.Warning)
                 .AddFilter("System", LogLevel.Warning)
                 .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
                 .AddConsole()).CreateLogger<Program>();
-            
-            
+
+
             if (!File.Exists("./config.json"))
             {
-                logger.LogError("There was no config.json file found so we created new default one. Please fill it up with info and start this bot again!");
+                logger.LogError(
+                    "There was no config.json file found so we created new default one. Please fill it up with info and start this bot again!");
                 File.WriteAllText("./config.json", Encoding.UTF8.GetString(Resources.defaultconfig));
                 Environment.Exit(1);
             }
@@ -34,16 +36,17 @@ namespace SuperGamblino
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("config.json", false, true)
                 .Build();
-            
-            Config config = new Config();
-            
+
+            var config = new Config();
+
             configuration.Bind("Settings", config);
-            
+
             var dependencies = new DependencyCollectionBuilder()
                 .AddInstance(logger)
                 .AddInstance(config)
                 .Add<Database>()
                 .Add<Messages>()
+                .Add<BetSizeParser>()
                 .Build();
             try
             {
@@ -55,8 +58,8 @@ namespace SuperGamblino
                 Thread.Sleep(30); //Without it logger don't have enough time to display the error to console
                 Environment.Exit(1);
             }
- 
         }
+
         private async Task MainAsync(DependencyCollection dependencyCollection)
         {
             var logger = dependencyCollection.GetDependency<ILogger>();
@@ -71,29 +74,29 @@ namespace SuperGamblino
                 AutoReconnect = true,
                 UseInternalLogHandler = true
             };
-            
-            logger.LogInformation("Starting discord bot...");
-            DiscordClient client = new DiscordClient(cfg);
 
-            CommandsNextModule commands = client.UseCommandsNext(new CommandsNextConfiguration
+            logger.LogInformation("Starting discord bot...");
+            var client = new DiscordClient(cfg);
+
+            var commands = client.UseCommandsNext(new CommandsNextConfiguration
             {
                 StringPrefix = conf.BotSettings.Prefix,
                 Dependencies = dependencyCollection
             });
 
             logger.LogInformation("Registering event handlers...");
-            EventHandler eventHandler = new EventHandler(client, conf);
+            var eventHandler = new EventHandler(client, conf);
 
             client.Ready += eventHandler.OnReady;
             client.ClientErrored += eventHandler.OnClientError;
             logger.LogInformation("Event handlers were registered successfully.");
-            
-            
+
+
             logger.LogInformation("Registering commands...");
             //Initialize commands
             commands.RegisterCommands<RouletteCommand>();
             commands.RegisterCommands<CoinflipCommand>();
-           // commands.RegisterCommands<SearchCommand>(); Removed for balance
+            // commands.RegisterCommands<SearchCommand>(); Removed for balance
             commands.RegisterCommands<CreditsCommand>();
             commands.RegisterCommands<GlobalTopCommand>();
             commands.RegisterCommands<HourlyReward>();
@@ -102,9 +105,10 @@ namespace SuperGamblino
             commands.RegisterCommands<WorkReward>();
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
-            
+
             logger.LogInformation("Starting the DB connection...");
-            db.SetConnectionString(conf.DatabaseSettings.Address, conf.DatabaseSettings.Port, conf.DatabaseSettings.Name, conf.DatabaseSettings.Username, conf.DatabaseSettings.Password);
+            db.SetConnectionString(conf.DatabaseSettings.Address, conf.DatabaseSettings.Port,
+                conf.DatabaseSettings.Name, conf.DatabaseSettings.Username, conf.DatabaseSettings.Password);
             try
             {
                 await db.SetupTables();

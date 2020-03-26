@@ -1,20 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
-using SuperGamblino.Properties;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Microsoft.Extensions.Logging;
-using YamlDotNet.Serialization;
-
-namespace SuperGamblino
+﻿namespace SuperGamblino
 {
     public class Config
     {
         public BotSettings BotSettings { get; set; }
 
         public ColorSettings ColorSettings { get; set; }
-        
+
         public DatabaseSettings DatabaseSettings { get; set; }
     }
 
