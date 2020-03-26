@@ -24,7 +24,7 @@ namespace SuperGamblino.Commands
             var listUsers = await _database.CommandGetGlobalTop(command);
 
             var desc = "";
-            foreach (var user in listUsers) desc += user.discordUser.Username + ": " + user.currency + "\n";
+            foreach (var user in listUsers) desc += user.DiscordUser.Username + ": " + user.Credits + "\n";
 
             var message = new DiscordEmbedBuilder
             {

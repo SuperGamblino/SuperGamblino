@@ -6,6 +6,8 @@ using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using SuperGamblino.GameObjects;
+using System.Data;
+using DSharpPlus;
 
 namespace SuperGamblino
 {
@@ -141,7 +143,8 @@ namespace SuperGamblino
             {
                 await c.OpenAsync();
 
-                var mySqlCommand = new MySqlCommand("give_user_exp;", c);
+                MySqlCommand mySqlCommand = new MySqlCommand("give_user_exp;", c);
+          
                 mySqlCommand.CommandType = CommandType.StoredProcedure;
 
                 //Add the input parameters
@@ -176,9 +179,9 @@ namespace SuperGamblino
                 var results = await selection.ExecuteReaderAsync();
                 while (results.Read())
                 {
-                    var uid = await results.GetFieldValueAsync<ulong>(0);
-                    var cur = await results.GetFieldValueAsync<int>(1);
-                    discordUsers.Add(new User {discordUser = await command.Client.GetUserAsync(uid), currency = cur});
+                    ulong uid = await results.GetFieldValueAsync<ulong>(0);
+                    int cur = await results.GetFieldValueAsync<int>(1);
+                    discordUsers.Add(new User { DiscordUser = await command.Client.GetUserAsync(uid), Credits = cur });
                 }
 
                 //Object currentCredits = results.GetValue(0);
@@ -327,6 +330,32 @@ namespace SuperGamblino
             {
                 await connection.CloseAsync();
             }
+        }
+
+        public async Task<User> GetUser(CommandContext command)
+        {
+            ulong userId = command.User.Id;
+            await EnsureUserCreated(userId);
+            await using MySqlConnection c = GetConnection();
+            MySqlCommand selection = new MySqlCommand(@"SELECT * FROM user WHERE user_id = @user_id", c);
+            selection.Parameters.AddWithValue("@user_id", userId);
+            await c.OpenAsync();
+            await selection.PrepareAsync();
+            var results = await selection.ExecuteReaderAsync();
+            await results.ReadAsync();
+
+            User user = new User {
+                Id = await results.GetFieldValueAsync<UInt64>(0),
+                Credits = await results.GetFieldValueAsync<int>(1),
+                LastHourlyReward = await results.GetFieldValueAsync<DateTime>(2),
+                LastDailyReward = await results.GetFieldValueAsync<DateTime>(3),
+                Experience = await results.GetFieldValueAsync<int>(4),
+                Level = await results.GetFieldValueAsync<int>(5),
+                DiscordUser = await command.Client.GetUserAsync(userId)
+
+            };
+            await results.CloseAsync();
+            return user;
         }
     }
 }

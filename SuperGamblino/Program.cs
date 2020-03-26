@@ -102,6 +102,7 @@ namespace SuperGamblino
             commands.RegisterCommands<HourlyReward>();
             commands.RegisterCommands<DailyReward>();
             commands.RegisterCommands<Cooldown>();
+            commands.RegisterCommands<WorkReward>();
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
 
