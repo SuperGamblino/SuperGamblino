@@ -43,7 +43,8 @@ namespace SuperGamblino
                 "last_hourly_reward DateTime," +
                 "last_daily_reward DateTime," +
                 "current_exp INT, " +
-                "current_level INT)",
+                "current_level INT, " +
+                "last_work_reward DateTime)",
                 c);
             await c.OpenAsync();
             await createUser.ExecuteNonQueryAsync();
