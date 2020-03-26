@@ -30,7 +30,7 @@ namespace SuperGamblino.Commands
             string desc = "";
             foreach (User user in listUsers)
             {
-                desc += user.discordUser.Username + ": " + user.currency + "\n";
+                desc += user.DiscordUser.Username + ": " + user.Credits + "\n";
             }
 
             DiscordEmbedBuilder message = new DiscordEmbedBuilder
