@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using SuperGamblino.Helpers;
 
 namespace SuperGamblino.Commands
 {
@@ -11,12 +12,14 @@ namespace SuperGamblino.Commands
         private readonly Config _config;
         private readonly Database _database;
         private readonly Messages _messages;
+        private readonly BetSizeParser _betSizeParser;
 
-        public CoinflipCommand(Database database, Config config, Messages messages)
+        public CoinflipCommand(Database database, Config config, Messages messages, BetSizeParser betSizeParser)
         {
             _database = database;
             _config = config;
             _messages = messages;
+            _betSizeParser = betSizeParser;
         }
 
         [Command("coinflip")]
@@ -30,8 +33,22 @@ namespace SuperGamblino.Commands
                 var option = argument[0] == "HEAD" || argument[0] == "TAIL" ? argument[0] : "";
                 if (!string.IsNullOrWhiteSpace(option) && argument.Length == 2)
                 {
-                    var isNumeric = int.TryParse(argument[1], out var bet);
-
+                    int bet = -1;
+                    if (argument[1].Trim().ToLower() == "all")
+                    {
+                        bet = await _database.CommandGetUserCredits(command.User.Id);
+                    }else if (argument[1].Trim().ToLower() == "half")
+                    {
+                        bet = await _database.CommandGetUserCredits(command.User.Id) / 2;
+                    }
+                    else
+                    {
+                        bet = _betSizeParser.Parse(argument[1]);
+                    }
+                    if (bet == -1)
+                    {
+                        throw new NotImplementedException(); //Handle if bet is given in wrong format
+                    }
                     if (await _database.CommandSubsctractCredits(command.User.Id, bet))
                     {
                         var rnd = new Random();

@@ -8,6 +8,7 @@ using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SuperGamblino.Commands;
+using SuperGamblino.Helpers;
 using SuperGamblino.Properties;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -45,6 +46,7 @@ namespace SuperGamblino
                 .AddInstance(config)
                 .Add<Database>()
                 .Add<Messages>()
+                .Add<BetSizeParser>()
                 .Build();
             try
             {

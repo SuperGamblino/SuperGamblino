@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using SuperGamblino.GameObjects;
+using SuperGamblino.Helpers;
 
 namespace SuperGamblino.Commands
 {
@@ -12,12 +13,14 @@ namespace SuperGamblino.Commands
         private readonly Config _config;
         private readonly Database _database;
         private readonly Messages _messages;
+        private readonly BetSizeParser _betSizeParser;
 
-        public RouletteCommand(Database database, Messages messages, Config config)
+        public RouletteCommand(Database database, Messages messages, Config config, BetSizeParser betSizeParser)
         {
             _database = database;
             _messages = messages;
             _config = config;
+            _betSizeParser = betSizeParser;
         }
 
         [Command("roulette")]
@@ -29,18 +32,27 @@ namespace SuperGamblino.Commands
                 ? command.RawArgumentString.ToUpper().TrimStart().Split(' ')
                 : new string[0];
             var isNumber = false;
-            var betIsNmb = false;
-            var nmbBet = 0;
+            var nmbBet = -1;
             var nmbGuess = 0;
             if (argument.Length >= 2)
             {
                 isNumber = int.TryParse(argument[0], out nmbGuess);
-                betIsNmb = int.TryParse(argument[1], out nmbBet);
+                if (argument[1].Trim() == "ALL")
+                {
+                    nmbBet = await _database.CommandGetUserCredits(command.User.Id);
+                } else if (argument[1].Trim() == "HALF")
+                {
+                    nmbBet = await _database.CommandGetUserCredits(command.User.Id) / 2;
+                }
+                else
+                {
+                    nmbBet = _betSizeParser.Parse(argument[1]);
+                }
             }
 
             var enoughCredits = true;
 
-            if (betIsNmb)
+            if (nmbBet != -1)
             {
                 var curCred = await _database.CommandGetUserCredits(command.User.Id);
                 if (curCred < nmbBet)
@@ -136,7 +148,7 @@ namespace SuperGamblino.Commands
                     if (hasWon)
                     {
                         title = "Roulette - You've won!";
-                        credWon = Convert.ToInt32(argument[1]) * rewardMulti;
+                        credWon = nmbBet * rewardMulti;
                         await _database.CommandGiveCredits(command.User.Id, credWon);
                     }
                     else
