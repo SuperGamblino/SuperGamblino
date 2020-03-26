@@ -6,8 +6,6 @@ using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using SuperGamblino.GameObjects;
-using System.Data;
-using DSharpPlus;
 
 namespace SuperGamblino
 {
