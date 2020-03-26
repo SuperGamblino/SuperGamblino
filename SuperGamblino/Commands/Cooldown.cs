@@ -27,6 +27,7 @@ namespace SuperGamblino.Commands
         {
             var curLHR = await _database.GetDateTime(command.User.Id, "last_hourly_reward");
             var curLDR = await _database.GetDateTime(command.User.Id, "last_daily_reward");
+            var curLWR = await _database.GetDateTime(command.User.Id, "last_work_reward");
 
             var cooldownObjects = new List<CooldownObject>();
 
@@ -56,6 +57,19 @@ namespace SuperGamblino.Commands
                 else
                 {
                     cooldownObjects.Add(new CooldownObject("Daily"));
+                }
+
+                if (curLWR.DateTime.HasValue)
+                {
+                    var timeSpan = DateTime.Now - curLWR.DateTime.Value;
+                    if (timeSpan >= TimeSpan.FromHours(6))
+                        cooldownObjects.Add(new CooldownObject("Work"));
+                    else
+                        cooldownObjects.Add(new CooldownObject("Work", TimeSpan.FromHours(6) - timeSpan));
+                }
+                else
+                {
+                    cooldownObjects.Add(new CooldownObject("Work"));
                 }
 
                 await _messages.ListCooldown(command, cooldownObjects);
