@@ -341,20 +341,46 @@ namespace SuperGamblino
             await c.OpenAsync();
             await selection.PrepareAsync();
             var results = await selection.ExecuteReaderAsync();
-            await results.ReadAsync();
+            //await results.ReadAsync();
+            if (!await results.ReadAsync()) return new User { };
+            /*
+                         await c.OpenAsync();
+            await selection.PrepareAsync();
+            var results = await selection.ExecuteReaderAsync();
+            if (!await results.ReadAsync()) return 0;
+             */
 
-            User user = new User {
-                Id = await results.GetFieldValueAsync<UInt64>(0),
-                Credits = await results.GetFieldValueAsync<int>(1),
-                LastHourlyReward = await results.GetFieldValueAsync<DateTime>(2),
-                LastDailyReward = await results.GetFieldValueAsync<DateTime>(3),
-                Experience = await results.GetFieldValueAsync<int>(4),
-                Level = await results.GetFieldValueAsync<int>(5),
-                DiscordUser = await command.Client.GetUserAsync(userId)
+            if (await results.IsDBNullAsync(2) || await results.IsDBNullAsync(3))
+            {
+                User user = new User
+                {
+                    Id = await results.GetFieldValueAsync<UInt64>(0),
+                    Credits = await results.GetFieldValueAsync<int>(1),
+                    LastHourlyReward = null,
+                    LastDailyReward = null,
+                    Experience = await results.GetFieldValueAsync<int>(4),
+                    Level = await results.GetFieldValueAsync<int>(5),
+                    DiscordUser = await command.Client.GetUserAsync(userId)
+                };
+                return user;
+            }
+            else
+            {
+                User user = new User
+                {
+                    Id = await results.GetFieldValueAsync<UInt64>(0),
+                    Credits = await results.GetFieldValueAsync<int>(1),
+                    LastHourlyReward = await results.GetFieldValueAsync<DateTime>(2),
+                    LastDailyReward = await results.GetFieldValueAsync<DateTime>(3),
+                    Experience = await results.GetFieldValueAsync<int>(4),
+                    Level = await results.GetFieldValueAsync<int>(5),
+                    DiscordUser = await command.Client.GetUserAsync(userId)
+                };
+                return user;
+            }
 
-            };
-            await results.CloseAsync();
-            return user;
+                await results.CloseAsync();
+                return new User { };
         }
     }
 }
