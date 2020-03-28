@@ -48,7 +48,7 @@ namespace SuperGamblino
                 c);
             var createHistory = new MySqlCommand(
                 "CREATE TABLE IF NOT EXISTS history(" +
-                "user_id BIGINT UNSIGNED NOT NULL PRIMARY KEY," +
+                "user_id BIGINT UNSIGNED NOT NULL," +
                 "game TEXT NOT NULL," +
                 "did_win BOOL NOT NULL," +
                 "credits_difference INT NOT NULL)",c);
