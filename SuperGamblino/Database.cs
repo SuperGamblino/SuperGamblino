@@ -51,10 +51,21 @@ namespace SuperGamblino
                 "user_id BIGINT UNSIGNED NOT NULL," +
                 "game TEXT NOT NULL," +
                 "did_win BOOL NOT NULL," +
-                "credits_difference INT NOT NULL)",c);
+                "credits_difference INT NOT NULL)",
+                c);
+            var createBlackjack = new MySqlCommand(
+                "CREATE TABLE IF NOT EXISTS blackjack(" +
+                "id INT NOT NULL AUTO_INCREMENT," +
+                "user_hand VARCHAR(45) NULL," +
+                "dealer_hand VARCHAR(45) NULL," +
+                "is_game_done TINYINT NULL," +
+                "user_id BIGINT NULL," +
+                "PRIMARY KEY (id))",
+                c);
             await c.OpenAsync();
             await createUser.ExecuteNonQueryAsync();
             await createHistory.ExecuteNonQueryAsync();
+            await createBlackjack.ExecuteNonQueryAsync();
             await c.CloseAsync();
         }
 
@@ -245,6 +256,49 @@ namespace SuperGamblino
             }
         }
 
+        public async Task<BlackjackHelper> GetBlackjackGame(ulong userId)
+        {
+            await using var connection = GetConnection();
+            try
+            {
+                await connection.OpenAsync();
+                var checkCmd = new MySqlCommand($@"SELECT EXISTS(SELECT * FROM blackjack WHERE user_id = {userId} AND is_game_done = 0)",
+                    connection);
+                var checkResult = await checkCmd.ExecuteReaderAsync();
+                await checkResult.ReadAsync();
+                var doExists = checkResult.GetBoolean(0);
+                await checkResult.CloseAsync();
+                if (doExists)
+                {
+                    var getCmd = new MySqlCommand($@"SELECT user_hand, dealer_hand, is_game_done FROM blackjack WHERE user_id = {userId} AND is_game_done = 0",
+                    connection);
+                    var result = await getCmd.ExecuteReaderAsync();
+                    await result.ReadAsync();
+                    BlackjackHelper blackjackHelper = new BlackjackHelper
+                    {
+                        UserHand = result.GetString(0),
+                        DealerHand = result.GetString(1),
+                        IsGameDone = Convert.ToBoolean(result.GetByte(2))
+                    };
+                    await result.CloseAsync();
+                    return blackjackHelper;
+                }
+                else
+                {
+                    return new BlackjackHelper { IsGameDone = true };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occured while executing GetBlackjackGame method in Database class!");
+                return new BlackjackHelper { };
+            }
+            finally
+            {
+                await connection.CloseAsync();
+            }
+        }
+
         private async Task EnsureUserCreated(ulong userId)
         {
             await using var connection = GetConnection();
@@ -275,6 +329,8 @@ namespace SuperGamblino
                 await connection.CloseAsync();
             }
         }
+
+
 
 
         public async Task<DateTimeResult> GetDateTime(ulong userId, string fieldName)

@@ -105,6 +105,7 @@ namespace SuperGamblino
             commands.RegisterCommands<WorkReward>();
             commands.RegisterCommands<GamesHistory>();
             commands.RegisterCommands<ShowProfile>();
+            commands.RegisterCommands<BlackJackTest>();
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
 
