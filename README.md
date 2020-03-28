@@ -19,14 +19,14 @@ Contributing to this project is really simple.
  For easier discussion, questions and feedback, please join our [Discord](https://discord.gg/fG3FJDW "SuperGamblino Discord").
 
 ## Commands
-help - The help command displays available commands, and gives detailed information about them.
-coinflip - This is a simple coinflip command which takes two arguments Head/Tail and the amount to bet.
-Cooldown - Simply displays the cooldown on your Hourly and Daily rewards.
-Credits - Shows you how many credits you currently have.
-Hourly - Gives you 20 credits, and is available once an hour.
-Daily - Gives you 500 credits, and is available once every day.
-Globaltop - shows you a global top10.
-Roulette - This is a classic roulette game, where you can bet on Black, Red, Green or a specific number.
-History - Displays the recent games and the results here from.
-Profile - Shows a profile page
-Work - Gives you credits based on your job. Your job is based on your level.
+ - help - The help command displays available commands, and gives detailed information about them. 
+ - coinflip - This is a simple coinflip command which takes two arguments Head/Tail and the amount to bet.
+ - Cooldown - Simply displays the cooldown on your Hourly and Daily rewards.
+ - Credits - Shows you how many credits you currently have.
+ - Hourly - Gives you 20 credits, and is available once an hour.
+ - Daily - Gives you 500 credits, and is available once every day.
+ - Globaltop - shows you a global top10.
+ - Roulette - This is a classic roulette game, where you can bet on Black, Red, Green or a specific number.
+ - History - Displays the recent games and the results here from.
+ - Profile - Shows a profile page
+ - Work - Gives you credits based on your job. Your job is based on your level.
