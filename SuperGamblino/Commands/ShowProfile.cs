@@ -19,6 +19,7 @@ namespace SuperGamblino.Commands
 
         [Command("profile")]
         [Cooldown(1, 3, CooldownBucketType.User)]
+        [Description("Shows a profile, descriping detailed information about the user. This command has no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
             User user = await _database.GetUser(command);

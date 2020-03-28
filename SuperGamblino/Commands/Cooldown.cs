@@ -23,6 +23,7 @@ namespace SuperGamblino.Commands
         [Command("cooldown")]
         [Aliases("cd")]
         [Cooldown(1, 3, CooldownBucketType.User)]
+        [Description("Shows the current command cooldowns. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
             var curLHR = await _database.GetDateTime(command.User.Id, "last_hourly_reward");

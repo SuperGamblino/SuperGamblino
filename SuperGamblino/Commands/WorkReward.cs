@@ -24,6 +24,7 @@ namespace SuperGamblino.Commands
 
         [Command("work")]
         [Aliases("get-work")]
+        [Description("Gives you credits based on your job. This command has no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
             User user = await _database.GetUser(command);

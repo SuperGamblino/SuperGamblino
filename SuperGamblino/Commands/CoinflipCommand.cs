@@ -26,6 +26,7 @@ namespace SuperGamblino.Commands
         [Command("coinflip")]
         [Aliases("cf")]
         [Cooldown(1, 2, CooldownBucketType.User)]
+        [Description("Simple coinflip game. This command takes two argument Head or Tail and your bet. \nEx. coinflip head 100")]
         public async Task OnExecute(CommandContext command)
         {
             try

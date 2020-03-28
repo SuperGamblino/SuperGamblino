@@ -19,6 +19,7 @@ namespace SuperGamblino.Commands
         [Command("globaltop")]
         [Aliases("gt")]
         [Cooldown(1, 3, CooldownBucketType.User)]
+        [Description("Shows a global leaderboard based on credits. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
             var listUsers = await _database.CommandGetGlobalTop(command);

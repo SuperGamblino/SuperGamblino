@@ -18,6 +18,7 @@ namespace SuperGamblino.Commands
 
         [Command("credits")]
         [Aliases("cred")]
+        [Description("Shows your current credits. This command has no arguments.")]
         [Cooldown(1, 3, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {

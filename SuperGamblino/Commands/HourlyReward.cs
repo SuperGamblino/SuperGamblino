@@ -18,6 +18,7 @@ namespace SuperGamblino.Commands
 
         [Command("hourly")]
         [Aliases("get-hourly")]
+        [Description("Gives you 20 credits. This command is available once every hour.")]
         public async Task OnExecute(CommandContext command)
         {
             const int reward = 20;

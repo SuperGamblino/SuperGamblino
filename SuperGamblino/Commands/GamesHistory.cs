@@ -19,6 +19,7 @@ namespace SuperGamblino.Commands
 
         [Command("history")]
         [Cooldown(1,2,CooldownBucketType.User)]
+        [Description("Displays the recent games and the results here from. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
             var history = await _database.GetGameHistories(command.User.Id);

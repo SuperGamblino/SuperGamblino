@@ -18,6 +18,7 @@ namespace SuperGamblino.Commands
 
         [Command("daily")]
         [Aliases("get-daily")]
+        [Description("Gives you 500 credits. This command is available once every day.")]
         public async Task OnExecute(CommandContext command)
         {
             const int reward = 500;
