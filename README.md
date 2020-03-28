@@ -1,4 +1,4 @@
-# SuperGamblino [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/fG3FJDW) [![Invite](https://img.shields.io/badge/invite-bot%20discord-7289da.svg)](https://discordapp.com/oauth2/authorize?client_id=688160933574475800&scope=bot&permissions=8)
+# SuperGamblino [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/fG3FJDW) [![Invite](https://img.shields.io/badge/invite-bot%20discord-7289da.svg)](https://discordapp.com/oauth2/authorize?client_id=688160933574475800&scope=bot&permissions=8)![.NET Core](https://github.com/Emil8250/SuperGamblino/workflows/.NET%20Core/badge.svg)
 This is a DSharpPlus open source discord gambling bot
 
 ## Setup
