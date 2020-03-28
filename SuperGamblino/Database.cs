@@ -299,6 +299,28 @@ namespace SuperGamblino
             }
         }
 
+        public async Task UpdateBlackjackGame(BlackjackHelper blackjackHelper, ulong userId)
+        {
+            await using var connection = GetConnection();
+
+            try
+            {
+                await connection.OpenAsync();
+                var updateCmd = new MySqlCommand($@"UPDATE blackjack SET user_hand = '{blackjackHelper.UserHand}', dealer_hand = '{blackjackHelper.DealerHand}', is_game_done = {Convert.ToInt32(blackjackHelper.IsGameDone)} WHERE user_id = {userId}",
+                    connection);
+                await updateCmd.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occured while executing UpdateBlackhackGame method in Database class!");
+                throw;
+            }
+            finally
+            {
+                await connection.CloseAsync();
+            }
+        }
+
         private async Task EnsureUserCreated(ulong userId)
         {
             await using var connection = GetConnection();
