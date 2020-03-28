@@ -156,6 +156,13 @@ namespace SuperGamblino.Commands
                         title = "Roulette - You've lost!";
                     }
 
+                    await _database.AddGameHistory(command.User.Id, new GameHistory()
+                    {
+                        GameName = "roulette",
+                        HasWon = hasWon,
+                        CoinsDifference = credWon
+                    });
+                    
                     var message = new DiscordEmbedBuilder
                     {
                         Color = new DiscordColor(color),
