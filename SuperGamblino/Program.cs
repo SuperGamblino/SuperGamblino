@@ -104,6 +104,7 @@ namespace SuperGamblino
             commands.RegisterCommands<Cooldown>();
             commands.RegisterCommands<WorkReward>();
             commands.RegisterCommands<GamesHistory>();
+            commands.RegisterCommands<ShowProfile>();
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
 

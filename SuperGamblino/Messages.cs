@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using SuperGamblino.GameObjects;
+using static SuperGamblino.GameObjects.Work;
 
 namespace SuperGamblino
 {
@@ -120,6 +121,24 @@ namespace SuperGamblino
                 Title = "Level Up!",
                 Description = "You've gained a level!"
             };
+            await command.RespondAsync("", false, message);
+        }
+
+        public async Task Profile(CommandContext command, User user, Job job)
+        {
+
+            var message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(_config.ColorSettings.Info),
+                Title = $"User profile - {command.User.Username}",
+                Description = $"**Credits: **{user.Credits}\n" +
+                $"**Level: **{user.Level}\n" +
+                $"**Current exp: **{user.Experience}\n" +
+                $"**Job title: **{job.Title}\n" +
+                $"**Job salery: ** {job.Reward}\n" +
+                $"**Job cooldown: ** {job.Cooldown}"
+            };
+
             await command.RespondAsync("", false, message);
         }
     }

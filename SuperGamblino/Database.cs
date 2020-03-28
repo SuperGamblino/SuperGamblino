@@ -385,9 +385,6 @@ namespace SuperGamblino
                 };
                 return user;
             }
-
-                await results.CloseAsync();
-                return new User { };
         }
 
         public async Task<History> GetGameHistories(ulong userId)
