@@ -46,8 +46,15 @@ namespace SuperGamblino
                 "current_level INT, " +
                 "last_work_reward DateTime)",
                 c);
+            var createHistory = new MySqlCommand(
+                "CREATE TABLE IF NOT EXISTS history(" +
+                "user_id BIGINT UNSIGNED NOT NULL PRIMARY KEY," +
+                "game TEXT NOT NULL," +
+                "did_win BOOL NOT NULL," +
+                "credits_difference INT NOT NULL)",c);
             await c.OpenAsync();
             await createUser.ExecuteNonQueryAsync();
+            await createHistory.ExecuteNonQueryAsync();
             await c.CloseAsync();
         }
 
@@ -176,7 +183,7 @@ namespace SuperGamblino
                 await c.OpenAsync();
                 var selection = new MySqlCommand(@"CALL `get_top_users`()", c);
                 var results = await selection.ExecuteReaderAsync();
-                while (results.Read())
+                while (await results.ReadAsync())
                 {
                     ulong uid = await results.GetFieldValueAsync<ulong>(0);
                     int cur = await results.GetFieldValueAsync<int>(1);
@@ -355,6 +362,65 @@ namespace SuperGamblino
             };
             await results.CloseAsync();
             return user;
+        }
+
+        public async Task<History> GetGameHistories(ulong userId)
+        {
+            await using var c = GetConnection();
+            try
+            {
+                var command = new MySqlCommand($"SELECT * FROM history WHERE user_id = {userId}", c);
+                await c.OpenAsync();
+                var reader = await command.ExecuteReaderAsync();
+                var history = new History();
+                history.UserId = userId;
+                var list = new List<GameHistory>();
+                while (await reader.ReadAsync())
+                {
+                    list.Add(new GameHistory()
+                    {
+                        GameName = await reader.GetFieldValueAsync<string>(1),
+                        HasWon = await reader.GetFieldValueAsync<bool>(2),
+                        CoinsDifference = await reader.GetFieldValueAsync<int>(3)
+                    });
+                }
+
+                history.GameHistories = list;
+                return history;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Exception occured while executing GetGameHistories with userId = {userId} method in Database class!");
+                return null;
+            }
+            finally
+            {
+                await c.CloseAsync();
+            }
+        }
+
+        public async Task<bool> AddGameHistory(ulong userId, GameHistory history)
+        {
+            await using var c = GetConnection();
+            try
+            {
+                var command = new MySqlCommand("INSERT INTO history (user_id, game, did_win, credits_difference)" +
+                                               $" VALUES ({userId}, \"{history.GameName}\", {history.HasWon}, {history.CoinsDifference})",
+                    c);
+                await c.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    $"Exception occured while executing AddGameHistory with userId = {userId} method in Database class!");
+                return false;
+            }
+            finally
+            {
+                await c.CloseAsync();
+            }
         }
     }
 }

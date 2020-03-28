@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using SuperGamblino.GameObjects;
 using SuperGamblino.Helpers;
 
 namespace SuperGamblino.Commands
@@ -62,7 +63,12 @@ namespace SuperGamblino.Commands
                         };
                         await command.RespondAsync("", false, resultMsg);
 
-
+                        await _database.AddGameHistory(command.User.Id, new GameHistory()
+                        {
+                            GameName = "coinflip",
+                            HasWon = result == option,
+                            CoinsDifference = result == option ? bet : bet * -1
+                        });
                         if (result == option)
                             await _messages.Won(command, bet, expResult);
                         else
