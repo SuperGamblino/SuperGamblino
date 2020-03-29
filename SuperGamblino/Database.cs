@@ -60,6 +60,7 @@ namespace SuperGamblino
                 "dealer_hand VARCHAR(45) NULL," +
                 "is_game_done TINYINT NULL," +
                 "user_id BIGINT NULL," +
+                "bet INT NULL," +
                 "PRIMARY KEY (id))",
                 c);
             await c.OpenAsync();
@@ -161,7 +162,7 @@ namespace SuperGamblino
                 await c.OpenAsync();
 
                 MySqlCommand mySqlCommand = new MySqlCommand("give_user_exp;", c);
-          
+
                 mySqlCommand.CommandType = CommandType.StoredProcedure;
 
                 //Add the input parameters
@@ -299,6 +300,28 @@ namespace SuperGamblino
             }
         }
 
+        public async Task StartNewBlackjackGame(BlackjackHelper blackjackHelper, ulong userId)
+        {
+            await using var connection = GetConnection();
+
+            try
+            {
+                await connection.OpenAsync();
+                MySqlCommand insertCmd = new MySqlCommand($@"INSERT INTO blackjack(user_hand, dealer_hand, is_game_done, user_id, bet) VALUES('{blackjackHelper.UserHand}', '{blackjackHelper.DealerHand}',{ Convert.ToInt32(blackjackHelper.IsGameDone) },{ userId},{ blackjackHelper.Bet})",
+                    connection);
+                await insertCmd.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occured while executing StartBewBlackhackGame method in Database class!");
+                throw;
+            }
+            finally
+            {
+                await connection.CloseAsync();
+            }
+        }
+
         public async Task UpdateBlackjackGame(BlackjackHelper blackjackHelper, ulong userId)
         {
             await using var connection = GetConnection();
@@ -306,8 +329,9 @@ namespace SuperGamblino
             try
             {
                 await connection.OpenAsync();
-                var updateCmd = new MySqlCommand($@"UPDATE blackjack SET user_hand = '{blackjackHelper.UserHand}', dealer_hand = '{blackjackHelper.DealerHand}', is_game_done = {Convert.ToInt32(blackjackHelper.IsGameDone)} WHERE user_id = {userId}",
-                    connection);
+                    MySqlCommand updateCmd = new MySqlCommand($@"UPDATE blackjack SET user_hand = '{blackjackHelper.UserHand}', dealer_hand = '{blackjackHelper.DealerHand}', is_game_done = {Convert.ToInt32(blackjackHelper.IsGameDone)}, bet = {blackjackHelper.Bet} WHERE user_id = {userId} AND is_game_done = 0",
+                   connection);
+
                 await updateCmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
