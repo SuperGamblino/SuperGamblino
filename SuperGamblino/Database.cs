@@ -112,15 +112,16 @@ namespace SuperGamblino
                 "   WHERE user_id = cur_user_id;" +
                 "   IF cur_exp > needed_exp THEN" +
                 "		SET did_level_increase = true;" +
-                "       SET cur_exp = 0;" +
+                "       SET cur_exp = cur_exp - needed_exp;" +
                 "       UPDATE user" +
-                "       SET current_exp = 0, current_level = current_level + 1" +
+                "       SET current_exp = cur_exp, current_level = current_level + 1" +
                 "       WHERE user_id = cur_user_id;" +
                 "   ELSE" +
                 "   	SET did_level_increase = false;" +
                 "	END IF;" +
                 "END",
                 c);
+            _logger.LogInformation(createIncreaseExp.CommandText);
             await c.OpenAsync();
             await createTop.ExecuteNonQueryAsync();
             await createIncreaseExp.ExecuteNonQueryAsync();
