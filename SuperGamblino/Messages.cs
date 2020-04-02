@@ -136,7 +136,8 @@ namespace SuperGamblino
                 $"**Current exp: **{user.Experience}\n" +
                 $"**Job title: **{job.Title}\n" +
                 $"**Job salery: ** {job.Reward}\n" +
-                $"**Job cooldown: ** {job.Cooldown}"
+                $"**Job cooldown: ** {job.Cooldown}\n" +
+                $"**Minimum bet: ** {user.Level * 15}"
             };
 
             await command.RespondAsync("", false, message);
