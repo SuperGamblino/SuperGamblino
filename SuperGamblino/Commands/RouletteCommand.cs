@@ -73,8 +73,10 @@ namespace SuperGamblino.Commands
                     var invalid = false;
                     var random = new Random();
                     var number = random.Next(0, 37);
-                    var exp = number * 3 + 25;
-                    var expResult = await _database.CommandGiveUserExp(command, exp);
+
+                    Exp expHelper = new Exp(_database);
+
+                    var expResult = await expHelper.Give(command, nmbBet);
                     if (expResult.DidUserLevelUp) await _messages.LevelUp(command);
                     var result = Roulette.GetResult(number);
 
@@ -168,7 +170,7 @@ namespace SuperGamblino.Commands
                         Color = new DiscordColor(color),
                         Title = title,
                         Description =
-                            $"You rolled {result.Color} {result.Number}.\nThe result is {result.OddOrEven}\n\nProfit: {credWon}\nExp: {exp}"
+                            $"You rolled {result.Color} {result.Number}.\nThe result is {result.OddOrEven}\n\nProfit: {credWon}\nExp: {expResult.GivenExp}"
                     };
                     if (!invalid)
                         await command.RespondAsync("", false,

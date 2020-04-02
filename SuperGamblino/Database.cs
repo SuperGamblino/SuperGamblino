@@ -183,7 +183,8 @@ namespace SuperGamblino
 
                 return new AddExpResult(Convert.ToBoolean(mySqlCommand.Parameters["?did_level_increase"].Value),
                     Convert.ToInt32(mySqlCommand.Parameters["?cur_exp_needed"].Value),
-                    Convert.ToInt32(mySqlCommand.Parameters["?cur_exp"].Value));
+                    Convert.ToInt32(mySqlCommand.Parameters["?cur_exp"].Value), 
+                    exp);
             }
         }
 

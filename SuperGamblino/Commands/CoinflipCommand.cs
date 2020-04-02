@@ -55,7 +55,8 @@ namespace SuperGamblino.Commands
                     {
                         var rnd = new Random();
                         var result = Convert.ToBoolean(rnd.Next(0, 2)) ? "HEAD" : "TAIL";
-                        var expResult = await _database.CommandGiveUserExp(command, 100);
+                        Exp expHelper = new Exp(_database);
+                        var expResult = await expHelper.Give(command, bet);
                         if (expResult.DidUserLevelUp) await _messages.LevelUp(command);
                         DiscordEmbed resultMsg = new DiscordEmbedBuilder
                         {
