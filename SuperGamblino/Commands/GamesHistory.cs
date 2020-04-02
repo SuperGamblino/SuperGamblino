@@ -19,12 +19,12 @@ namespace SuperGamblino.Commands
 
         [Command("history")]
         [Cooldown(1,2,CooldownBucketType.User)]
-        [Description("Displays the recent games and the results here from. This command takes no arguments.")]
+        [Description("Displays the 10 recent games and the results. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
             var history = await _database.GetGameHistories(command.User.Id);
             var text = string.Join("\n", history.GameHistories
-                .Select(x => $"{x.GameName} | {(x.HasWon ? "Won" : "Lost")} | {x.CoinsDifference}").ToArray());
+                .TakeLast(10).Select(x => $"{x.GameName} | {(x.HasWon ? "Won" : "Lost")} | {x.CoinsDifference}").ToArray());
             var message = new DiscordEmbedBuilder()
             {
                 Color = new DiscordColor(_config.ColorSettings.Info),
