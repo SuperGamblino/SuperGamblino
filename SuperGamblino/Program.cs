@@ -51,7 +51,6 @@ namespace SuperGamblino
                 .Add<BlackjackConnector>()
                 .Add<GameHistoryConnector>()
                 .Add<UsersConnector>()
-                .Add<UsersConnector>()
                 .Add<Messages>()
                 .Add<BetSizeParser>()
                 .Build();
