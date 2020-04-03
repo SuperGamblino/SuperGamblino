@@ -1,7 +1,7 @@
 ﻿{
 	"Settings" : {
 		"BotSettings": {
-			"Token": "<TokenHere>",
+			"Token": "Njk1NjU1NjU0MTE0NzIxOTgy.XodV3A.3RMj03XKWrZeRGlO2kY9eAzqVJU",
 			"Prefix": "!"
 		},
 		"ColorSettings": {
@@ -13,7 +13,7 @@
 			"Address": "127.0.0.1",
 			"Port": 3306,
 			"Name": "supergamblino",
-			"Username": "",
+			"Username": "root",
 			"Password": ""
 		}	
 	}
