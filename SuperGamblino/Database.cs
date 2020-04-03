@@ -9,7 +9,7 @@ using SuperGamblino.GameObjects;
 
 namespace SuperGamblino
 {
-    internal class Database
+    public class Database
     {
         private readonly ILogger _logger;
         private string _connectionString = "";

@@ -4,13 +4,13 @@ using System;
 
 namespace SuperGamblino.GameObjects
 {
-    public class Slots
+    public static class Slots
     {
         const int BET_DIVIDER = 8;
         const int JACKPOT_MULTIPLIER = 10;
         const int DOUBLE_MULTIPLIER = 3;
 
-        public static SlotsResult GetResult(DiscordClient client)
+        public static SlotsResult GetResult()
         {
             SlotsEmote resultOne = GetRandomEmote();
             SlotsEmote resultTwo = GetRandomEmote();
@@ -22,9 +22,9 @@ namespace SuperGamblino.GameObjects
                 ResultTwo = resultTwo,
                 ResultThree = resultThree,
 
-                EmojiOne = SlotsEmoteToDiscordEmoji(client, resultOne),
-                EmojiTwo = SlotsEmoteToDiscordEmoji(client, resultTwo),
-                EmojiThree = SlotsEmoteToDiscordEmoji(client, resultThree)
+                EmojiOne = SlotsEmoteToDiscordEmoji(resultOne),
+                EmojiTwo = SlotsEmoteToDiscordEmoji(resultTwo),
+                EmojiThree = SlotsEmoteToDiscordEmoji(resultThree)
             };
         }
 
@@ -48,38 +48,38 @@ namespace SuperGamblino.GameObjects
             return (SlotsEmote)values.GetValue(rand.Next(values.Length));
         }
 
-        public static DiscordEmoji SlotsEmoteToDiscordEmoji(DiscordClient client, SlotsEmote emote) 
+        public static string SlotsEmoteToDiscordEmoji(SlotsEmote emote) 
         {
-            DiscordEmoji emoji = null;
+            string emoji = null;
 
             switch (emote) 
             {
                 case SlotsEmote.GEM:
-                    emoji = DiscordEmoji.FromName(client, ":gem:");
+                    emoji = ":gem:";
                     break;
                 case SlotsEmote.SEVEN:
-                    emoji = DiscordEmoji.FromName(client, ":seven:");
+                    emoji = ":seven:";
                     break;
                 case SlotsEmote.HEART:
-                    emoji = DiscordEmoji.FromName(client, ":heart:");
+                    emoji = ":heart:";
                     break;
                 case SlotsEmote.BELL:
-                    emoji = DiscordEmoji.FromName(client, ":bell:");
+                    emoji = ":bell:";
                     break;
                 case SlotsEmote.PILL:
-                    emoji = DiscordEmoji.FromName(client, ":pill:");
+                    emoji = ":pill:";
                     break;
                 case SlotsEmote.MELON:
-                    emoji = DiscordEmoji.FromName(client, ":melon:");
+                    emoji = ":melon:";
                     break;
                 case SlotsEmote.CHERRY:
-                    emoji = DiscordEmoji.FromName(client, ":cherries:");
+                    emoji =  ":cherries:";
                     break;
                 case SlotsEmote.LEMON:
-                    emoji = DiscordEmoji.FromName(client, ":lemon:");
+                    emoji = ":lemon:";
                     break;
                 case SlotsEmote.THINKING:
-                    emoji = DiscordEmoji.FromName(client, ":thinking:");
+                    emoji = ":thinking:";
                     break;
             }
 
@@ -150,9 +150,9 @@ namespace SuperGamblino.GameObjects
             public SlotsEmote ResultTwo { get; set; }
             public SlotsEmote ResultThree { get; set; }
 
-            public DiscordEmoji EmojiOne { get; set; }
-            public DiscordEmoji EmojiTwo { get; set; }
-            public DiscordEmoji EmojiThree { get; set; }
+            public string EmojiOne { get; set; }
+            public string EmojiTwo { get; set; }
+            public string EmojiThree { get; set; }
         }
     }
 }
