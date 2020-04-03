@@ -1,13 +1,15 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SuperGamblino.GameObjects
 {
     public class Slots
     {
+        const int BET_DIVIDER = 8;
+        const int JACKPOT_MULTIPLIER = 10;
+        const int DOUBLE_MULTIPLIER = 3;
+
         public static SlotsResult GetResult(DiscordClient client)
         {
             SlotsEmote resultOne = GetRandomEmote();
@@ -115,29 +117,31 @@ namespace SuperGamblino.GameObjects
 
             if (IsJackpot(result)) 
             {
-                points = ((int)result.ResultOne + (int)result.ResultTwo + (int)result.ResultThree) * 10;
-                return PointMultiplier(points, betAmount);
-            }
-            
-            if (result.ResultOne == result.ResultTwo)
+                points = ((int)result.ResultOne + (int)result.ResultTwo + (int)result.ResultThree) * JACKPOT_MULTIPLIER;
+            }   
+            else if (result.ResultOne == result.ResultTwo)
             {
-                points = ((int)result.ResultOne + (int)result.ResultTwo) * 4;
-                return PointMultiplier(points, betAmount);
+                points = ((int)result.ResultOne + (int)result.ResultTwo) * DOUBLE_MULTIPLIER;
 
             }
-            
-            if (result.ResultTwo == result.ResultThree) 
+            else if (result.ResultTwo == result.ResultThree) 
             {
-                points = ((int)result.ResultTwo + (int)result.ResultThree) * 4;
-                return PointMultiplier(points, betAmount);
+                points = ((int)result.ResultTwo + (int)result.ResultThree) * DOUBLE_MULTIPLIER;
             }
 
-            return PointMultiplier(points, betAmount);
+            if (points > 0)
+            {
+                return PointMultiplier(points, betAmount);
+            }
+            else 
+            {
+                return 0;
+            }
         }
 
         public static int PointMultiplier(int currentPoints, int betAmount) 
         {
-            return currentPoints + (currentPoints * (betAmount / 10));
+            return currentPoints + (currentPoints * (betAmount / BET_DIVIDER));
         }
 
         public class SlotsResult

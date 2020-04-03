@@ -63,7 +63,7 @@ namespace SuperGamblino.Commands
 
                         string message = "";
 
-                        if (pointsResult > 0 && pointsResult >= bet)
+                        if (pointsResult > 0)
                         {
                             hasWon = true;
                             if (Slots.IsJackpot(result))
