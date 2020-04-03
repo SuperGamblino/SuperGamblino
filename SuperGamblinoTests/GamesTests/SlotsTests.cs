@@ -1,10 +1,4 @@
-﻿using DSharpPlus.CommandsNext;
-using Microsoft.Extensions.Logging;
-using Moq;
-using SuperGamblino;
-using SuperGamblino.Commands;
-using SuperGamblino.GameObjects;
-using SuperGamblino.Helpers;
+﻿using SuperGamblino.GameObjects;
 using Xunit;
 
 namespace SuperGamblinoTests.GamesTests
