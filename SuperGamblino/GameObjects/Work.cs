@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SuperGamblino.GameObjects
 {
-    class Work
+    public class Work
     {
         public struct Job
         {

@@ -8,7 +8,7 @@ using static SuperGamblino.GameObjects.Work;
 
 namespace SuperGamblino
 {
-    internal class Messages
+    public class Messages
     {
         private readonly Config _config;
         private readonly Database _database;

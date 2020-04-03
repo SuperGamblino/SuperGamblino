@@ -9,7 +9,7 @@ using SuperGamblino.Helpers;
 
 namespace SuperGamblino.Commands
 {
-    class SlotsCommand
+    public class SlotsCommand
     {
         private readonly Config _config;
         private readonly Database _database;
@@ -57,7 +57,7 @@ namespace SuperGamblino.Commands
                         //win or lose here
                         bool hasWon = false;
 
-                        Slots.SlotsResult result = Slots.GetResult(command.Client);
+                        Slots.SlotsResult result = Slots.GetResult();
 
                         int pointsResult = Slots.GetPointsFromResult(result, bet);
 
