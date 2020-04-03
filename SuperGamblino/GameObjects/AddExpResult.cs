@@ -1,6 +1,6 @@
 ﻿namespace SuperGamblino.GameObjects
 {
-    internal class AddExpResult
+    public class AddExpResult
     {
         public AddExpResult(bool didUserLevelUp, int requiredExp, int currentExp, int givenExp)
         {

@@ -2,18 +2,19 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using SuperGamblino.DatabaseConnectors;
 
 namespace SuperGamblino.Commands
 {
     internal class CreditsCommand
     {
         private readonly Config _config;
-        private readonly Database _database;
+        private readonly UsersConnector _usersConnector;
 
-        public CreditsCommand(Config config, Database database)
+        public CreditsCommand(Config config, UsersConnector usersConnector)
         {
             _config = config;
-            _database = database;
+            _usersConnector = usersConnector;
         }
 
         [Command("credits")]
@@ -22,7 +23,7 @@ namespace SuperGamblino.Commands
         [Cooldown(1, 3, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {
-            var currentCredits = await _database.CommandGetUserCredits(command.User.Id);
+            var currentCredits = await _usersConnector.CommandGetUserCredits(command.User.Id);
 
             DiscordEmbed message = new DiscordEmbedBuilder
             {

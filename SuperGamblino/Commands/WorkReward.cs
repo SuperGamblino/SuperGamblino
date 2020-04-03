@@ -6,6 +6,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
 using static SuperGamblino.GameObjects.Work;
 
@@ -13,13 +14,13 @@ namespace SuperGamblino.Commands
 {
     class WorkReward
     {
-        private readonly Database _database;
+        private readonly UsersConnector _usersConnector;
         private readonly Messages _messages;
 
-        public WorkReward(Messages messages, Database database)
+        public WorkReward(Messages messages, UsersConnector usersConnector)
         {
             _messages = messages;
-            _database = database;
+            _usersConnector = usersConnector;
         }
 
         [Command("work")]
@@ -27,8 +28,8 @@ namespace SuperGamblino.Commands
         [Description("Gives you credits based on your job. This command has no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
-            User user = await _database.GetUser(command);
-            DateTimeResult lastReward = await _database.GetDateTime(command.User.Id, "last_work_reward");
+            User user = await _usersConnector.GetUser(command.User.Id);
+            DateTimeResult lastReward = await _usersConnector.GetDateTime(command.User.Id, "last_work_reward");
 
             Job currentJob = GetCurrentJob(user.Level);
 
@@ -41,8 +42,8 @@ namespace SuperGamblino.Commands
                     TimeSpan timeSpan = DateTime.Now - lastReward.DateTime.Value;
                     if (timeSpan >= TimeSpan.FromHours(currentJob.Cooldown))
                     {
-                        await _database.CommandGiveCredits(command.User.Id, currentJob.Reward);
-                        await _database.SetDateTime(command.User.Id, "last_work_reward", DateTime.Now);
+                        await _usersConnector.CommandGiveCredits(command.User.Id, currentJob.Reward);
+                        await _usersConnector.SetDateTime(command.User.Id, "last_work_reward", DateTime.Now);
                         await _messages.CoinsGain(command, currentJob.Reward);
                     }
                     else
@@ -52,8 +53,8 @@ namespace SuperGamblino.Commands
                 }
                 else
                 {
-                    await _database.CommandGiveCredits(command.User.Id, currentJob.Reward);
-                    await _database.SetDateTime(command.User.Id, "last_work_reward", DateTime.Now);
+                    await _usersConnector.CommandGiveCredits(command.User.Id, currentJob.Reward);
+                    await _usersConnector.SetDateTime(command.User.Id, "last_work_reward", DateTime.Now);
                     await _messages.CoinsGain(command, currentJob.Reward);
                 }
             }

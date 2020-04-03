@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
 using SuperGamblino.Helpers;
 
@@ -11,16 +12,19 @@ namespace SuperGamblino.Commands
     internal class RouletteCommand
     {
         private readonly Config _config;
-        private readonly Database _database;
+        private readonly GameHistoryConnector _gameHistoryConnector;
+        private readonly UsersConnector _usersConnector;
         private readonly Messages _messages;
         private readonly BetSizeParser _betSizeParser;
 
-        public RouletteCommand(Database database, Messages messages, Config config, BetSizeParser betSizeParser)
+        public RouletteCommand(Messages messages, Config config, BetSizeParser betSizeParser,
+            GameHistoryConnector gameHistoryConnector, UsersConnector usersConnector)
         {
-            _database = database;
             _messages = messages;
             _config = config;
             _betSizeParser = betSizeParser;
+            _gameHistoryConnector = gameHistoryConnector;
+            _usersConnector = usersConnector;
         }
 
         [Command("roulette")]
@@ -39,10 +43,10 @@ namespace SuperGamblino.Commands
                 isNumber = int.TryParse(argument[0], out nmbGuess);
                 if (argument[1].Trim() == "ALL")
                 {
-                    nmbBet = await _database.CommandGetUserCredits(command.User.Id);
+                    nmbBet = await _usersConnector.CommandGetUserCredits(command.User.Id);
                 } else if (argument[1].Trim() == "HALF")
                 {
-                    nmbBet = await _database.CommandGetUserCredits(command.User.Id) / 2;
+                    nmbBet = await _usersConnector.CommandGetUserCredits(command.User.Id) / 2;
                 }
                 else
                 {
@@ -54,7 +58,7 @@ namespace SuperGamblino.Commands
 
             if (nmbBet != -1)
             {
-                var curCred = await _database.CommandGetUserCredits(command.User.Id);
+                var curCred = await _usersConnector.CommandGetUserCredits(command.User.Id);
                 if (curCred < nmbBet)
                 {
                     enoughCredits = false;
@@ -62,7 +66,7 @@ namespace SuperGamblino.Commands
                 }
                 else
                 {
-                    await _database.CommandSubsctractCredits(command.User.Id, nmbBet);
+                    await _usersConnector.CommandSubsctractCredits(command.User.Id, nmbBet);
                 }
 
                 if (enoughCredits)
@@ -74,7 +78,7 @@ namespace SuperGamblino.Commands
                     var random = new Random();
                     var number = random.Next(0, 37);
 
-                    Exp expHelper = new Exp(_database);
+                    Exp expHelper = new Exp(_usersConnector);
 
                     var expResult = await expHelper.Give(command, nmbBet);
                     if (expResult.DidUserLevelUp) await _messages.LevelUp(command);
@@ -151,14 +155,14 @@ namespace SuperGamblino.Commands
                     {
                         title = "Roulette - You've won!";
                         credWon = nmbBet * rewardMulti;
-                        await _database.CommandGiveCredits(command.User.Id, credWon);
+                        await _usersConnector.CommandGiveCredits(command.User.Id, credWon);
                     }
                     else
                     {
                         title = "Roulette - You've lost!";
                     }
 
-                    await _database.AddGameHistory(command.User.Id, new GameHistory()
+                    await _gameHistoryConnector.AddGameHistory(command.User.Id, new GameHistory()
                     {
                         GameName = "roulette",
                         HasWon = hasWon,
@@ -175,7 +179,7 @@ namespace SuperGamblino.Commands
                     if (!invalid)
                         await command.RespondAsync("", false,
                             message.WithFooter("Current credits: " +
-                                               await _database.CommandGetUserCredits(command.User.Id) +
+                                               await _usersConnector.CommandGetUserCredits(command.User.Id) +
                                                "\nCurrent exp: " + expResult.CurrentExp + "/" + expResult.RequiredExp));
                 }
             }

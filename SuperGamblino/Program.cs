@@ -8,6 +8,7 @@ using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SuperGamblino.Commands;
+using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.Helpers;
 using SuperGamblino.Properties;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
@@ -41,10 +42,16 @@ namespace SuperGamblino
 
             configuration.Bind("Settings", config);
 
+            var connectionString = new ConnectionString(config);
+
             var dependencies = new DependencyCollectionBuilder()
                 .AddInstance(logger)
                 .AddInstance(config)
-                .Add<Database>()
+                .AddInstance(connectionString)
+                .Add<BlackjackConnector>()
+                .Add<GameHistoryConnector>()
+                .Add<UsersConnector>()
+                .Add<UsersConnector>()
                 .Add<Messages>()
                 .Add<BetSizeParser>()
                 .Build();
@@ -64,7 +71,7 @@ namespace SuperGamblino
         {
             var logger = dependencyCollection.GetDependency<ILogger>();
             var conf = dependencyCollection.GetDependency<Config>();
-            var db = dependencyCollection.GetDependency<Database>();
+            var connectionString = dependencyCollection.GetDependency<ConnectionString>();
 
             var cfg = new DiscordConfiguration
             {
@@ -109,12 +116,10 @@ namespace SuperGamblino
             logger.LogInformation("All commands registered successfully.");
 
             logger.LogInformation("Starting the DB connection...");
-            db.SetConnectionString(conf.DatabaseSettings.Address, conf.DatabaseSettings.Port,
-                conf.DatabaseSettings.Name, conf.DatabaseSettings.Username, conf.DatabaseSettings.Password);
             try
             {
-                await db.SetupTables();
-                await db.SetupProcedures();
+                await DatabaseHelpers.SetupTables(connectionString.GetConnectionString());
+                await DatabaseHelpers.SetupProcedures(connectionString.GetConnectionString());
                 logger.LogInformation("DB loaded successfully.");
             }
             catch (Exception ex)

@@ -1,25 +1,26 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using SuperGamblino.DatabaseConnectors;
 
 namespace SuperGamblino.Commands
 {
     internal class SearchCommand
     {
-        private readonly Database _database;
+        private readonly UsersConnector _usersConnector;
         private readonly Messages _messages;
 
-        public SearchCommand(Database database, Messages messages)
+        public SearchCommand(Messages messages, UsersConnector usersConnector)
         {
-            _database = database;
             _messages = messages;
+            _usersConnector = usersConnector;
         }
 
         [Command("search")]
         [Cooldown(1, 5, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {
-            var moneyFound = await _database.CommandSearch(command.Member.Id);
+            var moneyFound = await _usersConnector.CommandSearch(command.Member.Id);
             await _messages.CoinsGain(command, moneyFound);
         }
     }
