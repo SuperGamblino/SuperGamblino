@@ -122,7 +122,6 @@ namespace SuperGamblino.GameObjects
             else if (result.ResultOne == result.ResultTwo)
             {
                 points = ((int)result.ResultOne + (int)result.ResultTwo) * DOUBLE_MULTIPLIER;
-
             }
             else if (result.ResultTwo == result.ResultThree) 
             {
@@ -141,7 +140,7 @@ namespace SuperGamblino.GameObjects
 
         public static int PointMultiplier(int currentPoints, int betAmount) 
         {
-            return currentPoints + (currentPoints * (betAmount / BET_DIVIDER));
+            return currentPoints + (currentPoints * (int)Math.Floor((decimal)(betAmount / BET_DIVIDER)));
         }
 
         public class SlotsResult
