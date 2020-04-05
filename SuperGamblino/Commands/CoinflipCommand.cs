@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
 using SuperGamblino.Helpers;
 
@@ -11,16 +12,18 @@ namespace SuperGamblino.Commands
     internal class CoinflipCommand
     {
         private readonly Config _config;
-        private readonly Database _database;
+        private readonly UsersConnector _usersConnector;
+        private readonly GameHistoryConnector _gameHistoryConnector;
         private readonly Messages _messages;
         private readonly BetSizeParser _betSizeParser;
 
-        public CoinflipCommand(Database database, Config config, Messages messages, BetSizeParser betSizeParser)
+        public CoinflipCommand(Config config, Messages messages, BetSizeParser betSizeParser, UsersConnector usersConnector, GameHistoryConnector gameHistoryConnector)
         {
-            _database = database;
             _config = config;
             _messages = messages;
             _betSizeParser = betSizeParser;
+            _usersConnector = usersConnector;
+            _gameHistoryConnector = gameHistoryConnector;
         }
 
         [Command("coinflip")]
@@ -38,10 +41,10 @@ namespace SuperGamblino.Commands
                     int bet = -1;
                     if (argument[1].Trim().ToLower() == "all")
                     {
-                        bet = await _database.CommandGetUserCredits(command.User.Id);
+                        bet = await _usersConnector.CommandGetUserCredits(command.User.Id);
                     }else if (argument[1].Trim().ToLower() == "half")
                     {
-                        bet = await _database.CommandGetUserCredits(command.User.Id) / 2;
+                        bet = await _usersConnector.CommandGetUserCredits(command.User.Id) / 2;
                     }
                     else
                     {
@@ -51,11 +54,11 @@ namespace SuperGamblino.Commands
                     {
                         throw new NotImplementedException(); //Handle if bet is given in wrong format
                     }
-                    if (await _database.CommandSubsctractCredits(command.User.Id, bet))
+                    if (await _usersConnector.CommandSubsctractCredits(command.User.Id, bet))
                     {
                         var rnd = new Random();
                         var result = Convert.ToBoolean(rnd.Next(0, 2)) ? "HEAD" : "TAIL";
-                        Exp expHelper = new Exp(_database);
+                        Exp expHelper = new Exp(_usersConnector);
                         var expResult = await expHelper.Give(command, bet);
                         if (expResult.DidUserLevelUp) await _messages.LevelUp(command);
                         DiscordEmbed resultMsg = new DiscordEmbedBuilder
@@ -65,16 +68,21 @@ namespace SuperGamblino.Commands
                         };
                         await command.RespondAsync("", false, resultMsg);
 
-                        await _database.AddGameHistory(command.User.Id, new GameHistory()
+                        await _gameHistoryConnector.AddGameHistory(command.User.Id, new GameHistory()
                         {
                             GameName = "coinflip",
                             HasWon = result == option,
                             CoinsDifference = result == option ? bet : bet * -1
                         });
                         if (result == option)
-                            await _messages.Won(command, bet, expResult);
+                        {
+                            var currentCred = await _usersConnector.CommandGiveCredits(command.User.Id, bet * 2);
+                            await _messages.Won(command, currentCred, expResult);
+                        }
                         else
+                        {
                             await _messages.Lost(command);
+                        }
                     }
                     else
                     {

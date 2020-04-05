@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SuperGamblino.GameObjects
 {
-    internal class BlackjackHelper
+    public class BlackjackHelper
     {
         public bool IsGameDone { get; set; }
         public string? UserHand { get; set; }

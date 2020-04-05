@@ -3,18 +3,19 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using SuperGamblino.DatabaseConnectors;
 
 namespace SuperGamblino.Commands
 {
     internal class GamesHistory
     {
-        private readonly Database _database;
+        private readonly GameHistoryConnector _gameHistoryConnector;
         private readonly Config _config;
 
-        public GamesHistory(Database database, Config config)
+        public GamesHistory(Config config, GameHistoryConnector gameHistoryConnector)
         {
-            _database = database;
             _config = config;
+            _gameHistoryConnector = gameHistoryConnector;
         }
 
         [Command("history")]
@@ -22,7 +23,7 @@ namespace SuperGamblino.Commands
         [Description("Displays the 10 recent games and the results. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
-            var history = await _database.GetGameHistories(command.User.Id);
+            var history = await _gameHistoryConnector.GetGameHistories(command.User.Id);
             var text = string.Join("\n", history.GameHistories
                 .TakeLast(10).Select(x => $"{x.GameName} | {(x.HasWon ? "Won" : "Lost")} | {x.CoinsDifference}").ToArray());
             var message = new DiscordEmbedBuilder()

@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
 
 namespace SuperGamblino.Commands
 {
     internal class Cooldown
     {
-        private readonly Config _config;
-        private readonly Database _database;
+        private readonly UsersConnector _usersConnector;
         private readonly Messages _messages;
 
-        public Cooldown(Database database, Config config, Messages messages)
+        public Cooldown(Messages messages, UsersConnector usersConnector)
         {
-            _database = database;
-            _config = config;
             _messages = messages;
+            _usersConnector = usersConnector;
         }
 
         [Command("cooldown")]
@@ -26,17 +25,17 @@ namespace SuperGamblino.Commands
         [Description("Shows the current command cooldowns. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
-            var curLHR = await _database.GetDateTime(command.User.Id, "last_hourly_reward");
-            var curLDR = await _database.GetDateTime(command.User.Id, "last_daily_reward");
-            var curLWR = await _database.GetDateTime(command.User.Id, "last_work_reward");
+            var curLhr = await _usersConnector.GetDateTime(command.User.Id, "last_hourly_reward");
+            var curLdr = await _usersConnector.GetDateTime(command.User.Id, "last_daily_reward");
+            var curLwr = await _usersConnector.GetDateTime(command.User.Id, "last_work_reward");
 
             var cooldownObjects = new List<CooldownObject>();
 
-            if (curLHR.Successful && curLDR.Successful)
+            if (curLhr.Successful && curLdr.Successful)
             {
-                if (curLHR.DateTime.HasValue)
+                if (curLhr.DateTime.HasValue)
                 {
-                    var timeSpan = DateTime.Now - curLHR.DateTime.Value;
+                    var timeSpan = DateTime.Now - curLhr.DateTime.Value;
                     if (timeSpan >= TimeSpan.FromHours(1))
                         cooldownObjects.Add(new CooldownObject("Hourly"));
                     else
@@ -47,9 +46,9 @@ namespace SuperGamblino.Commands
                     cooldownObjects.Add(new CooldownObject("Hourly"));
                 }
 
-                if (curLDR.DateTime.HasValue)
+                if (curLdr.DateTime.HasValue)
                 {
-                    var timeSpan = DateTime.Now - curLDR.DateTime.Value;
+                    var timeSpan = DateTime.Now - curLdr.DateTime.Value;
                     if (timeSpan >= TimeSpan.FromDays(1))
                         cooldownObjects.Add(new CooldownObject("Daily"));
                     else
@@ -60,9 +59,9 @@ namespace SuperGamblino.Commands
                     cooldownObjects.Add(new CooldownObject("Daily"));
                 }
 
-                if (curLWR.DateTime.HasValue)
+                if (curLwr.DateTime.HasValue)
                 {
-                    var timeSpan = DateTime.Now - curLWR.DateTime.Value;
+                    var timeSpan = DateTime.Now - curLwr.DateTime.Value;
                     if (timeSpan >= TimeSpan.FromHours(6))
                         cooldownObjects.Add(new CooldownObject("Work"));
                     else

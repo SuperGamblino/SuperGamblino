@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
 using static SuperGamblino.GameObjects.Work;
 
@@ -11,17 +12,16 @@ namespace SuperGamblino
     internal class Messages
     {
         private readonly Config _config;
-        private readonly Database _database;
+        private readonly UsersConnector _usersConnector;
 
-        public Messages(Database database, Config config)
+        public Messages(Config config, UsersConnector usersConnector)
         {
-            _database = database;
             _config = config;
+            _usersConnector = usersConnector;
         }
 
-        public async Task Won(CommandContext command, int bet, AddExpResult result)
+        public async Task Won(CommandContext command, int currentCred, AddExpResult result)
         {
-            var currentCred = await _database.CommandGiveCredits(command.User.Id, bet * 2);
             var message = new DiscordEmbedBuilder
             {
                 Color = new DiscordColor(_config.ColorSettings.Success),
@@ -33,7 +33,7 @@ namespace SuperGamblino
 
         public async Task Lost(CommandContext command)
         {
-            var currentCred = await _database.CommandGetUserCredits(command.User.Id);
+            var currentCred = await _usersConnector.CommandGetUserCredits(command.User.Id);
             DiscordEmbed message = new DiscordEmbedBuilder
             {
                 Color = new DiscordColor(_config.ColorSettings.Warning),

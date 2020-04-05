@@ -2,18 +2,19 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using SuperGamblino.DatabaseConnectors;
 
 namespace SuperGamblino.Commands
 {
     internal class GlobalTopCommand
     {
         private readonly Config _config;
-        private readonly Database _database;
+        private readonly UsersConnector _usersConnector;
 
-        public GlobalTopCommand(Database database, Config config)
+        public GlobalTopCommand(Config config, UsersConnector usersConnector)
         {
-            _database = database;
             _config = config;
+            _usersConnector = usersConnector;
         }
 
         [Command("globaltop")]
@@ -22,10 +23,10 @@ namespace SuperGamblino.Commands
         [Description("Shows a global leaderboard based on credits. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
-            var listUsers = await _database.CommandGetGlobalTop(command);
+            var listUsers = await _usersConnector.CommandGetGlobalTop();
 
             var desc = "";
-            foreach (var user in listUsers) desc += user.DiscordUser.Username + ": " + user.Credits + "\n";
+            foreach (var user in listUsers) desc += await command.Guild.GetMemberAsync(user.Id) + ": " + user.Credits + "\n";
 
             var message = new DiscordEmbedBuilder
             {

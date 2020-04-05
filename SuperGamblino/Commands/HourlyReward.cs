@@ -2,18 +2,19 @@
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using SuperGamblino.DatabaseConnectors;
 
 namespace SuperGamblino.Commands
 {
     internal class HourlyReward
     {
-        private readonly Database _database;
+        private readonly UsersConnector _usersConnector;
         private readonly Messages _messages;
 
-        public HourlyReward(Database database, Messages messages)
+        public HourlyReward(Messages messages, UsersConnector usersConnector)
         {
-            _database = database;
             _messages = messages;
+            _usersConnector = usersConnector;
         }
 
         [Command("hourly")]
@@ -22,7 +23,7 @@ namespace SuperGamblino.Commands
         public async Task OnExecute(CommandContext command)
         {
             const int reward = 20;
-            var result = await _database.GetDateTime(command.User.Id, "last_hourly_reward");
+            var result = await _usersConnector.GetDateTime(command.User.Id, "last_hourly_reward");
             if (result.Successful)
             {
                 if (result.DateTime.HasValue)
@@ -30,8 +31,8 @@ namespace SuperGamblino.Commands
                     var timeSpan = DateTime.Now - result.DateTime.Value;
                     if (timeSpan >= TimeSpan.FromHours(1))
                     {
-                        await _database.CommandGiveCredits(command.User.Id, reward);
-                        await _database.SetDateTime(command.User.Id, "last_hourly_reward", DateTime.Now);
+                        await _usersConnector.CommandGiveCredits(command.User.Id, reward);
+                        await _usersConnector.SetDateTime(command.User.Id, "last_hourly_reward", DateTime.Now);
                         await _messages.CoinsGain(command, reward);
                     }
                     else
@@ -41,8 +42,8 @@ namespace SuperGamblino.Commands
                 }
                 else
                 {
-                    await _database.CommandGiveCredits(command.User.Id, reward);
-                    await _database.SetDateTime(command.User.Id, "last_hourly_reward", DateTime.Now);
+                    await _usersConnector.CommandGiveCredits(command.User.Id, reward);
+                    await _usersConnector.SetDateTime(command.User.Id, "last_hourly_reward", DateTime.Now);
                     await _messages.CoinsGain(command, reward);
                 }
             }
