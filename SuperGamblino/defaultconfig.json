@@ -1,7 +1,7 @@
 ﻿{
 	"Settings" : {
 		"BotSettings": {
-			"Token": "<TokenHere>",
+			"Token": "",
 			"Prefix": "!"
 		},
 		"ColorSettings": {

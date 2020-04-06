@@ -2,7 +2,7 @@
 
 namespace SuperGamblino.GameObjects
 {
-    internal class CooldownObject
+    public class CooldownObject
     {
         public CooldownObject(string command, TimeSpan timeLeft = new TimeSpan())
         {
