@@ -4,6 +4,7 @@ using System.Timers;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
 using SuperGamblino.Helpers;
 
@@ -12,16 +13,18 @@ namespace SuperGamblino.Commands
     public class SlotsCommand
     {
         private readonly Config _config;
-        private readonly Database _database;
+        private readonly UsersConnector _databaseUser;
+        private readonly GameHistoryConnector _databaseHistory;
         private readonly Messages _messages;
         private readonly BetSizeParser _betSizeParser;
 
-        public SlotsCommand(Database database, Config config, Messages messages, BetSizeParser betSizeParser)
+        public SlotsCommand(UsersConnector databaseUser, GameHistoryConnector databaseHistory, Config config, Messages messages, BetSizeParser betSizeParser)
         {
-            _database = database;
+            _databaseUser = databaseUser;
             _config = config;
             _messages = messages;
             _betSizeParser = betSizeParser;
+            _databaseHistory = databaseHistory;
         }
 
         [Command("slots")]
@@ -38,11 +41,11 @@ namespace SuperGamblino.Commands
                     int bet = -1;
                     if (argument[0].Trim().ToLower() == "all")
                     {
-                        bet = await _database.CommandGetUserCredits(command.User.Id);
+                        bet = await _databaseUser.CommandGetUserCredits(command.User.Id);
                     }
                     else if (argument[0].Trim().ToLower() == "half")
                     {
-                        bet = await _database.CommandGetUserCredits(command.User.Id) / 2;
+                        bet = await _databaseUser.CommandGetUserCredits(command.User.Id) / 2;
                     }
                     else
                     {
@@ -52,7 +55,7 @@ namespace SuperGamblino.Commands
                     {
                         throw new NotImplementedException(); //Handle if bet is given in wrong format
                     }
-                    if (await _database.CommandSubsctractCredits(command.User.Id, bet))
+                    if (await _databaseUser.CommandSubsctractCredits(command.User.Id, bet))
                     {
                         //win or lose here
                         bool hasWon = false;
@@ -74,11 +77,11 @@ namespace SuperGamblino.Commands
                             {
                                 message = "\n" + "DOUBLE! You won " + pointsResult + " points!";
                             }
-                            await _database.CommandGiveCredits(command.User.Id, pointsResult - bet);
+                            await _databaseUser.CommandGiveCredits(command.User.Id, pointsResult - bet);
                         }
 
                         //end result
-                        Exp expHelper = new Exp(_database);
+                        Exp expHelper = new Exp(_databaseUser);
                         var expResult = await expHelper.Give(command, bet);
                         if (expResult.DidUserLevelUp) await _messages.LevelUp(command);
                         DiscordEmbed resultMsg = new DiscordEmbedBuilder
@@ -89,7 +92,7 @@ namespace SuperGamblino.Commands
                         };
                         await command.RespondAsync("", false, resultMsg);
 
-                        await _database.AddGameHistory(command.User.Id, new GameHistory()
+                        await _databaseHistory.AddGameHistory(command.User.Id, new GameHistory()
                         {
                             GameName = "slots",
                             HasWon = hasWon,
