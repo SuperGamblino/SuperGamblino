@@ -77,7 +77,7 @@ namespace SuperGamblino.Commands
                             {
                                 message = "\n" + "DOUBLE! You won " + pointsResult + " points!";
                             }
-                            await _databaseUser.CommandGiveCredits(command.User.Id, pointsResult - bet);
+                            await _databaseUser.CommandGiveCredits(command.User.Id, pointsResult + bet);
                         }
 
                         //end result
@@ -96,12 +96,17 @@ namespace SuperGamblino.Commands
                         {
                             GameName = "slots",
                             HasWon = hasWon,
-                            CoinsDifference = hasWon ? bet : bet * -1
+                            CoinsDifference = hasWon ? pointsResult : bet * -1
                         });
                         if (hasWon == true)
-                            await _messages.Won(command, bet, expResult);
+                        {
+                            int credits = await _databaseUser.CommandGetUserCredits(command.User.Id);
+                            await _messages.Won(command, credits, expResult);
+                        }
                         else
+                        {
                             await _messages.Lost(command);
+                        }
                     }
                     else
                     {

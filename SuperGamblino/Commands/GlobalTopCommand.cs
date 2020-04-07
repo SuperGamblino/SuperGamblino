@@ -26,7 +26,11 @@ namespace SuperGamblino.Commands
             var listUsers = await _usersConnector.CommandGetGlobalTop();
 
             var desc = "";
-            foreach (var user in listUsers) desc += await command.Guild.GetMemberAsync(user.Id) + ": " + user.Credits + "\n";
+            foreach (var user in listUsers)
+            {
+                DiscordMember member = await command.Guild.GetMemberAsync(user.Id);
+                desc += member.Username + ": " + user.Credits + "\n";
+            }
 
             var message = new DiscordEmbedBuilder
             {
