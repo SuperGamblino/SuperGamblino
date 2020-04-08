@@ -54,6 +54,7 @@ namespace SuperGamblino.DatabaseConnectors
             {
                 if (!await CheckIfUserExist(userId))
                 {
+                    await connection.OpenAsync();
                     var command =
                         new MySqlCommand(
                             $"INSERT INTO user (user_id, currency, last_daily_reward, last_hourly_reward," +
