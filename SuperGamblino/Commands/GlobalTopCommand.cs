@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -36,6 +37,7 @@ namespace SuperGamblino.Commands
                 }
                 catch (System.Exception ex)
                 {
+                    Console.WriteLine(ex.Message.ToString());
                     Debug.WriteLine(ex.Message.ToString());
                 }
             }
