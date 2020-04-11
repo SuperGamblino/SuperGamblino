@@ -37,7 +37,7 @@ namespace SuperGamblino.Commands
                 }
                 catch (System.Exception ex)
                 {
-                    Console.WriteLine(ex.Message.ToString());
+                    Console.WriteLine(ex.Message.ToString() + "\nUser ID: "  + user.Id);
                     Debug.WriteLine(ex.Message.ToString());
                 }
             }
