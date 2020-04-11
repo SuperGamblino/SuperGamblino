@@ -32,7 +32,8 @@ namespace SuperGamblino.Commands
             {
                 try
                 {
-                    DiscordMember member = await command.Guild.GetMemberAsync(user.Id);
+                    DiscordUser member = await command.Client.GetUserAsync(user.Id);
+                   
                     desc += member.Username + ": " + user.Credits + "\n";
                 }
                 catch (System.Exception ex)
