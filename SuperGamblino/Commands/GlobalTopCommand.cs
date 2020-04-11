@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -28,8 +29,15 @@ namespace SuperGamblino.Commands
             var desc = "";
             foreach (var user in listUsers)
             {
-                DiscordMember member = await command.Guild.GetMemberAsync(user.Id);
-                desc += member.Username + ": " + user.Credits + "\n";
+                try
+                {
+                    DiscordMember member = await command.Guild.GetMemberAsync(user.Id);
+                    desc += member.Username + ": " + user.Credits + "\n";
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.WriteLine(ex.Message.ToString());
+                }
             }
 
             var message = new DiscordEmbedBuilder
