@@ -1,0 +1,15 @@
+﻿version: '2.0'
+services:
+  database:
+    image: "mysql"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=<password>"
+      - "MYSQL_DATABASE=supergamblino"
+      - "MYSQL_USER=<username>"
+      - "MYSQL_PASSWORD=<password>"
+    ports:
+    - "3306:3306"
+  bot:
+    build: .
+    env_file: config.env
+    restart: on-failure

@@ -30,3 +30,45 @@ Contributing to this project is really simple.
  - History - Displays the recent games and the results here from.
  - Profile - Shows a profile page
  - Work - Gives you credits based on your job. Your job is based on your level.
+
+## Configuration
+To configure the bot you can either setup create config.json file or deliver correct environment variables to set everything up.
+
+example config.json
+```json
+{
+	"Settings" : {
+		"BotSettings": {
+			"Token": "<bot token>",
+			"Prefix": "!"
+		},
+		"ColorSettings": {
+			"Info": "#439ff0",
+			"Success": "#4beb50",
+			"Warning": "#bf1004"
+		},
+		"DatabaseSettings": {
+			"Address": "127.0.0.1",
+			"Port": 3306,
+			"Name": "supergamblino",
+			"Username": "<username to db>",
+			"Password": "<password to db>"
+		}	
+	}
+}
+
+```
+
+example config.env
+```dotenv
+Settings__BotSettings__Token=<bot token>
+Settings__BotSettings__Prefix=!
+Settings__ColorSettings__Info=#439ff0
+Settings__ColorSettings__Success=#4beb50
+Settings__ColorSettings__Warning=#bf1004
+Settings__DatabaseSettings__Address=172.17.0.1
+Settings__DatabaseSettings__Port=3306
+Settings__DatabaseSettings__Name=supergamblino
+Settings__DatabaseSettings__Username=<username to db>
+Settings__DatabaseSettings__Password=<password to db>
+```
