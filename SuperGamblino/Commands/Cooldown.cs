@@ -28,7 +28,7 @@ namespace SuperGamblino.Commands
             var curLhr = await _usersConnector.GetDateTime(command.User.Id, "last_hourly_reward");
             var curLdr = await _usersConnector.GetDateTime(command.User.Id, "last_daily_reward");
             var curLwr = await _usersConnector.GetDateTime(command.User.Id, "last_work_reward");
-
+            var curLvr = await _usersConnector.GetDateTime(command.User.Id, "last_vote_reward");
             var cooldownObjects = new List<CooldownObject>();
 
             if (curLhr.Successful && curLdr.Successful)
@@ -70,6 +70,18 @@ namespace SuperGamblino.Commands
                 else
                 {
                     cooldownObjects.Add(new CooldownObject("Work"));
+                }
+                if (curLvr.DateTime.HasValue)
+                {
+                    var timeSpan = DateTime.Now - curLvr.DateTime.Value;
+                    if (timeSpan >= TimeSpan.FromHours(12))
+                        cooldownObjects.Add(new CooldownObject("Vote"));
+                    else
+                        cooldownObjects.Add(new CooldownObject("Vote", TimeSpan.FromHours(12) - timeSpan));
+                }
+                else
+                {
+                    cooldownObjects.Add(new CooldownObject("Vote"));
                 }
 
                 await _messages.ListCooldown(command, cooldownObjects);
