@@ -21,7 +21,7 @@ namespace SuperGamblino.Helpers
             User user = await _usersConnector.GetUser(command.User.Id);
             Random rnd = new Random();
             int exp = rnd.Next(50, 125);
-            if (user.Level * 15 >= bet)
+            if (user.Level * 15 > bet)
                 return await _usersConnector.CommandGiveUserExp(command, 0);
             else
                 return await _usersConnector.CommandGiveUserExp(command, exp);
