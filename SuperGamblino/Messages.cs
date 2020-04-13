@@ -124,6 +124,18 @@ namespace SuperGamblino
             await command.RespondAsync("", false, message);
         }
 
+        public async Task NotVotedYet(CommandContext command)
+        {
+            var message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(_config.ColorSettings.Info),
+                Title = "You haven't voted yet!",
+                Description = "To gain a vote reward, you have to use this link\n" +
+                "[Vote](https://top.gg/bot/688160933574475800/vote)"
+            };
+            await command.RespondAsync("", false, message);
+        }
+
         public async Task Profile(CommandContext command, User user, Job job)
         {
 

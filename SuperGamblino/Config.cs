@@ -13,6 +13,7 @@
     {
         public string Token { get; set; }
         public string Prefix { get; set; }
+        public string TopGgToken { get; set; }
     }
 
     public class ColorSettings

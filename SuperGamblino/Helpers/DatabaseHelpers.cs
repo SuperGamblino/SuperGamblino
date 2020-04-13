@@ -17,7 +17,8 @@ namespace SuperGamblino.Helpers
                 "last_daily_reward DateTime," +
                 "current_exp INT, " +
                 "current_level INT, " +
-                "last_work_reward DateTime)",
+                "last_work_reward DateTime," +
+                "last_vote_reward DateTime)",
                 c);
             var createHistory = new MySqlCommand(
                 "CREATE TABLE IF NOT EXISTS history(" +
