@@ -21,15 +21,15 @@ Contributing to this project is really simple.
 ## Commands
  - help - The help command displays available commands, and gives detailed information about them. 
  - coinflip - This is a simple coinflip command which takes two arguments Head/Tail and the amount to bet.
- - Cooldown - Simply displays the cooldown on your Hourly and Daily rewards.
- - Credits - Shows you how many credits you currently have.
- - Hourly - Gives you 20 credits, and is available once an hour.
- - Daily - Gives you 500 credits, and is available once every day.
- - Globaltop - shows you a global top10.
- - Roulette - This is a classic roulette game, where you can bet on Black, Red, Green or a specific number.
- - History - Displays the recent games and the results here from.
- - Profile - Shows a profile page
- - Work - Gives you credits based on your job. Your job is based on your level.
+ - cooldown - Simply displays the cooldown on your Hourly and Daily rewards.
+ - credits - Shows you how many credits you currently have.
+ - hourly - Gives you 20 credits, and is available once an hour.
+ - daily - Gives you 500 credits, and is available once every day.
+ - globaltop - shows you a global top10.
+ - roulette - This is a classic roulette game, where you can bet on Black, Red, Green or a specific number.
+ - history - Displays the recent games and the results here from.
+ - profile - Shows a profile page
+ - work - Gives you credits based on your job. Your job is based on your level.
 
 ## Configuration
 To configure the bot you can either setup create config.json file or deliver correct environment variables to set everything up.
@@ -40,6 +40,7 @@ example config.json
 	"Settings" : {
 		"BotSettings": {
 			"Token": "<bot token>",
+            "TopGgToken": "<top gg token>",
 			"Prefix": "!"
 		},
 		"ColorSettings": {
@@ -62,6 +63,7 @@ example config.json
 example config.env
 ```dotenv
 Settings__BotSettings__Token=<bot token>
+Settings__BotSettings__TopGgToken=<top gg token>
 Settings__BotSettings__Prefix=!
 Settings__ColorSettings__Info=#439ff0
 Settings__ColorSettings__Success=#4beb50
