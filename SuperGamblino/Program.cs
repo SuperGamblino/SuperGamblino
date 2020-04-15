@@ -113,6 +113,7 @@ namespace SuperGamblino
             commands.RegisterCommands<GamesHistory>();
             commands.RegisterCommands<ShowProfile>();
             commands.RegisterCommands<VoteReward>();
+            commands.RegisterCommands<About>();
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
 

@@ -154,5 +154,18 @@ namespace SuperGamblino
 
             await command.RespondAsync("", false, message);
         }
+
+        public async Task About(CommandContext command)
+        {
+           int guildCount = command.Client.Guilds.Count;
+            var message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(_config.ColorSettings.Info),
+                Title = "About",
+                Description = $"Servers: {guildCount}"
+            };
+            await command.RespondAsync("", false, message);
+        }
+
     }
 }
