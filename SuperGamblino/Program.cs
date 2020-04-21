@@ -52,6 +52,7 @@ namespace SuperGamblino
                 .AddInstance(connectionString)
                 .Add<BlackjackConnector>()
                 .Add<GameHistoryConnector>()
+                .Add<CoindropConnector>()
                 .Add<UsersConnector>()
                 .Add<Messages>()
                 .Add<BetSizeParser>()
@@ -73,6 +74,8 @@ namespace SuperGamblino
             var logger = dependencyCollection.GetDependency<ILogger>();
             var conf = dependencyCollection.GetDependency<Config>();
             var connectionString = dependencyCollection.GetDependency<ConnectionString>();
+            var coinDrop = dependencyCollection.GetDependency<CoindropConnector>();
+            var msg = dependencyCollection.GetDependency<Messages>();
 
             var cfg = new DiscordConfiguration
             {
@@ -93,10 +96,11 @@ namespace SuperGamblino
             });
 
             logger.LogInformation("Registering event handlers...");
-            var eventHandler = new EventHandler(client, conf);
+            var eventHandler = new EventHandler(client, conf, coinDrop, msg);
 
             client.Ready += eventHandler.OnReady;
             client.ClientErrored += eventHandler.OnClientError;
+            client.MessageCreated += eventHandler.MessageCreated;
             logger.LogInformation("Event handlers were registered successfully.");
 
 
@@ -116,6 +120,7 @@ namespace SuperGamblino
             commands.RegisterCommands<ShowProfile>();
             commands.RegisterCommands<VoteReward>();
             commands.RegisterCommands<About>();
+            commands.RegisterCommands<CollectDrop>();
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
 

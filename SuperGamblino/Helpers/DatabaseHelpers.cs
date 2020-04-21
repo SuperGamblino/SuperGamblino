@@ -37,10 +37,21 @@ namespace SuperGamblino.Helpers
                 "bet INT NULL," +
                 "PRIMARY KEY (id))",
                 c);
+            var createCoindrop = new MySqlCommand(
+                "CREATE TABLE IF NOT EXISTS coin_drop (" +
+                "id INT NOT NULL AUTO_INCREMENT," +
+                "channel_id BIGINT NOT NULL," +
+                "claim_id INT NOT NULL," +
+                "coin_reward INT NOT NULL," +
+                "claimed TINYINT NOT NULL DEFAULT '0'," +
+                "PRIMARY KEY (id)," +
+                "UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);"
+                , c);
             await c.OpenAsync();
             await createUser.ExecuteNonQueryAsync();
             await createHistory.ExecuteNonQueryAsync();
             await createBlackjack.ExecuteNonQueryAsync();
+            await createCoindrop.ExecuteNonQueryAsync();
             await c.CloseAsync();
         }
 

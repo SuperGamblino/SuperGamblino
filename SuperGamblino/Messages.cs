@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
 using static SuperGamblino.GameObjects.Work;
@@ -165,6 +166,43 @@ namespace SuperGamblino
                 Description = $"Servers: {guildCount}"
             };
             await command.RespondAsync("", false, message);
+        }
+
+        public async Task CoinDropAlert(MessageCreateEventArgs e, int claimId)
+        {
+            var message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(_config.ColorSettings.Info),
+                Title = "Coin Drop!",
+                Description = $"THERE HAS BEEN A COINDROP\n" +
+                $"To collect this drop use the collect command with the following id\n" +
+                $"**Claim ID:** {claimId}"
+            };
+            await e.Message.RespondAsync("", false, message);
+        }
+
+        public async Task CoindDropSuccess(CommandContext command, int reward)
+        {
+            var message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(_config.ColorSettings.Success),
+                Title = "Coin Drop Reward",
+                Description = $"Congratulations, you won the coindrop!\n" +
+                $"**Reward:** {reward}"
+            };
+            await command.RespondAsync("", false, 
+                message.WithFooter($"{command.Message.Author.Username}"));
+        }
+        public async Task CoindDropLate(CommandContext command)
+        {
+            var message = new DiscordEmbedBuilder
+            {
+                Color = new DiscordColor(_config.ColorSettings.Info),
+                Title = "Coin Drop Reward",
+                Description = $"Sadly there was no coindrop for you!"
+            };
+            await command.RespondAsync("", false,
+                message.WithFooter($"{command.Message.Author.Username}"));
         }
 
     }

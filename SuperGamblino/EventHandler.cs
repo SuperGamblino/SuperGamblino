@@ -6,6 +6,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using SuperGamblino.DatabaseConnectors;
 
 namespace SuperGamblino
 {
@@ -13,17 +14,42 @@ namespace SuperGamblino
     {
         private readonly Config _config;
         private readonly DiscordClient _discordClient;
+        private readonly CoindropConnector _coindropConnector;
+        private readonly Messages _messages;
 
-        public EventHandler(DiscordClient client, Config config)
+        public EventHandler(DiscordClient client, Config config, CoindropConnector coindropConnector, Messages messages)
         {
             _discordClient = client;
             _config = config;
+            _coindropConnector = coindropConnector;
+            _messages = messages; 
         }
 
         internal Task OnReady(ReadyEventArgs e)
         {
             _discordClient.UpdateStatusAsync(new DiscordGame("Gambling House"), UserStatus.Online);
             return Task.CompletedTask;
+        }
+
+        internal async Task MessageCreated(MessageCreateEventArgs e)
+        {
+            Console.WriteLine(e.Message.Content.ToString());
+            if (!e.Author.IsBot)
+            {
+                string sId = e.Message.Id.ToString();
+                int id = Convert.ToInt32(sId.Substring(sId.Length - 2, 2)) + 1; //1-100
+                Console.WriteLine(id);
+                if (id <= 1)
+                {
+                    int claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 20);
+
+                    await _messages.CoinDropAlert(e, claimId);
+                    //await e.Message.RespondAsync("THERE HAS BEEN A COINDROP\nTYPE: " + claimId + "\nTO COLLECT");
+                }
+                
+            }
+               
+            
         }
 
         internal Task OnClientError(ClientErrorEventArgs e)
