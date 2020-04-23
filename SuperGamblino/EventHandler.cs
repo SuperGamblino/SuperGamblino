@@ -36,12 +36,28 @@ namespace SuperGamblino
             if (!e.Author.IsBot)
             {
                 string sId = e.Message.Id.ToString();
-                int id = Convert.ToInt32(sId.Substring(sId.Length - 2, 2)) + 1; //1-100
-                if (id <= 1)
+                int id = Convert.ToInt32(sId.Substring(sId.Length - 4, 4)) + 1; //1-10000
+                if (id <= 100) //1% chance
                 {
-                    int claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 20);
+                    bool med = id >= 65 && id <= 99;
+                    bool high = id == 100;
 
-                    await _messages.CoinDropAlert(e, claimId);
+                    if(med)
+                    {
+                        int claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 100);
+                        await _messages.CoinDropAlert(e, claimId);
+                    }
+                    if(high)
+                    {
+                        int claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 350);
+                        await _messages.CoinDropAlert(e, claimId);
+                    }
+                    else
+                    {
+                        int claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 25);
+                        await _messages.CoinDropAlert(e, claimId);
+                    }
+
                 }
                 
             }
