@@ -80,7 +80,7 @@ namespace SuperGamblino.Commands
 
                     Exp expHelper = new Exp(_usersConnector);
 
-                    var expResult = await expHelper.Give(command, nmbBet);
+                    var expResult = await expHelper.Give(command.User.Id, nmbBet);
                     if (expResult.DidUserLevelUp) await _messages.LevelUp(command);
                     var result = Roulette.GetResult(number);
 

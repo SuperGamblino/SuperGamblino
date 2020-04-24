@@ -82,7 +82,7 @@ namespace SuperGamblino.Commands
 
                         //end result
                         Exp expHelper = new Exp(_databaseUser);
-                        var expResult = await expHelper.Give(command, bet);
+                        var expResult = await expHelper.Give(command.User.Id, bet);
                         if (expResult.DidUserLevelUp) await _messages.LevelUp(command);
                         DiscordEmbed resultMsg = new DiscordEmbedBuilder
                         {

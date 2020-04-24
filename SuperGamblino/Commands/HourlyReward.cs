@@ -22,6 +22,7 @@ namespace SuperGamblino.Commands
         [Description("Gives you 20 credits. This command is available once every hour.")]
         public async Task OnExecute(CommandContext command)
         {
+            throw new NotImplementedException();
             const int reward = 20;
             var result = await _usersConnector.GetDateTime(command.User.Id, "last_hourly_reward");
             if (result.Successful)

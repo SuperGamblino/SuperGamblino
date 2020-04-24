@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.DatabaseConnectors;
@@ -20,6 +21,7 @@ namespace SuperGamblino.Commands
         [Cooldown(1, 5, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {
+            throw new NotImplementedException();
             var moneyFound = await _usersConnector.CommandSearch(command.Member.Id);
             await _messages.CoinsGain(command, moneyFound);
         }

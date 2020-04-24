@@ -28,6 +28,7 @@ namespace SuperGamblino.Commands
         [Description("Gives you credits based on your job. This command has no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
+            throw new NotImplementedException();
             User user = await _usersConnector.GetUser(command.User.Id);
             DateTimeResult lastReward = await _usersConnector.GetDateTime(command.User.Id, "last_work_reward");
 

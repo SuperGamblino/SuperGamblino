@@ -74,7 +74,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
         }
         
-        public async Task<int> CommandGiveCredits(ulong userId, int credits)
+        public virtual async Task<int> CommandGiveCredits(ulong userId, int credits)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
         }
         
-        public async Task<User> GetUser(ulong userId)
+        public virtual async Task<User> GetUser(ulong userId)
         {
             await EnsureUserCreated(userId);
             await using MySqlConnection c = new MySqlConnection(_connectionString);
@@ -259,7 +259,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
         }
         
-        public async Task<int> CommandGetUserCredits(ulong userId)
+        public virtual async Task<int> CommandGetUserCredits(ulong userId)
         {
             await EnsureUserCreated(userId);
             await using var c = new MySqlConnection(_connectionString);
@@ -275,7 +275,7 @@ namespace SuperGamblino.DatabaseConnectors
             return currentCredits;
         }
 
-        public async Task<bool> CommandSubsctractCredits(ulong userId, int credits)
+        public virtual async Task<bool> CommandSubsctractCredits(ulong userId, int credits)
         {
             if (await CommandGetUserCredits(userId) >= credits)
             {
@@ -286,9 +286,9 @@ namespace SuperGamblino.DatabaseConnectors
             return false;
         }
 
-        public async Task<AddExpResult> CommandGiveUserExp(CommandContext command, int exp)
+        public virtual async Task<AddExpResult> CommandGiveUserExp(ulong userId, int exp)
         {
-            await EnsureUserCreated(command.User.Id);
+            await EnsureUserCreated(userId);
             await using (var c = new MySqlConnection(_connectionString))
             {
                 await c.OpenAsync();
@@ -300,7 +300,7 @@ namespace SuperGamblino.DatabaseConnectors
                 //Add the input parameters
                 mySqlCommand.Parameters.AddWithValue("?given_exp", exp);
                 mySqlCommand.Parameters["?given_exp"].Direction = ParameterDirection.Input;
-                mySqlCommand.Parameters.AddWithValue("?cur_user_id", command.User.Id);
+                mySqlCommand.Parameters.AddWithValue("?cur_user_id", userId);
                 mySqlCommand.Parameters["?cur_user_id"].Direction = ParameterDirection.Input;
                 //Add the output parameters
                 mySqlCommand.Parameters.Add(new MySqlParameter("?did_level_increase", MySqlDbType.Bit));

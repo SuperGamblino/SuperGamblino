@@ -17,8 +17,8 @@ namespace SuperGamblino.DatabaseConnectors
             _logger = logger;
             _connectionString = connectionString.GetConnectionString();
         }
-        
-                public async Task<History> GetGameHistories(ulong userId)
+
+        public async Task<History> GetGameHistories(ulong userId)
         {
             await using var c = new MySqlConnection(_connectionString);
             try

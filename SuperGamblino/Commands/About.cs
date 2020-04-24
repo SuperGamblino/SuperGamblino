@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using SuperGamblino.CommandsLogics;
 using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
 using static SuperGamblino.GameObjects.Work;
@@ -9,11 +10,11 @@ namespace SuperGamblino.Commands
 {
     internal class About
     {
-        private readonly Messages _messages;
+        private readonly AboutCommandLogic _aboutCommandLogic;
 
-        public About(Messages messages)
+        public About(AboutCommandLogic aboutCommandLogic)
         {
-            _messages = messages;
+            _aboutCommandLogic = aboutCommandLogic;
         }
 
         [Command("about")]
@@ -21,7 +22,8 @@ namespace SuperGamblino.Commands
         [Description("Shows how many server the bot has been added to.")]
         public async Task OnExecute(CommandContext command)
         {
-            await _messages.About(command);
+            var guildCount = command.Client.Guilds.Count;
+            await command.RespondAsync("", false,_aboutCommandLogic.GetAboutInfo(guildCount));
         }
     }
 }

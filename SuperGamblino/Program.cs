@@ -12,6 +12,7 @@ using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.Helpers;
 using SuperGamblino.Properties;
 using Microsoft.Extensions.Configuration;
+using SuperGamblino.CommandsLogics;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace SuperGamblino
@@ -25,15 +26,6 @@ namespace SuperGamblino
                 .AddFilter("System", LogLevel.Warning)
                 .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
                 .AddConsole()).CreateLogger<Program>();
-
-            /*
-            if (!File.Exists("./config.json"))
-            {
-                logger.LogError(
-                    "There was no config.json file found so we created new default one. Please fill it up with info and start this bot again!");
-                File.WriteAllText("./config.json", Encoding.UTF8.GetString(Resources.defaultconfig));
-                Environment.Exit(1);
-            }*/
 
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("config.json", true, true)
@@ -56,6 +48,9 @@ namespace SuperGamblino
                 .Add<UsersConnector>()
                 .Add<Messages>()
                 .Add<BetSizeParser>()
+                .Add<AboutCommandLogic>()
+                .Add<CoinflipCommandLogic>()
+                .Add<CollectDropCommandLogic>()
                 .Build();
             try
             {
@@ -105,11 +100,9 @@ namespace SuperGamblino
 
 
             logger.LogInformation("Registering commands...");
-            //Initialize commands
             commands.RegisterCommands<RouletteCommand>();
             commands.RegisterCommands<CoinflipCommand>();
             commands.RegisterCommands<SlotsCommand>();
-            // commands.RegisterCommands<SearchCommand>(); Removed for balance
             commands.RegisterCommands<CreditsCommand>();
             commands.RegisterCommands<GlobalTopCommand>();
             commands.RegisterCommands<HourlyReward>();

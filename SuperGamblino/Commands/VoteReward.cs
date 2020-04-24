@@ -27,6 +27,7 @@ namespace SuperGamblino.Commands
         [Description("This command gives you 400 credits. It's usable every 12th hour.")]
         public async Task OnExecute(CommandContext command)
         {
+            throw new NotImplementedException();
             const int reward = 400;
             HttpClient client = new HttpClient();
             var result = await _usersConnector.GetDateTime(command.User.Id, "last_vote_reward");

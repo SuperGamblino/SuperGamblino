@@ -67,7 +67,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
 
         }
-        public async Task<int> CollectCoinDrop(ulong channelId, int claimId, CommandContext command)
+        public virtual async Task<int> CollectCoinDrop(ulong channelId, int claimId)
         {
             await using var c = new MySqlConnection(_connectionString);
             try

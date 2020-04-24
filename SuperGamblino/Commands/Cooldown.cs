@@ -25,6 +25,7 @@ namespace SuperGamblino.Commands
         [Description("Shows the current command cooldowns. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
+            throw new NotImplementedException();
             var curLhr = await _usersConnector.GetDateTime(command.User.Id, "last_hourly_reward");
             var curLdr = await _usersConnector.GetDateTime(command.User.Id, "last_daily_reward");
             var curLwr = await _usersConnector.GetDateTime(command.User.Id, "last_work_reward");
