@@ -9,20 +9,15 @@ using SuperGamblino.GameObjects;
 
 namespace SuperGamblino.DatabaseConnectors
 {
-    public class UsersConnector
+    public class UsersConnector : DatabaseConnector
     {
-        private ILogger _logger;
-        private string _connectionString;
-        
-        public UsersConnector(ILogger logger, ConnectionString connectionString)
+        public UsersConnector(ILogger logger, ConnectionString connectionString) : base(logger, connectionString)
         {
-            _logger = logger;
-            _connectionString = connectionString.GetConnectionString();
         }
 
         private async Task<bool> CheckIfUserExist(ulong userId)
         {
-            await using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(ConnectionString);
             try
             {
                 await connection.OpenAsync();
@@ -36,7 +31,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
+                Logger.LogError(ex,
                     "Exception occured while executing CheckIfUserExist method in UsersConnector class!");
                 throw new Exception("Unknown problem occurred!");
                 //I have no idea what kind of problem can occur here so I have no idea how to handle it
@@ -49,7 +44,7 @@ namespace SuperGamblino.DatabaseConnectors
         
         private async Task EnsureUserCreated(ulong userId)
         {
-            await using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(ConnectionString);
             try
             {
                 if (!await CheckIfUserExist(userId))
@@ -65,7 +60,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception occured while executing" +
+                Logger.LogError(ex, "Exception occured while executing" +
                                      " EnsureUserCreated method in Database class!");
             }
             finally
@@ -79,20 +74,20 @@ namespace SuperGamblino.DatabaseConnectors
             try
             {
                 await EnsureUserCreated(userId);
-                await using var c = new MySqlConnection(_connectionString);
+                await using var c = new MySqlConnection(ConnectionString);
                 var searchCoins = new MySqlCommand(
                     @"UPDATE user SET currency = currency + (@credits) WHERE user_id = @userId",
                     c);
                 searchCoins.Parameters.AddWithValue("@userId", userId);
                 searchCoins.Parameters.AddWithValue("@credits", credits);
-                _logger.LogInformation(searchCoins.CommandText);
+                Logger.LogInformation(searchCoins.CommandText);
                 await c.OpenAsync();
                 await searchCoins.ExecuteNonQueryAsync();
                 return await CommandGetUserCredits(userId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception occured while executing CommandGiveCredits method in Database class!");
+                Logger.LogError(ex, "Exception occured while executing CommandGiveCredits method in Database class!");
                 return -1;
             }
         }
@@ -100,7 +95,7 @@ namespace SuperGamblino.DatabaseConnectors
         public virtual async Task<User> GetUser(ulong userId)
         {
             await EnsureUserCreated(userId);
-            await using MySqlConnection c = new MySqlConnection(_connectionString);
+            await using MySqlConnection c = new MySqlConnection(ConnectionString);
             MySqlCommand selection = new MySqlCommand(@"SELECT * FROM user WHERE user_id = @user_id", c);
             selection.Parameters.AddWithValue("@user_id", userId);
             await c.OpenAsync();
@@ -138,7 +133,7 @@ namespace SuperGamblino.DatabaseConnectors
 
         public async Task SetUser(User user)
         {
-            await using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(ConnectionString);
             try
             {
                 if (!await CheckIfUserExist(user.Id))
@@ -167,20 +162,20 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception occured while executing" +
+                Logger.LogError(ex, "Exception occured while executing" +
                                      " SetUser method in UsersConnector class!");
                 await Task.FromException(ex);
             }
         }
         
-        public async Task<DateTimeResult> GetDateTime(ulong userId, string fieldName)
+        public virtual async Task<DateTimeResult> GetDateTime(ulong userId, string fieldName)
         {
             await EnsureUserCreated(userId);
-            await using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(ConnectionString);
             try
             {
                 var command = new MySqlCommand(@$"SELECT {fieldName} from user where user_id = {userId}", connection);
-                _logger.LogInformation(command.CommandText);
+                Logger.LogInformation(command.CommandText);
                 await connection.OpenAsync();
                 var reader = await command.ExecuteReaderAsync();
                 if (!await reader.ReadAsync())
@@ -198,7 +193,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
+                Logger.LogError(ex,
                     $"Exception occured while executing GetDateTime with fieldName = {fieldName} method in Database class!");
                 return new DateTimeResult(false, null);
             }
@@ -211,20 +206,20 @@ namespace SuperGamblino.DatabaseConnectors
         public async Task<bool> SetDateTime(ulong userId, string fieldName, DateTime time)
         {
             //Here is no need to use EnsureUserCreated because this method is always called after GetDateTime
-            await using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(ConnectionString);
             try
             {
                 var command = new MySqlCommand(
                     $"UPDATE user set {fieldName} = \'{time:yyyy-MM-dd HH:mm:ss}\' where user_id = {userId}",
                     connection);
-                _logger.LogInformation(command.CommandText);
+                Logger.LogInformation(command.CommandText);
                 await connection.OpenAsync();
                 await command.ExecuteNonQueryAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
+                Logger.LogError(ex,
                     $"Exception occured while executing SetDateTime with fieldName = {fieldName} and time = {time} method in Database class!");
                 return false;
             }
@@ -247,14 +242,14 @@ namespace SuperGamblino.DatabaseConnectors
                 await c.OpenAsync();
                 searchCoins.Parameters.AddWithValue("@userId", userId);
                 searchCoins.Parameters.AddWithValue("@moneyFound", foundMoney);
-                _logger.LogInformation(searchCoins.CommandText);
-                _logger.LogInformation($"User {userId} found {foundMoney}");
+                Logger.LogInformation(searchCoins.CommandText);
+                Logger.LogInformation($"User {userId} found {foundMoney}");
                 await searchCoins.ExecuteNonQueryAsync();
                 return foundMoney;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception occured while executing CommandSearch method in Database class!");
+                Logger.LogError(ex, "Exception occured while executing CommandSearch method in Database class!");
                 return -1;
             }
         }
@@ -262,7 +257,7 @@ namespace SuperGamblino.DatabaseConnectors
         public virtual async Task<int> CommandGetUserCredits(ulong userId)
         {
             await EnsureUserCreated(userId);
-            await using var c = new MySqlConnection(_connectionString);
+            await using var c = new MySqlConnection(ConnectionString);
             var selection = new MySqlCommand(@"SELECT currency FROM user WHERE user_id = @user_id", c);
             selection.Parameters.AddWithValue("@user_id", userId);
             await c.OpenAsync();
@@ -289,7 +284,7 @@ namespace SuperGamblino.DatabaseConnectors
         public virtual async Task<AddExpResult> CommandGiveUserExp(ulong userId, int exp)
         {
             await EnsureUserCreated(userId);
-            await using (var c = new MySqlConnection(_connectionString))
+            await using (var c = new MySqlConnection(ConnectionString))
             {
                 await c.OpenAsync();
 
@@ -322,7 +317,7 @@ namespace SuperGamblino.DatabaseConnectors
         public async Task<List<User>> CommandGetGlobalTop()
         {
             var discordUsers = new List<User>();
-            await using (var c = new MySqlConnection(_connectionString))
+            await using (var c = new MySqlConnection(ConnectionString))
             {
                 await c.OpenAsync();
                 var selection = new MySqlCommand(@"CALL `get_top_users`()", c);

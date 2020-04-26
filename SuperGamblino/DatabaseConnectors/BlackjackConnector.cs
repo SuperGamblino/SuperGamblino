@@ -6,20 +6,15 @@ using SuperGamblino.GameObjects;
 
 namespace SuperGamblino.DatabaseConnectors
 {
-    public class BlackjackConnector
+    public class BlackjackConnector : DatabaseConnector
     {
-        private readonly ILogger _logger;
-        private readonly string _connectionString;
-
-        public BlackjackConnector(ConnectionString connectionString, ILogger logger)
+        public BlackjackConnector(ILogger logger, ConnectionString connectionString) : base(logger, connectionString)
         {
-            _connectionString = connectionString.GetConnectionString();
-            _logger = logger;
         }
 
         public async Task<BlackjackHelper> GetBlackjackGame(ulong userId)
         {
-            await using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(ConnectionString);
             try
             {
                 await connection.OpenAsync();
@@ -51,7 +46,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception occured while executing GetBlackjackGame method in Database class!");
+                Logger.LogError(ex, "Exception occured while executing GetBlackjackGame method in Database class!");
                 return new BlackjackHelper { };
             }
             finally
@@ -62,7 +57,7 @@ namespace SuperGamblino.DatabaseConnectors
 
         public async Task StartNewBlackjackGame(BlackjackHelper blackjackHelper, ulong userId)
         {
-            await using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(ConnectionString);
 
             try
             {
@@ -73,7 +68,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception occured while executing StartBewBlackhackGame method in Database class!");
+                Logger.LogError(ex, "Exception occured while executing StartBewBlackhackGame method in Database class!");
                 throw;
             }
             finally
@@ -84,7 +79,7 @@ namespace SuperGamblino.DatabaseConnectors
 
         public async Task UpdateBlackjackGame(BlackjackHelper blackjackHelper, ulong userId)
         {
-            await using var connection = new MySqlConnection(_connectionString);
+            await using var connection = new MySqlConnection(ConnectionString);
 
             try
             {
@@ -96,7 +91,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception occured while executing UpdateBlackhackGame method in Database class!");
+                Logger.LogError(ex, "Exception occured while executing UpdateBlackhackGame method in Database class!");
                 throw;
             }
             finally

@@ -8,21 +8,15 @@ using SuperGamblino.GameObjects;
 
 namespace SuperGamblino.DatabaseConnectors
 {
-    public class CoindropConnector
+    public class CoindropConnector : DatabaseConnector
     {
-        private readonly ILogger _logger;
-        private readonly string _connectionString;
-        private readonly Messages _messages;
-
-        public CoindropConnector(ILogger logger, ConnectionString connectionString)
+        public CoindropConnector(ILogger logger, ConnectionString connectionString) : base(logger, connectionString)
         {
-            _logger = logger;
-            _connectionString = connectionString.GetConnectionString();
         }
 
         public async Task<int> AddCoindrop(ulong channelId, int coinReward)
         {
-            await using var c = new MySqlConnection(_connectionString);
+            await using var c = new MySqlConnection(ConnectionString);
             Random rand = new Random();
             int claimId = rand.Next(1000, 9999);
             try
@@ -36,7 +30,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
+                Logger.LogError(ex,
                     $"Exception occured while executing AddCoindrop method in Database class!");
                 return 0;
             }
@@ -47,7 +41,7 @@ namespace SuperGamblino.DatabaseConnectors
         }
         public async Task SetClaimed(ulong channelId)
         {
-            await using var c = new MySqlConnection(_connectionString);
+            await using var c = new MySqlConnection(ConnectionString);
             try
             {
                 //UPDATE `supergamblino`.`coin_drop` SET `claimed` = '1' WHERE (`id` = '16');
@@ -58,7 +52,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
+                Logger.LogError(ex,
                     $"Exception occured while executing SetClaimed method in Database class!");
             }
             finally
@@ -69,7 +63,7 @@ namespace SuperGamblino.DatabaseConnectors
         }
         public virtual async Task<int> CollectCoinDrop(ulong channelId, int claimId)
         {
-            await using var c = new MySqlConnection(_connectionString);
+            await using var c = new MySqlConnection(ConnectionString);
             try
             {
                 var sql = new MySqlCommand($"SELECT claimed, coin_reward, claim_id FROM coin_drop WHERE channel_id = '{channelId}' ORDER BY id DESC LIMIT 0, 1 ", c);
@@ -97,7 +91,7 @@ namespace SuperGamblino.DatabaseConnectors
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                _logger.LogError(ex,
+                Logger.LogError(ex,
                     $"Exception occured while executing CollectCoinDrop method in Database class!");
                 return 0;
             }

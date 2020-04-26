@@ -7,20 +7,11 @@ using SuperGamblino.GameObjects;
 
 namespace SuperGamblino.DatabaseConnectors
 {
-    public class GameHistoryConnector
+    public class GameHistoryConnector : DatabaseConnector
     {
-        private readonly ILogger _logger;
-        private readonly string _connectionString;
-
-        public GameHistoryConnector(ILogger logger, ConnectionString connectionString)
-        {
-            _logger = logger;
-            _connectionString = connectionString.GetConnectionString();
-        }
-
         public async Task<History> GetGameHistories(ulong userId)
         {
-            await using var c = new MySqlConnection(_connectionString);
+            await using var c = new MySqlConnection(ConnectionString);
             try
             {
                 var command = new MySqlCommand($"SELECT * FROM history WHERE user_id = {userId}", c);
@@ -44,7 +35,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Exception occured while executing GetGameHistories with userId = {userId} method in Database class!");
+                Logger.LogError(ex, $"Exception occured while executing GetGameHistories with userId = {userId} method in Database class!");
                 return null;
             }
             finally
@@ -55,7 +46,7 @@ namespace SuperGamblino.DatabaseConnectors
 
         public async Task<bool> AddGameHistory(ulong userId, GameHistory history)
         {
-            await using var c = new MySqlConnection(_connectionString);
+            await using var c = new MySqlConnection(ConnectionString);
             try
             {
                 var command = new MySqlCommand("INSERT INTO history (user_id, game, did_win, credits_difference)" +
@@ -67,7 +58,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
+                Logger.LogError(ex,
                     $"Exception occured while executing AddGameHistory with userId = {userId} method in Database class!");
                 return false;
             }
@@ -75,6 +66,10 @@ namespace SuperGamblino.DatabaseConnectors
             {
                 await c.CloseAsync();
             }
+        }
+
+        public GameHistoryConnector(ILogger logger, ConnectionString connectionString) : base(logger, connectionString)
+        {
         }
     }
 }

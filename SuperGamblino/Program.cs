@@ -51,6 +51,7 @@ namespace SuperGamblino
                 .Add<AboutCommandLogic>()
                 .Add<CoinflipCommandLogic>()
                 .Add<CollectDropCommandLogic>()
+                .Add<CooldownCommandLogic>()
                 .Build();
             try
             {

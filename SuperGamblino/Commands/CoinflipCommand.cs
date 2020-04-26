@@ -12,7 +12,7 @@ namespace SuperGamblino.Commands
 {
     internal class CoinflipCommand
     {
-        private CoinflipCommandLogic _logic;
+        private readonly CoinflipCommandLogic _logic;
 
         public CoinflipCommand(CoinflipCommandLogic logic)
         {

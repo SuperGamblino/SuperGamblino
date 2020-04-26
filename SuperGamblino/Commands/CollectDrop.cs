@@ -11,18 +11,10 @@ namespace SuperGamblino.Commands
 {
     internal class CollectDrop
     {
-        private CollectDropCommandLogic _logic;
-        private readonly CoindropConnector _coindropConnector;
-        private readonly Config _config;
-        private readonly Messages _messages;
-        private readonly UsersConnector _usersConnector;
+        private readonly CollectDropCommandLogic _logic;
 
-        public CollectDrop(Config config, CoindropConnector coindropConnector, UsersConnector usersConnector, Messages messages, CollectDropCommandLogic logic)
+        public CollectDrop(CollectDropCommandLogic logic)
         {
-            _config = config;
-            _coindropConnector = coindropConnector;
-            _usersConnector = usersConnector;
-            _messages = messages;
             _logic = logic;
         }
 
