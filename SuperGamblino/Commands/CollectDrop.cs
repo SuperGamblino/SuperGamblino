@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using SuperGamblino.CommandsLogics;
-using SuperGamblino.DatabaseConnectors;
 
 namespace SuperGamblino.Commands
 {

@@ -6,7 +6,6 @@ namespace SuperGamblino.GameObjects
     {
         public ulong UserId { get; set; }
         public IEnumerable<GameHistory> GameHistories { get; set; }
-        
     }
 
     public class GameHistory

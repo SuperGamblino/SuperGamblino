@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using SuperGamblino.GameObjects;
@@ -41,7 +40,7 @@ namespace SuperGamblino.DatabaseConnectors
                 await connection.CloseAsync();
             }
         }
-        
+
         private async Task EnsureUserCreated(ulong userId)
         {
             await using var connection = new MySqlConnection(ConnectionString);
@@ -52,7 +51,7 @@ namespace SuperGamblino.DatabaseConnectors
                     await connection.OpenAsync();
                     var command =
                         new MySqlCommand(
-                            $"INSERT INTO user (user_id, currency, last_daily_reward, last_hourly_reward," +
+                            "INSERT INTO user (user_id, currency, last_daily_reward, last_hourly_reward," +
                             $" current_exp, current_level) VALUES ({userId}, 0, null, null, 0, 1)",
                             connection);
                     await command.ExecuteNonQueryAsync();
@@ -61,14 +60,14 @@ namespace SuperGamblino.DatabaseConnectors
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Exception occured while executing" +
-                                     " EnsureUserCreated method in Database class!");
+                                    " EnsureUserCreated method in Database class!");
             }
             finally
             {
                 await connection.CloseAsync();
             }
         }
-        
+
         public virtual async Task<int> CommandGiveCredits(ulong userId, int credits)
         {
             try
@@ -91,41 +90,41 @@ namespace SuperGamblino.DatabaseConnectors
                 return -1;
             }
         }
-        
+
         public virtual async Task<User> GetUser(ulong userId)
         {
             await EnsureUserCreated(userId);
-            await using MySqlConnection c = new MySqlConnection(ConnectionString);
-            MySqlCommand selection = new MySqlCommand(@"SELECT * FROM user WHERE user_id = @user_id", c);
+            await using var c = new MySqlConnection(ConnectionString);
+            var selection = new MySqlCommand(@"SELECT * FROM user WHERE user_id = @user_id", c);
             selection.Parameters.AddWithValue("@user_id", userId);
             await c.OpenAsync();
             await selection.PrepareAsync();
             var results = await selection.ExecuteReaderAsync();
-            if (!await results.ReadAsync()) return new User { };
+            if (!await results.ReadAsync()) return new User();
 
             if (await results.IsDBNullAsync(2) || await results.IsDBNullAsync(3))
             {
-                User user = new User
+                var user = new User
                 {
-                    Id = await results.GetFieldValueAsync<UInt64>(0),
+                    Id = await results.GetFieldValueAsync<ulong>(0),
                     Credits = await results.GetFieldValueAsync<int>(1),
                     LastHourlyReward = null,
                     LastDailyReward = null,
                     Experience = await results.GetFieldValueAsync<int>(4),
-                    Level = await results.GetFieldValueAsync<int>(5),
+                    Level = await results.GetFieldValueAsync<int>(5)
                 };
                 return user;
             }
             else
             {
-                User user = new User
+                var user = new User
                 {
-                    Id = await results.GetFieldValueAsync<UInt64>(0),
+                    Id = await results.GetFieldValueAsync<ulong>(0),
                     Credits = await results.GetFieldValueAsync<int>(1),
                     LastHourlyReward = await results.GetFieldValueAsync<DateTime>(2),
                     LastDailyReward = await results.GetFieldValueAsync<DateTime>(3),
                     Experience = await results.GetFieldValueAsync<int>(4),
-                    Level = await results.GetFieldValueAsync<int>(5),
+                    Level = await results.GetFieldValueAsync<int>(5)
                 };
                 return user;
             }
@@ -139,7 +138,7 @@ namespace SuperGamblino.DatabaseConnectors
                 if (!await CheckIfUserExist(user.Id))
                 {
                     var command = new MySqlCommand(
-                        $"INSERT INTO user(user_id, currency, last_daily_reward," +
+                        "INSERT INTO user(user_id, currency, last_daily_reward," +
                         $" last_hourly_reward, current_exp, current_level) VALUES ({user.Id}," +
                         $" {user.Credits}, {user.LastDailyReward}, {user.LastHourlyReward}," +
                         $" {user.Experience}, {user.Level})", connection);
@@ -163,11 +162,11 @@ namespace SuperGamblino.DatabaseConnectors
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Exception occured while executing" +
-                                     " SetUser method in UsersConnector class!");
+                                    " SetUser method in UsersConnector class!");
                 await Task.FromException(ex);
             }
         }
-        
+
         public virtual async Task<DateTimeResult> GetDateTime(ulong userId, string fieldName)
         {
             await EnsureUserCreated(userId);
@@ -228,7 +227,7 @@ namespace SuperGamblino.DatabaseConnectors
                 await connection.CloseAsync();
             }
         }
-        
+
         public async Task<int> CommandSearch(ulong userId)
         {
             var rnd = new Random();
@@ -253,7 +252,7 @@ namespace SuperGamblino.DatabaseConnectors
                 return -1;
             }
         }
-        
+
         public virtual async Task<int> CommandGetUserCredits(ulong userId)
         {
             await EnsureUserCreated(userId);
@@ -288,7 +287,7 @@ namespace SuperGamblino.DatabaseConnectors
             {
                 await c.OpenAsync();
 
-                MySqlCommand mySqlCommand = new MySqlCommand("give_user_exp;", c);
+                var mySqlCommand = new MySqlCommand("give_user_exp;", c);
 
                 mySqlCommand.CommandType = CommandType.StoredProcedure;
 
@@ -309,7 +308,7 @@ namespace SuperGamblino.DatabaseConnectors
 
                 return new AddExpResult(Convert.ToBoolean(mySqlCommand.Parameters["?did_level_increase"].Value),
                     Convert.ToInt32(mySqlCommand.Parameters["?cur_exp_needed"].Value),
-                    Convert.ToInt32(mySqlCommand.Parameters["?cur_exp"].Value), 
+                    Convert.ToInt32(mySqlCommand.Parameters["?cur_exp"].Value),
                     exp);
             }
         }
@@ -324,10 +323,11 @@ namespace SuperGamblino.DatabaseConnectors
                 var results = await selection.ExecuteReaderAsync();
                 while (await results.ReadAsync())
                 {
-                    ulong uid = await results.GetFieldValueAsync<ulong>(0);
-                    int cur = await results.GetFieldValueAsync<int>(1);
-                    discordUsers.Add(new User { Id = uid, Credits = cur });
+                    var uid = await results.GetFieldValueAsync<ulong>(0);
+                    var cur = await results.GetFieldValueAsync<int>(1);
+                    discordUsers.Add(new User {Id = uid, Credits = cur});
                 }
+
                 await results.CloseAsync();
             }
 

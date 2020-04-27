@@ -1,12 +1,10 @@
-﻿using DSharpPlus.Entities;
-using System;
+﻿using System;
 
 namespace SuperGamblino.GameObjects
 {
     public class User
     {
-
-        public UInt64 Id { get; set; }
+        public ulong Id { get; set; }
         public int Credits { get; set; }
         public DateTime? LastHourlyReward { get; set; }
         public DateTime? LastDailyReward { get; set; }

@@ -1,18 +1,15 @@
 ﻿using DSharpPlus.Entities;
-using Microsoft.Extensions.Logging;
 using Moq;
-using SuperGamblino;
 using SuperGamblino.CommandsLogics;
 using SuperGamblino.DatabaseConnectors;
-using SuperGamblino.Helpers;
 using Xunit;
 
-namespace SuperGamblinoTests.GamesTests
+namespace SuperGamblinoTests.CommandsTests
 {
     public class CoinDropCollectingTests
     {
-
-        private CollectDropCommandLogic GetCollectDropCommandLogic(CoindropConnector coindropConnector, UsersConnector usersConnector)
+        private CollectDropCommandLogic GetCollectDropCommandLogic(CoindropConnector coindropConnector,
+            UsersConnector usersConnector)
         {
             return new CollectDropCommandLogic(Helpers.GetMessages(), coindropConnector, usersConnector);
         }
@@ -48,7 +45,7 @@ namespace SuperGamblinoTests.GamesTests
             var logic = GetCollectDropCommandLogic(coinDropConnector.Object, usersConnector.Object);
 
             var result = await logic.Collect("4453", 0, 0, "test-user");
-            
+
             Assert.Equal(new DiscordColor(Helpers.SuccessColor), result.Color);
             Assert.Contains("Congratulations, the CoinDrop has been collected!\n**Reward**", result.Description);
             Assert.Equal("CoinDropCollected", result.Title);
@@ -65,7 +62,7 @@ namespace SuperGamblinoTests.GamesTests
             var logic = GetCollectDropCommandLogic(coinDropConnector.Object, usersConnector.Object);
 
             var result = await logic.Collect("4453", 0, 0, "test-user");
-            
+
             Assert.Equal(new DiscordColor(Helpers.InfoColor), result.Color);
             Assert.Contains("Sadly the CoinDrop has already been collected!", result.Description);
             Assert.Equal("CoinDropAlreadyCollected", result.Title);

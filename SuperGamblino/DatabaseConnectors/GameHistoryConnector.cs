@@ -9,6 +9,10 @@ namespace SuperGamblino.DatabaseConnectors
 {
     public class GameHistoryConnector : DatabaseConnector
     {
+        public GameHistoryConnector(ILogger logger, ConnectionString connectionString) : base(logger, connectionString)
+        {
+        }
+
         public async Task<History> GetGameHistories(ulong userId)
         {
             await using var c = new MySqlConnection(ConnectionString);
@@ -21,21 +25,20 @@ namespace SuperGamblino.DatabaseConnectors
                 history.UserId = userId;
                 var list = new List<GameHistory>();
                 while (await reader.ReadAsync())
-                {
-                    list.Add(new GameHistory()
+                    list.Add(new GameHistory
                     {
                         GameName = await reader.GetFieldValueAsync<string>(1),
                         HasWon = await reader.GetFieldValueAsync<bool>(2),
                         CoinsDifference = await reader.GetFieldValueAsync<int>(3)
                     });
-                }
 
                 history.GameHistories = list;
                 return history;
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, $"Exception occured while executing GetGameHistories with userId = {userId} method in Database class!");
+                Logger.LogError(ex,
+                    $"Exception occured while executing GetGameHistories with userId = {userId} method in Database class!");
                 return null;
             }
             finally
@@ -66,10 +69,6 @@ namespace SuperGamblino.DatabaseConnectors
             {
                 await c.CloseAsync();
             }
-        }
-
-        public GameHistoryConnector(ILogger logger, ConnectionString connectionString) : base(logger, connectionString)
-        {
         }
     }
 }

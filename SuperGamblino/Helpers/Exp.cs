@@ -1,21 +1,19 @@
-﻿using DSharpPlus.CommandsNext;
-using SuperGamblino.GameObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 using SuperGamblino.DatabaseConnectors;
+using SuperGamblino.GameObjects;
 
 namespace SuperGamblino.Helpers
 {
-    class Exp
+    internal class Exp
     {
         private readonly UsersConnector _usersConnector;
 
-        public Exp (UsersConnector usersConnector)
+        public Exp(UsersConnector usersConnector)
         {
             _usersConnector = usersConnector;
         }
+
         public async Task<AddExpResult> Give(ulong userId, int bet)
         {
             var user = await _usersConnector.GetUser(userId);

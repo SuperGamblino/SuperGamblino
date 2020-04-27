@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.CommandsLogics;
-using SuperGamblino.DatabaseConnectors;
-using SuperGamblino.GameObjects;
 
 namespace SuperGamblino.Commands
 {
     internal class Cooldown
     {
         private readonly CooldownCommandLogic _cooldownCommandLogic;
+
         public Cooldown(CooldownCommandLogic cooldownCommandLogic)
         {
             _cooldownCommandLogic = cooldownCommandLogic;

@@ -9,8 +9,8 @@ namespace SuperGamblino.CommandsLogics
 {
     public class CooldownCommandLogic
     {
-        private readonly UsersConnector _usersConnector;
         private readonly Messages _messages;
+        private readonly UsersConnector _usersConnector;
 
         public CooldownCommandLogic(UsersConnector usersConnector, Messages messages)
         {
@@ -26,15 +26,14 @@ namespace SuperGamblino.CommandsLogics
             var curLvr = await _usersConnector.GetDateTime(userId, "last_vote_reward");
             var cooldownObjects = new List<CooldownObject>();
 
-            if (curLhr.Successful && curLdr.Successful) //TODO Should I add curLwr and curLvr or should I correct the unit test?
+            if (curLhr.Successful && curLdr.Successful && curLwr.Successful && curLvr.Successful)
             {
                 if (curLhr.DateTime.HasValue)
                 {
                     var timeSpan = DateTime.Now - curLhr.DateTime.Value;
-                    if (timeSpan >= TimeSpan.FromHours(1))
-                        cooldownObjects.Add(new CooldownObject("Hourly"));
-                    else
-                        cooldownObjects.Add(new CooldownObject("Hourly", TimeSpan.FromHours(1) - timeSpan));
+                    cooldownObjects.Add(timeSpan >= TimeSpan.FromHours(1)
+                        ? new CooldownObject("Hourly")
+                        : new CooldownObject("Hourly", TimeSpan.FromHours(1) - timeSpan));
                 }
                 else
                 {
@@ -64,6 +63,7 @@ namespace SuperGamblino.CommandsLogics
                 {
                     cooldownObjects.Add(new CooldownObject("Work"));
                 }
+
                 if (curLvr.DateTime.HasValue)
                 {
                     var timeSpan = DateTime.Now - curLvr.DateTime.Value;
@@ -78,10 +78,8 @@ namespace SuperGamblino.CommandsLogics
 
                 return _messages.ListCurrentCooldowns(cooldownObjects, "Cooldowns");
             }
-            else
-            {
-                return _messages.Error("Some problem with DB occured!!!");
-            }
+
+            return _messages.Error("Some problem with DB occured!!!");
         }
     }
 }

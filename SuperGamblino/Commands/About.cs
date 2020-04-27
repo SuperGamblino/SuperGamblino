@@ -2,9 +2,6 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.CommandsLogics;
-using SuperGamblino.DatabaseConnectors;
-using SuperGamblino.GameObjects;
-using static SuperGamblino.GameObjects.Work;
 
 namespace SuperGamblino.Commands
 {
@@ -23,7 +20,7 @@ namespace SuperGamblino.Commands
         public async Task OnExecute(CommandContext command)
         {
             var guildCount = command.Client.Guilds.Count;
-            await command.RespondAsync("", false,_aboutCommandLogic.GetAboutInfo(guildCount));
+            await command.RespondAsync("", false, _aboutCommandLogic.GetAboutInfo(guildCount));
         }
     }
 }

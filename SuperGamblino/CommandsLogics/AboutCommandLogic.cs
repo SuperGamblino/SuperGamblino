@@ -1,4 +1,4 @@
-﻿﻿using DSharpPlus.Entities;
+﻿using DSharpPlus.Entities;
 
 namespace SuperGamblino.CommandsLogics
 {
@@ -14,6 +14,6 @@ namespace SuperGamblino.CommandsLogics
         public DiscordEmbed GetAboutInfo(int guildsCount)
         {
             return _messages.Information($"Bot is currently available on {guildsCount} servers!", "About");
-        } 
+        }
     }
 }

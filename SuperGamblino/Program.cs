@@ -1,18 +1,13 @@
 ﻿using System;
-using System.IO;
-using System.Text;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SuperGamblino.Commands;
 using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.Helpers;
-using SuperGamblino.Properties;
-using Microsoft.Extensions.Configuration;
-using SuperGamblino.CommandsLogics;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace SuperGamblino
@@ -42,16 +37,11 @@ namespace SuperGamblino
                 .AddInstance(logger)
                 .AddInstance(config)
                 .AddInstance(connectionString)
-                .Add<BlackjackConnector>()
-                .Add<GameHistoryConnector>()
-                .Add<CoindropConnector>()
-                .Add<UsersConnector>()
+                .AddInstance(new HttpClient())
+                .AddDatabaseConnectors()
                 .Add<Messages>()
                 .Add<BetSizeParser>()
-                .Add<AboutCommandLogic>()
-                .Add<CoinflipCommandLogic>()
-                .Add<CollectDropCommandLogic>()
-                .Add<CooldownCommandLogic>()
+                .AddCommandLogics()
                 .Build();
             try
             {
@@ -72,7 +62,6 @@ namespace SuperGamblino
             var connectionString = dependencyCollection.GetDependency<ConnectionString>();
             var coinDrop = dependencyCollection.GetDependency<CoindropConnector>();
             var msg = dependencyCollection.GetDependency<Messages>();
-
             var cfg = new DiscordConfiguration
             {
                 Token = conf.BotSettings.Token,
@@ -101,20 +90,7 @@ namespace SuperGamblino
 
 
             logger.LogInformation("Registering commands...");
-            commands.RegisterCommands<RouletteCommand>();
-            commands.RegisterCommands<CoinflipCommand>();
-            commands.RegisterCommands<SlotsCommand>();
-            commands.RegisterCommands<CreditsCommand>();
-            commands.RegisterCommands<GlobalTopCommand>();
-            commands.RegisterCommands<HourlyReward>();
-            commands.RegisterCommands<DailyReward>();
-            commands.RegisterCommands<Cooldown>();
-            commands.RegisterCommands<WorkReward>();
-            commands.RegisterCommands<GamesHistory>();
-            commands.RegisterCommands<ShowProfile>();
-            commands.RegisterCommands<VoteReward>();
-            commands.RegisterCommands<About>();
-            commands.RegisterCommands<CollectDrop>();
+            commands.AddCommands();
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
 

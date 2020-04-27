@@ -1,26 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DSharpPlus;
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using SuperGamblino.DatabaseConnectors;
-using SuperGamblino.GameObjects;
-using static SuperGamblino.GameObjects.Work;
+using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
-    class WorkReward
+    internal class WorkReward
     {
-        private readonly UsersConnector _usersConnector;
-        private readonly Messages _messages;
+        private readonly WorkRewardCommandLogic _logic;
 
-        public WorkReward(Messages messages, UsersConnector usersConnector)
+        public WorkReward(WorkRewardCommandLogic logic)
         {
-            _messages = messages;
-            _usersConnector = usersConnector;
+            _logic = logic;
         }
 
         [Command("work")]
@@ -28,42 +19,7 @@ namespace SuperGamblino.Commands
         [Description("Gives you credits based on your job. This command has no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
-            throw new NotImplementedException();
-            User user = await _usersConnector.GetUser(command.User.Id);
-            DateTimeResult lastReward = await _usersConnector.GetDateTime(command.User.Id, "last_work_reward");
-
-            Job currentJob = GetCurrentJob(user.Level);
-
-            
-
-            if (lastReward.Successful)
-            {
-                if (lastReward.DateTime.HasValue)
-                {
-                    TimeSpan timeSpan = DateTime.Now - lastReward.DateTime.Value;
-                    if (timeSpan >= TimeSpan.FromHours(currentJob.Cooldown))
-                    {
-                        await _usersConnector.CommandGiveCredits(command.User.Id, currentJob.Reward);
-                        await _usersConnector.SetDateTime(command.User.Id, "last_work_reward", DateTime.Now);
-                        await _messages.CoinsGain(command, currentJob.Reward);
-                    }
-                    else
-                    {
-                        await _messages.TooEarly(command, TimeSpan.FromHours(currentJob.Cooldown) - timeSpan);
-                    }
-                }
-                else
-                {
-                    await _usersConnector.CommandGiveCredits(command.User.Id, currentJob.Reward);
-                    await _usersConnector.SetDateTime(command.User.Id, "last_work_reward", DateTime.Now);
-                    await _messages.CoinsGain(command, currentJob.Reward);
-                }
-            }
-            else
-            {
-                await _messages.Error(command, "Some problem with DB occured!");
-            }
-
+            await command.RespondAsync("", false, await _logic.GetWorkReward(command.User.Id));
         }
     }
 }

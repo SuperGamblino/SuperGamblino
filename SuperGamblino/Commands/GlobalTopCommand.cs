@@ -1,22 +1,17 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using SuperGamblino.DatabaseConnectors;
+using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
     internal class GlobalTopCommand
     {
-        private readonly Config _config;
-        private readonly UsersConnector _usersConnector;
+        private readonly GlobalTopCommandLogic _logic;
 
-        public GlobalTopCommand(Config config, UsersConnector usersConnector)
+        public GlobalTopCommand(GlobalTopCommandLogic logic)
         {
-            _config = config;
-            _usersConnector = usersConnector;
+            _logic = logic;
         }
 
         [Command("globaltop")]
@@ -25,31 +20,8 @@ namespace SuperGamblino.Commands
         [Description("Shows a global leaderboard based on credits. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
-            var listUsers = await _usersConnector.CommandGetGlobalTop();
-
-            var desc = "";
-            foreach (var user in listUsers)
-            {
-                try
-                {
-                    DiscordUser member = await command.Client.GetUserAsync(user.Id);
-                   
-                    desc += member.Username + ": " + user.Credits + "\n";
-                }
-                catch (System.Exception ex)
-                {
-                    Console.WriteLine(ex.Message.ToString() + "\nUser ID: "  + user.Id);
-                    Debug.WriteLine(ex.Message.ToString());
-                }
-            }
-
-            var message = new DiscordEmbedBuilder
-            {
-                Color = new DiscordColor(_config.ColorSettings.Info),
-                Title = "Top 10 users",
-                Description = desc
-            };
-            await command.RespondAsync("", false, message);
+            await command.RespondAsync("", false,
+                await _logic.GetGlobalTop(async id => (await command.Client.GetUserAsync(id)).Username));
         }
     }
 }

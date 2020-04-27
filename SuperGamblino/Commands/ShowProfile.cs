@@ -1,21 +1,17 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using SuperGamblino.DatabaseConnectors;
-using SuperGamblino.GameObjects;
-using static SuperGamblino.GameObjects.Work;
+using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
     internal class ShowProfile
     {
-        private readonly UsersConnector _usersConnector;
-        private readonly Messages _messages;
+        private readonly ShowProfileCommandLogic _logic;
 
-        public ShowProfile(Messages messages, UsersConnector usersConnector)
+        public ShowProfile(ShowProfileCommandLogic logic)
         {
-            _messages = messages;
-            _usersConnector = usersConnector;
+            _logic = logic;
         }
 
         [Command("profile")]
@@ -23,9 +19,7 @@ namespace SuperGamblino.Commands
         [Description("Shows a profile, descriping detailed information about the user. This command has no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
-            User user = await _usersConnector.GetUser(command.User.Id);
-            Job currentJob = GetCurrentJob(user.Level);
-            await _messages.Profile(command, user, currentJob);
+            await command.RespondAsync("", false, await _logic.ShowProfile(command.User.Id, command.User.Username));
         }
     }
 }

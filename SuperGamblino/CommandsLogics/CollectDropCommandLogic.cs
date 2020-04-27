@@ -7,11 +7,12 @@ namespace SuperGamblino.CommandsLogics
 {
     public class CollectDropCommandLogic
     {
-        private readonly Messages _messages;
         private readonly CoindropConnector _coindropConnector;
+        private readonly Messages _messages;
         private readonly UsersConnector _usersConnector;
 
-        public CollectDropCommandLogic(Messages messages, CoindropConnector coindropConnector, UsersConnector usersConnector)
+        public CollectDropCommandLogic(Messages messages, CoindropConnector coindropConnector,
+            UsersConnector usersConnector)
         {
             _messages = messages;
             _coindropConnector = coindropConnector;
@@ -22,11 +23,8 @@ namespace SuperGamblino.CommandsLogics
         {
             var arguments = argument.ToUpper().TrimStart().Split(' ');
 
-            if (arguments.Length != 1)
-            {
-                return _messages.InvalidArguments(new [] {"<Claim Id>"}, "Collect", "Collect");
-            }
-            
+            if (arguments.Length != 1) return _messages.InvalidArguments(new[] {"<Claim Id>"}, "Collect", "Collect");
+
             try
             {
                 var collectId = Convert.ToInt32(arguments[0]);
@@ -36,14 +34,12 @@ namespace SuperGamblino.CommandsLogics
                     await _usersConnector.CommandGiveCredits(userId, reward);
                     return _messages.CoinDropSuccessful(reward, username);
                 }
-                else
-                {
-                    return _messages.CoinDropTooLate();
-                }
+
+                return _messages.CoinDropTooLate();
             }
             catch (Exception)
             {
-                return _messages.InvalidArguments(new [] {"<Claim Id>"}, "Collect", "Collect");
+                return _messages.InvalidArguments(new[] {"<Claim Id>"}, "Collect", "Collect");
             }
         }
     }

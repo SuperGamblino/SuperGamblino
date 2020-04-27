@@ -1,20 +1,17 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using SuperGamblino.DatabaseConnectors;
+using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
     internal class CreditsCommand
     {
-        private readonly Config _config;
-        private readonly UsersConnector _usersConnector;
+        private readonly CreditsCommandLogic _logic;
 
-        public CreditsCommand(Config config, UsersConnector usersConnector)
+        public CreditsCommand(CreditsCommandLogic logic)
         {
-            _config = config;
-            _usersConnector = usersConnector;
+            _logic = logic;
         }
 
         [Command("credits")]
@@ -23,14 +20,7 @@ namespace SuperGamblino.Commands
         [Cooldown(1, 3, CooldownBucketType.User)]
         public async Task OnExecute(CommandContext command)
         {
-            var currentCredits = await _usersConnector.CommandGetUserCredits(command.User.Id);
-
-            DiscordEmbed message = new DiscordEmbedBuilder
-            {
-                Color = new DiscordColor(_config.ColorSettings.Info),
-                Description = "You currently have:\n" + currentCredits + " credits"
-            };
-            await command.RespondAsync("", false, message);
+            await command.RespondAsync("", false, await _logic.GetCurrentCreditStatus(command.User.Id));
         }
     }
 }

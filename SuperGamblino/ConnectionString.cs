@@ -10,6 +10,7 @@
                                 $"port={config.DatabaseSettings.Port};userid={config.DatabaseSettings.Username};" +
                                 $"password={config.DatabaseSettings.Password}";
         }
+
         public string GetConnectionString()
         {
             return _connectionString;

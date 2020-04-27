@@ -1,38 +1,25 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using SuperGamblino.DatabaseConnectors;
+using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
     internal class GamesHistory
     {
-        private readonly GameHistoryConnector _gameHistoryConnector;
-        private readonly Config _config;
+        private readonly GameHistoryCommandLogic _logic;
 
-        public GamesHistory(Config config, GameHistoryConnector gameHistoryConnector)
+        public GamesHistory(GameHistoryCommandLogic logic)
         {
-            _config = config;
-            _gameHistoryConnector = gameHistoryConnector;
+            _logic = logic;
         }
 
         [Command("history")]
-        [Cooldown(1,2,CooldownBucketType.User)]
+        [Cooldown(1, 2, CooldownBucketType.User)]
         [Description("Displays the 10 recent games and the results. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
-            var history = await _gameHistoryConnector.GetGameHistories(command.User.Id);
-            var text = string.Join("\n", history.GameHistories
-                .TakeLast(10).Select(x => $"{x.GameName} | {(x.HasWon ? "Won" : "Lost")} | {x.CoinsDifference}").ToArray());
-            var message = new DiscordEmbedBuilder()
-            {
-                Color = new DiscordColor(_config.ColorSettings.Info),
-                Title = "Games history",
-                Description = $"Game name | Has the game been won? | Coins difference\n{text}" 
-            };
-            await command.RespondAsync("", false, message.Build());
+            await command.RespondAsync("", false, await _logic.GetGameHistory(command.User.Id));
         }
     }
 }

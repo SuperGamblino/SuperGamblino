@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SuperGamblino.GameObjects
+﻿namespace SuperGamblino.GameObjects
 {
-    class Vote
+    internal class Vote
     {
         public bool voted { get; set; }
     }

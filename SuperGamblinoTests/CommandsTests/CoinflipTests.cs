@@ -1,24 +1,22 @@
-﻿using System.Linq;
-using DSharpPlus.Entities;
-using Microsoft.Extensions.Logging;
+﻿using DSharpPlus.Entities;
 using Moq;
-using SuperGamblino;
 using SuperGamblino.CommandsLogics;
 using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
 using SuperGamblino.Helpers;
 using Xunit;
-using SuperGamblinoTests.GamesTests;
 
-namespace SuperGamblinoTests.GamesTests
+namespace SuperGamblinoTests.CommandsTests
 {
     public class CoinflipTests
     {
-        private CoinflipCommandLogic GetCoinflipCommandLogic(UsersConnector usersConnector, GameHistoryConnector gameHistoryConnector)
+        private CoinflipCommandLogic GetCoinflipCommandLogic(UsersConnector usersConnector,
+            GameHistoryConnector gameHistoryConnector)
         {
-            return new CoinflipCommandLogic(usersConnector, new BetSizeParser(), gameHistoryConnector, Helpers.GetMessages());
+            return new CoinflipCommandLogic(usersConnector, new BetSizeParser(), gameHistoryConnector,
+                Helpers.GetMessages());
         }
-        
+
         [Theory]
         [InlineData("head 10 free")]
         [InlineData("head")]
@@ -28,7 +26,7 @@ namespace SuperGamblinoTests.GamesTests
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
             var gameHistoryConnector = Helpers.GetDatabaseConnector<GameHistoryConnector>();
             var logic = GetCoinflipCommandLogic(usersConnector.Object, gameHistoryConnector.Object);
-            
+
             //Assert
             var result = await logic.PlayCoinflip(arguments, 0);
             Assert.Contains("Invalid arguments!", result.Description);
@@ -44,11 +42,12 @@ namespace SuperGamblinoTests.GamesTests
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
             var gameHistoryConnector = Helpers.GetDatabaseConnector<GameHistoryConnector>();
             var logic = GetCoinflipCommandLogic(usersConnector.Object, gameHistoryConnector.Object);
-            
+
             //Assert
             var result = await logic.PlayCoinflip(arguments, 0);
             Assert.Contains("Error Occured!!!", result.Title);
-            Assert.Contains("Check your arguments (whether bet size does not equal 0 for example)!", result.Description);
+            Assert.Contains("Check your arguments (whether bet size does not equal 0 for example)!",
+                result.Description);
             Assert.Equal(new DiscordColor(Helpers.WarningColor), result.Color);
         }
 
@@ -76,7 +75,7 @@ namespace SuperGamblinoTests.GamesTests
             usersConnector.Setup(x => x.CommandSubsctractCredits(0, amount)).ReturnsAsync(true);
             usersConnector.Setup(x => x.CommandGiveCredits(0, amount * 2)).ReturnsAsync(0);
             usersConnector.Setup(x => x.CommandGetUserCredits(0)).ReturnsAsync(1000);
-            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Level = 10
             });

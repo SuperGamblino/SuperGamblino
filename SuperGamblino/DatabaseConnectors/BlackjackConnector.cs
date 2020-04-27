@@ -18,7 +18,8 @@ namespace SuperGamblino.DatabaseConnectors
             try
             {
                 await connection.OpenAsync();
-                var checkCmd = new MySqlCommand($@"SELECT EXISTS(SELECT * FROM blackjack WHERE user_id = {userId} AND is_game_done = 0)",
+                var checkCmd = new MySqlCommand(
+                    $@"SELECT EXISTS(SELECT * FROM blackjack WHERE user_id = {userId} AND is_game_done = 0)",
                     connection);
                 var checkResult = await checkCmd.ExecuteReaderAsync();
                 await checkResult.ReadAsync();
@@ -26,11 +27,12 @@ namespace SuperGamblino.DatabaseConnectors
                 await checkResult.CloseAsync();
                 if (doExists)
                 {
-                    var getCmd = new MySqlCommand($@"SELECT user_hand, dealer_hand, is_game_done FROM blackjack WHERE user_id = {userId} AND is_game_done = 0",
-                    connection);
+                    var getCmd = new MySqlCommand(
+                        $@"SELECT user_hand, dealer_hand, is_game_done FROM blackjack WHERE user_id = {userId} AND is_game_done = 0",
+                        connection);
                     var result = await getCmd.ExecuteReaderAsync();
                     await result.ReadAsync();
-                    BlackjackHelper blackjackHelper = new BlackjackHelper
+                    var blackjackHelper = new BlackjackHelper
                     {
                         UserHand = result.GetString(0),
                         DealerHand = result.GetString(1),
@@ -41,13 +43,13 @@ namespace SuperGamblino.DatabaseConnectors
                 }
                 else
                 {
-                    return new BlackjackHelper { IsGameDone = true };
+                    return new BlackjackHelper {IsGameDone = true};
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Exception occured while executing GetBlackjackGame method in Database class!");
-                return new BlackjackHelper { };
+                return new BlackjackHelper();
             }
             finally
             {
@@ -62,13 +64,15 @@ namespace SuperGamblino.DatabaseConnectors
             try
             {
                 await connection.OpenAsync();
-                MySqlCommand insertCmd = new MySqlCommand($@"INSERT INTO blackjack(user_hand, dealer_hand, is_game_done, user_id, bet) VALUES('{blackjackHelper.UserHand}', '{blackjackHelper.DealerHand}',{ Convert.ToInt32(blackjackHelper.IsGameDone) },{ userId},{ blackjackHelper.Bet})",
+                var insertCmd = new MySqlCommand(
+                    $@"INSERT INTO blackjack(user_hand, dealer_hand, is_game_done, user_id, bet) VALUES('{blackjackHelper.UserHand}', '{blackjackHelper.DealerHand}',{Convert.ToInt32(blackjackHelper.IsGameDone)},{userId},{blackjackHelper.Bet})",
                     connection);
                 await insertCmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Exception occured while executing StartBewBlackhackGame method in Database class!");
+                Logger.LogError(ex,
+                    "Exception occured while executing StartBewBlackhackGame method in Database class!");
                 throw;
             }
             finally
@@ -84,8 +88,9 @@ namespace SuperGamblino.DatabaseConnectors
             try
             {
                 await connection.OpenAsync();
-                    MySqlCommand updateCmd = new MySqlCommand($@"UPDATE blackjack SET user_hand = '{blackjackHelper.UserHand}', dealer_hand = '{blackjackHelper.DealerHand}', is_game_done = {Convert.ToInt32(blackjackHelper.IsGameDone)}, bet = {blackjackHelper.Bet} WHERE user_id = {userId} AND is_game_done = 0",
-                   connection);
+                var updateCmd = new MySqlCommand(
+                    $@"UPDATE blackjack SET user_hand = '{blackjackHelper.UserHand}', dealer_hand = '{blackjackHelper.DealerHand}', is_game_done = {Convert.ToInt32(blackjackHelper.IsGameDone)}, bet = {blackjackHelper.Bet} WHERE user_id = {userId} AND is_game_done = 0",
+                    connection);
 
                 await updateCmd.ExecuteNonQueryAsync();
             }
