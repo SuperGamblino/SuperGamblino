@@ -50,9 +50,9 @@ namespace SuperGamblinoTests.CommandsTests
             return new Mock<HttpMessageHandler>().Protected();
         }
 
-        public static Messages GetMessages()
+        public static MessagesHelper GetMessages()
         {
-            return new Messages(GetConfig(), GetDatabaseConnector<UsersConnector>().Object);
+            return new MessagesHelper(GetConfig());
         }
     }
 }

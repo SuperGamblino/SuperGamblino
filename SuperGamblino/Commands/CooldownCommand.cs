@@ -5,11 +5,11 @@ using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
-    internal class Cooldown
+    internal class CooldownCommand
     {
         private readonly CooldownCommandLogic _cooldownCommandLogic;
 
-        public Cooldown(CooldownCommandLogic cooldownCommandLogic)
+        public CooldownCommand(CooldownCommandLogic cooldownCommandLogic)
         {
             _cooldownCommandLogic = cooldownCommandLogic;
         }

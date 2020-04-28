@@ -8,12 +8,12 @@ namespace SuperGamblino.CommandsLogics
     public class GameHistoryCommandLogic
     {
         private readonly GameHistoryConnector _gameHistoryConnector;
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
 
-        public GameHistoryCommandLogic(GameHistoryConnector gameHistoryConnector, Messages messages)
+        public GameHistoryCommandLogic(GameHistoryConnector gameHistoryConnector, MessagesHelper messagesHelper)
         {
             _gameHistoryConnector = gameHistoryConnector;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public async Task<DiscordEmbed> GetGameHistory(ulong userId)
@@ -22,7 +22,7 @@ namespace SuperGamblino.CommandsLogics
             var text = string.Join("\n", history.GameHistories
                 .TakeLast(10).Select(x => $"{x.GameName} | {(x.HasWon ? "Won" : "Lost")} | {x.CoinsDifference}")
                 .ToArray());
-            return _messages.Information(text, "GameHistory");
+            return _messagesHelper.Information(text, "GameHistory");
         }
     }
 }

@@ -6,19 +6,19 @@ namespace SuperGamblino.CommandsLogics
 {
     public class CreditsCommandLogic
     {
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public CreditsCommandLogic(UsersConnector usersConnector, Messages messages)
+        public CreditsCommandLogic(UsersConnector usersConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public async Task<DiscordEmbed> GetCurrentCreditStatus(ulong userId)
         {
             var credits = await _usersConnector.CommandGetUserCredits(userId);
-            return _messages.AddCoinsBalanceInformation(_messages.Information(""), credits);
+            return _messagesHelper.AddCoinsBalanceInformation(_messagesHelper.Information(""), credits);
         }
     }
 }

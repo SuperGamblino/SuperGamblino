@@ -5,11 +5,11 @@ using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
-    internal class CollectDrop
+    internal class CollectDropCommand
     {
         private readonly CollectDropCommandLogic _logic;
 
-        public CollectDrop(CollectDropCommandLogic logic)
+        public CollectDropCommand(CollectDropCommandLogic logic)
         {
             _logic = logic;
         }

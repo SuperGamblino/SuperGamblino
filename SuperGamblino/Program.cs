@@ -39,7 +39,7 @@ namespace SuperGamblino
                 .AddInstance(connectionString)
                 .AddInstance(new HttpClient())
                 .AddDatabaseConnectors()
-                .Add<Messages>()
+                .Add<MessagesHelper>()
                 .Add<BetSizeParser>()
                 .AddCommandLogics()
                 .Build();
@@ -61,7 +61,7 @@ namespace SuperGamblino
             var conf = dependencyCollection.GetDependency<Config>();
             var connectionString = dependencyCollection.GetDependency<ConnectionString>();
             var coinDrop = dependencyCollection.GetDependency<CoindropConnector>();
-            var msg = dependencyCollection.GetDependency<Messages>();
+            var msg = dependencyCollection.GetDependency<MessagesHelper>();
             var cfg = new DiscordConfiguration
             {
                 Token = conf.BotSettings.Token,

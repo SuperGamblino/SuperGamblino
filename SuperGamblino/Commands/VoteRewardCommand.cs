@@ -5,11 +5,11 @@ using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
-    internal class VoteReward
+    internal class VoteRewardCommand
     {
         private readonly VoteRewardCommandLogic _logic;
 
-        public VoteReward(VoteRewardCommandLogic logic)
+        public VoteRewardCommand(VoteRewardCommandLogic logic)
         {
             _logic = logic;
         }

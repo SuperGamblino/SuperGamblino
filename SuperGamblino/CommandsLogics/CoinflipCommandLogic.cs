@@ -11,29 +11,29 @@ namespace SuperGamblino.CommandsLogics
     {
         private readonly BetSizeParser _betSizeParser;
         private readonly GameHistoryConnector _gameHistoryConnector;
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
         public CoinflipCommandLogic(UsersConnector usersConnector, BetSizeParser betSizeParser,
-            GameHistoryConnector gameHistoryConnector, Messages messages)
+            GameHistoryConnector gameHistoryConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
             _betSizeParser = betSizeParser;
             _gameHistoryConnector = gameHistoryConnector;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public async Task<DiscordEmbed> PlayCoinflip(string argument, ulong userId)
         {
             var arguments = argument.ToUpper().TrimStart().Split(' ');
 
-            if (arguments.Length != 2) return _messages.InvalidArguments(new[] {"<Head|Tail>", "<Bet>"}, "CoinFlip");
+            if (arguments.Length != 2) return _messagesHelper.InvalidArguments(new[] {"<Head|Tail>", "<Bet>"}, "CoinFlip");
 
             var option = arguments[0] == "HEAD" || arguments[0] == "TAIL" ? arguments[0] : "";
             var amount = arguments[1].Trim();
 
             if (string.IsNullOrWhiteSpace(option) || string.IsNullOrWhiteSpace(amount))
-                return _messages.InvalidArguments(new[] {"<Head|Tail>", "<Bet>"}, "CoinFlip");
+                return _messagesHelper.InvalidArguments(new[] {"<Head|Tail>", "<Bet>"}, "CoinFlip");
 
             var bet = amount switch
             {
@@ -43,7 +43,7 @@ namespace SuperGamblino.CommandsLogics
             };
 
             if (bet == -1)
-                return _messages.Error("Check your arguments (whether bet size does not equal 0 for example)!");
+                return _messagesHelper.Error("Check your arguments (whether bet size does not equal 0 for example)!");
 
             if (await _usersConnector.CommandSubsctractCredits(userId, bet))
             {
@@ -56,11 +56,11 @@ namespace SuperGamblino.CommandsLogics
                 if (hasWon) await _usersConnector.CommandGiveCredits(userId, bet * 2);
 
                 var embed = hasWon
-                    ? _messages.WinInformation(bet, "CoinFlip")
-                    : _messages.LoseInformation(bet, "CoinFlip");
+                    ? _messagesHelper.WinInformation(bet, "CoinFlip")
+                    : _messagesHelper.LoseInformation(bet, "CoinFlip");
 
-                _messages.AddCoinsBalanceInformation(embed, await _usersConnector.CommandGetUserCredits(userId));
-                if (expResult.DidUserLevelUp) embed = _messages.AddLevelUpMessage(embed);
+                _messagesHelper.AddCoinsBalanceInformation(embed, await _usersConnector.CommandGetUserCredits(userId));
+                if (expResult.DidUserLevelUp) embed = _messagesHelper.AddLevelUpMessage(embed);
 
                 await _gameHistoryConnector.AddGameHistory(userId, new GameHistory
                 {
@@ -72,7 +72,7 @@ namespace SuperGamblino.CommandsLogics
                 return embed;
             }
 
-            return _messages.NotEnoughCredits("CoinFlip");
+            return _messagesHelper.NotEnoughCredits("CoinFlip");
         }
     }
 }

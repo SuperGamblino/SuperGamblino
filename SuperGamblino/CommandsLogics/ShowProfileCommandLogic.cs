@@ -7,20 +7,20 @@ namespace SuperGamblino.CommandsLogics
 {
     public class ShowProfileCommandLogic
     {
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public ShowProfileCommandLogic(UsersConnector usersConnector, Messages messages)
+        public ShowProfileCommandLogic(UsersConnector usersConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public async Task<DiscordEmbed> ShowProfile(ulong userId, string username)
         {
             var user = await _usersConnector.GetUser(userId);
             var currentJob = Work.GetCurrentJob(user.Level);
-            return _messages.GetProfile(user, currentJob, username);
+            return _messagesHelper.GetProfile(user, currentJob, username);
         }
     }
 }

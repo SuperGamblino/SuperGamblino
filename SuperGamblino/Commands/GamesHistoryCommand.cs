@@ -5,11 +5,11 @@ using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
-    internal class GamesHistory
+    internal class GamesHistoryCommand
     {
         private readonly GameHistoryCommandLogic _logic;
 
-        public GamesHistory(GameHistoryCommandLogic logic)
+        public GamesHistoryCommand(GameHistoryCommandLogic logic)
         {
             _logic = logic;
         }

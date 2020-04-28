@@ -11,17 +11,15 @@ using static SuperGamblino.GameObjects.Work;
 
 namespace SuperGamblino
 {
-    public class Messages
+    public class MessagesHelper
     {
         private const string DefaultTitle = "SuperGamblino";
 
         private readonly Config _config;
-        private readonly UsersConnector _usersConnector;
 
-        public Messages(Config config, UsersConnector usersConnector)
+        public MessagesHelper(Config config)
         {
             _config = config;
-            _usersConnector = usersConnector;
         }
 
         public DiscordEmbedBuilder Success(string description, string title = DefaultTitle)

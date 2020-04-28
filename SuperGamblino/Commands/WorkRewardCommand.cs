@@ -5,11 +5,11 @@ using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
-    internal class WorkReward
+    internal class WorkRewardCommand
     {
         private readonly WorkRewardCommandLogic _logic;
 
-        public WorkReward(WorkRewardCommandLogic logic)
+        public WorkRewardCommand(WorkRewardCommandLogic logic)
         {
             _logic = logic;
         }

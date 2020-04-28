@@ -13,16 +13,16 @@ namespace SuperGamblino.CommandsLogics
     {
         private readonly HttpClient _client;
         private readonly Config _config;
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
         public VoteRewardCommandLogic(HttpClient client, UsersConnector usersConnector, Config config,
-            Messages messages)
+            MessagesHelper messagesHelper)
         {
             _client = client;
             _usersConnector = usersConnector;
             _config = config;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public async Task<DiscordEmbed> Vote(ulong userId)
@@ -53,22 +53,22 @@ namespace SuperGamblino.CommandsLogics
                         {
                             await _usersConnector.CommandGiveCredits(userId, reward);
                             await _usersConnector.SetDateTime(userId, "last_vote_reward", DateTime.Now);
-                            return _messages.CreditsGain(reward, "TopGGVote");
+                            return _messagesHelper.CreditsGain(reward, "TopGGVote");
                         }
 
-                        return _messages.CommandCalledTooEarly(TimeSpan.FromHours(12) - timeSpan, "!vote",
+                        return _messagesHelper.CommandCalledTooEarly(TimeSpan.FromHours(12) - timeSpan, "!vote",
                             "TopGGVote");
                     }
 
                     await _usersConnector.CommandGiveCredits(userId, reward);
                     await _usersConnector.SetDateTime(userId, "last_vote_reward", DateTime.Now);
-                    return _messages.CreditsGain(reward, "TopGGVote");
+                    return _messagesHelper.CreditsGain(reward, "TopGGVote");
                 }
 
-                return _messages.NotVotedYet();
+                return _messagesHelper.NotVotedYet();
             }
 
-            return _messages.Error("Some problem with Db occured!");
+            return _messagesHelper.Error("Some problem with DB occured!");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿namespace SuperGamblino.GameObjects
+﻿#nullable enable
+namespace SuperGamblino.GameObjects
 {
     public class BlackjackHelper
     {

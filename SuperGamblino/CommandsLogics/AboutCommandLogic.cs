@@ -4,16 +4,16 @@ namespace SuperGamblino.CommandsLogics
 {
     public class AboutCommandLogic
     {
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
 
-        public AboutCommandLogic(Messages messages)
+        public AboutCommandLogic(MessagesHelper messagesHelper)
         {
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public DiscordEmbed GetAboutInfo(int guildsCount)
         {
-            return _messages.Information($"Bot is currently available on {guildsCount} servers!", "About");
+            return _messagesHelper.Information($"Bot is currently available on {guildsCount} servers!", "About");
         }
     }
 }

@@ -5,11 +5,11 @@ using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
-    internal class ShowProfile
+    internal class ShowProfileCommand
     {
         private readonly ShowProfileCommandLogic _logic;
 
-        public ShowProfile(ShowProfileCommandLogic logic)
+        public ShowProfileCommand(ShowProfileCommandLogic logic)
         {
             _logic = logic;
         }

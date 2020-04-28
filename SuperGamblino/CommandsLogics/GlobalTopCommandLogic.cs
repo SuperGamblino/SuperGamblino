@@ -9,14 +9,14 @@ namespace SuperGamblino.CommandsLogics
     public class GlobalTopCommandLogic
     {
         private readonly ILogger _logger;
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public GlobalTopCommandLogic(UsersConnector usersConnector, ILogger logger, Messages messages)
+        public GlobalTopCommandLogic(UsersConnector usersConnector, ILogger logger, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
             _logger = logger;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public async Task<DiscordEmbed> GetGlobalTop(Func<ulong, Task<string>> getUserUsername)
@@ -34,7 +34,7 @@ namespace SuperGamblino.CommandsLogics
                     _logger.LogError($"Couldn't find {user.Id} username via getUserUsername method!", ex);
                 }
 
-            return _messages.Information(desc, "GlobalTop");
+            return _messagesHelper.Information(desc, "GlobalTop");
         }
     }
 }

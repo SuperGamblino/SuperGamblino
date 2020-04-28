@@ -8,14 +8,14 @@ namespace SuperGamblino.CommandsLogics
     public class DailyRewardCommandLogic
     {
         private const int Reward = 500;
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
 
         private readonly UsersConnector _usersConnector;
 
-        public DailyRewardCommandLogic(UsersConnector usersConnector, Messages messages)
+        public DailyRewardCommandLogic(UsersConnector usersConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public async Task<DiscordEmbed> GetDailyReward(ulong userId)
@@ -30,19 +30,19 @@ namespace SuperGamblino.CommandsLogics
                     {
                         await _usersConnector.CommandGiveCredits(userId, Reward);
                         await _usersConnector.SetDateTime(userId, "last_daily_reward", DateTime.Now);
-                        return _messages.CreditsGain(Reward, "DailyReward");
+                        return _messagesHelper.CreditsGain(Reward, "DailyReward");
                     }
 
-                    return _messages.CommandCalledTooEarly(TimeSpan.FromDays(1) - timeSpan, "!daily",
+                    return _messagesHelper.CommandCalledTooEarly(TimeSpan.FromDays(1) - timeSpan, "!daily",
                         "DailyReward");
                 }
 
                 await _usersConnector.CommandGiveCredits(userId, Reward);
                 await _usersConnector.SetDateTime(userId, "last_daily_reward", DateTime.Now);
-                return _messages.CreditsGain(Reward, "DailyReward");
+                return _messagesHelper.CreditsGain(Reward, "DailyReward");
             }
 
-            return _messages.Error("Some problem with DB occured!");
+            return _messagesHelper.Error("Some problem with DB occured!");
         }
     }
 }

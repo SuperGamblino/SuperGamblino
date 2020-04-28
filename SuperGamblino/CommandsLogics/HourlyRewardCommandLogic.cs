@@ -7,13 +7,13 @@ namespace SuperGamblino.CommandsLogics
 {
     public class HourlyRewardCommandLogic
     {
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public HourlyRewardCommandLogic(UsersConnector usersConnector, Messages messages)
+        public HourlyRewardCommandLogic(UsersConnector usersConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public async Task<DiscordEmbed> GetHourlyReward(ulong userId)
@@ -29,19 +29,19 @@ namespace SuperGamblino.CommandsLogics
                     {
                         await _usersConnector.CommandGiveCredits(userId, reward);
                         await _usersConnector.SetDateTime(userId, "last_hourly_reward", DateTime.Now);
-                        return _messages.CreditsGain(reward, "HourlyReward");
+                        return _messagesHelper.CreditsGain(reward, "HourlyReward");
                     }
 
-                    return _messages.CommandCalledTooEarly(TimeSpan.FromHours(1) - timeSpan, "!hourly",
+                    return _messagesHelper.CommandCalledTooEarly(TimeSpan.FromHours(1) - timeSpan, "!hourly",
                         "HourlyReward");
                 }
 
                 await _usersConnector.CommandGiveCredits(userId, reward);
                 await _usersConnector.SetDateTime(userId, "last_hourly_reward", DateTime.Now);
-                return _messages.CreditsGain(reward, "HourlyReward");
+                return _messagesHelper.CreditsGain(reward, "HourlyReward");
             }
 
-            return _messages.Error("Some problem with Db occured!");
+            return _messagesHelper.Error("Some problem with DB occured!");
         }
     }
 }

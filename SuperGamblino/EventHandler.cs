@@ -15,14 +15,14 @@ namespace SuperGamblino
         private readonly CoindropConnector _coindropConnector;
         private readonly Config _config;
         private readonly DiscordClient _discordClient;
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
 
-        public EventHandler(DiscordClient client, Config config, CoindropConnector coindropConnector, Messages messages)
+        public EventHandler(DiscordClient client, Config config, CoindropConnector coindropConnector, MessagesHelper messagesHelper)
         {
             _discordClient = client;
             _config = config;
             _coindropConnector = coindropConnector;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         internal Task OnReady(ReadyEventArgs e)
@@ -45,18 +45,18 @@ namespace SuperGamblino
                     if (med)
                     {
                         var claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 100);
-                        await e.Message.RespondAsync("", false, _messages.CoinDropAlert(claimId));
+                        await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId));
                     }
 
                     if (high)
                     {
                         var claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 350);
-                        await e.Message.RespondAsync("", false, _messages.CoinDropAlert(claimId));
+                        await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId));
                     }
                     else
                     {
                         var claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 25);
-                        await e.Message.RespondAsync("", false, _messages.CoinDropAlert(claimId));
+                        await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId));
                     }
                 }
             }

@@ -8,12 +8,12 @@ namespace SuperGamblino.CommandsLogics
 {
     public class WorkRewardCommandLogic
     {
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public WorkRewardCommandLogic(Messages messages, UsersConnector usersConnector)
+        public WorkRewardCommandLogic(MessagesHelper messagesHelper, UsersConnector usersConnector)
         {
-            _messages = messages;
+            _messagesHelper = messagesHelper;
             _usersConnector = usersConnector;
         }
 
@@ -33,19 +33,19 @@ namespace SuperGamblino.CommandsLogics
                     {
                         await _usersConnector.CommandGiveCredits(userId, currentJob.Reward);
                         await _usersConnector.SetDateTime(userId, "last_work_reward", DateTime.Now);
-                        return _messages.CreditsGain(currentJob.Reward, "WorkReward");
+                        return _messagesHelper.CreditsGain(currentJob.Reward, "WorkReward");
                     }
 
-                    return _messages.CommandCalledTooEarly(TimeSpan.FromHours(currentJob.Cooldown) - timeSpan,
+                    return _messagesHelper.CommandCalledTooEarly(TimeSpan.FromHours(currentJob.Cooldown) - timeSpan,
                         "!work", "WorkReward");
                 }
 
                 await _usersConnector.CommandGiveCredits(userId, currentJob.Reward);
                 await _usersConnector.SetDateTime(userId, "last_work_reward", DateTime.Now);
-                return _messages.CreditsGain(currentJob.Reward, "WorkReward");
+                return _messagesHelper.CreditsGain(currentJob.Reward, "WorkReward");
             }
 
-            return _messages.Error("Some problem with Db occured!");
+            return _messagesHelper.Error("Some problem with DB occured!");
         }
     }
 }

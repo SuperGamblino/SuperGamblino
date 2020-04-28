@@ -11,15 +11,15 @@ namespace SuperGamblino.CommandsLogics
     {
         private readonly BetSizeParser _betSizeParser;
         private readonly GameHistoryConnector _gameHistoryConnector;
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public RouletteCommandLogic(UsersConnector usersConnector, BetSizeParser betSizeParser, Messages messages,
+        public RouletteCommandLogic(UsersConnector usersConnector, BetSizeParser betSizeParser, MessagesHelper messagesHelper,
             GameHistoryConnector gameHistoryConnector)
         {
             _usersConnector = usersConnector;
             _betSizeParser = betSizeParser;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
             _gameHistoryConnector = gameHistoryConnector;
         }
 
@@ -47,7 +47,7 @@ namespace SuperGamblino.CommandsLogics
             {
                 var curCred = await _usersConnector.CommandGetUserCredits(userId);
                 if (curCred < nmbBet)
-                    return _messages.NotEnoughCredits("Roulette");
+                    return _messagesHelper.NotEnoughCredits("Roulette");
                 await _usersConnector.CommandSubsctractCredits(userId, nmbBet);
 
                 var rewardMulti = 0;
@@ -104,7 +104,7 @@ namespace SuperGamblino.CommandsLogics
 
                             break;
                         default:
-                            return _messages.InvalidArguments(new[] {"<Red|Black|Odd|Even|Number> <Bet>"},
+                            return _messagesHelper.InvalidArguments(new[] {"<Red|Black|Odd|Even|Number> <Bet>"},
                                 "!roulette", "Roulette");
                     }
                 }
@@ -120,18 +120,18 @@ namespace SuperGamblino.CommandsLogics
                 {
                     credWon = nmbBet * rewardMulti;
                     await _usersConnector.CommandGiveCredits(userId, credWon);
-                    responseBuilder = _messages.WinInformation(credWon, "Roulette");
+                    responseBuilder = _messagesHelper.WinInformation(credWon, "Roulette");
                 }
                 else
                 {
-                    responseBuilder = _messages.LoseInformation(nmbBet, "Roulette");
+                    responseBuilder = _messagesHelper.LoseInformation(nmbBet, "Roulette");
                 }
 
-                return _messages.AddCoinsBalanceAndExpInformation(responseBuilder, expResult,
+                return _messagesHelper.AddCoinsBalanceAndExpInformation(responseBuilder, expResult,
                     await _usersConnector.CommandGetUserCredits(userId));
             }
 
-            return _messages.InvalidArguments(new[] {"<Red|Black|Odd|Even|Number> <Bet>"}, "!roulette", "Roulette");
+            return _messagesHelper.InvalidArguments(new[] {"<Red|Black|Odd|Even|Number> <Bet>"}, "!roulette", "Roulette");
         }
     }
 }

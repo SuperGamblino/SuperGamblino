@@ -9,13 +9,13 @@ namespace SuperGamblino.CommandsLogics
 {
     public class CooldownCommandLogic
     {
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public CooldownCommandLogic(UsersConnector usersConnector, Messages messages)
+        public CooldownCommandLogic(UsersConnector usersConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public async Task<DiscordEmbed> GetCooldowns(ulong userId)
@@ -76,10 +76,10 @@ namespace SuperGamblino.CommandsLogics
                     cooldownObjects.Add(new CooldownObject("Vote"));
                 }
 
-                return _messages.ListCurrentCooldowns(cooldownObjects, "Cooldowns");
+                return _messagesHelper.ListCurrentCooldowns(cooldownObjects, "Cooldowns");
             }
 
-            return _messages.Error("Some problem with DB occured!!!");
+            return _messagesHelper.Error("Some problem with DB occured!!!");
         }
     }
 }

@@ -5,11 +5,11 @@ using SuperGamblino.CommandsLogics;
 
 namespace SuperGamblino.Commands
 {
-    internal class About
+    internal class AboutCommand
     {
         private readonly AboutCommandLogic _aboutCommandLogic;
 
-        public About(AboutCommandLogic aboutCommandLogic)
+        public AboutCommand(AboutCommandLogic aboutCommandLogic)
         {
             _aboutCommandLogic = aboutCommandLogic;
         }

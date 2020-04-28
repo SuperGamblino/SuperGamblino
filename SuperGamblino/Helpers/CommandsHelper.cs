@@ -12,15 +12,15 @@ namespace SuperGamblino.Helpers
             commands.RegisterCommands<SlotsCommand>();
             commands.RegisterCommands<CreditsCommand>();
             commands.RegisterCommands<GlobalTopCommand>();
-            commands.RegisterCommands<HourlyReward>();
-            commands.RegisterCommands<DailyReward>();
-            commands.RegisterCommands<Cooldown>();
-            commands.RegisterCommands<WorkReward>();
-            commands.RegisterCommands<GamesHistory>();
-            commands.RegisterCommands<ShowProfile>();
-            commands.RegisterCommands<VoteReward>();
-            commands.RegisterCommands<About>();
-            commands.RegisterCommands<CollectDrop>();
+            commands.RegisterCommands<HourlyRewardCommand>();
+            commands.RegisterCommands<DailyRewardCommand>();
+            commands.RegisterCommands<CooldownCommand>();
+            commands.RegisterCommands<WorkRewardCommand>();
+            commands.RegisterCommands<GamesHistoryCommand>();
+            commands.RegisterCommands<ShowProfileCommand>();
+            commands.RegisterCommands<VoteRewardCommand>();
+            commands.RegisterCommands<AboutCommand>();
+            commands.RegisterCommands<CollectDropCommand>();
         }
     }
 }

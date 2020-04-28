@@ -10,16 +10,16 @@ namespace SuperGamblino.CommandsLogics
     {
         private readonly BetSizeParser _betSizeParser;
         private readonly GameHistoryConnector _gameHistoryConnector;
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
         public SlotsCommandLogic(UsersConnector usersConnector, BetSizeParser betSizeParser,
-            GameHistoryConnector gameHistoryConnector, Messages messages)
+            GameHistoryConnector gameHistoryConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
             _betSizeParser = betSizeParser;
             _gameHistoryConnector = gameHistoryConnector;
-            _messages = messages;
+            _messagesHelper = messagesHelper;
         }
 
         public async Task<DiscordEmbed> PlaySlots(ulong userId, string arguments)
@@ -33,7 +33,7 @@ namespace SuperGamblino.CommandsLogics
                     "HALF" => await _usersConnector.CommandGetUserCredits(userId) / 2,
                     _ => _betSizeParser.Parse(argument[0])
                 };
-                if (bet == -1) return _messages.InvalidArguments(new[] {"slots <Bet>"}, "!slots", "Slots");
+                if (bet == -1) return _messagesHelper.InvalidArguments(new[] {"slots <Bet>"}, "!slots", "Slots");
                 if (await _usersConnector.CommandSubsctractCredits(userId, bet))
                 {
                     var hasWon = false;
@@ -62,19 +62,19 @@ namespace SuperGamblino.CommandsLogics
                         HasWon = hasWon,
                         CoinsDifference = hasWon ? pointsResult : bet * -1
                     });
-                    return _messages.AddCoinsBalanceAndExpInformation(hasWon
-                            ? _messages.Success(
+                    return _messagesHelper.AddCoinsBalanceAndExpInformation(hasWon
+                            ? _messagesHelper.Success(
                                 "You've won!\nResult: " + result.EmojiOne + " " + result.EmojiTwo + " " +
                                 result.EmojiThree
                                 + message, "Roulette")
-                            : _messages.LoseInformation(bet, "Roulette"), expResult,
+                            : _messagesHelper.LoseInformation(bet, "Roulette"), expResult,
                         await _usersConnector.CommandGetUserCredits(userId));
                 }
 
-                return _messages.NotEnoughCredits("Roulette");
+                return _messagesHelper.NotEnoughCredits("Roulette");
             }
 
-            return _messages.InvalidArguments(new[] {"slots <Bet>"}, "!slots", "Slots");
+            return _messagesHelper.InvalidArguments(new[] {"slots <Bet>"}, "!slots", "Slots");
         }
     }
 }
