@@ -6,9 +6,9 @@
 
         public ConnectionString(Config config)
         {
-            _connectionString = $"server={config.DatabaseSettings.Address};database={config.DatabaseSettings.Name};" +
-                                $"port={config.DatabaseSettings.Port};userid={config.DatabaseSettings.Username};" +
-                                $"password={config.DatabaseSettings.Password}";
+            _connectionString = $"Server={config.DatabaseSettings.Address};Database={config.DatabaseSettings.Name};" +
+                                $"Port={config.DatabaseSettings.Port};Uid={config.DatabaseSettings.Username};" +
+                                $"Pwd={config.DatabaseSettings.Password}";
         }
 
         public string GetConnectionString()

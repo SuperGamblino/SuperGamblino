@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
@@ -15,14 +16,16 @@ namespace SuperGamblino.CommandsLogics
         private readonly Config _config;
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
+        private ILogger _logger;
 
         public VoteRewardCommandLogic(HttpClient client, UsersConnector usersConnector, Config config,
-            MessagesHelper messagesHelper)
+            MessagesHelper messagesHelper, ILogger logger)
         {
             _client = client;
             _usersConnector = usersConnector;
             _config = config;
             _messagesHelper = messagesHelper;
+            _logger = logger;
         }
 
         public async Task<DiscordEmbed> Vote(ulong userId)
@@ -42,6 +45,12 @@ namespace SuperGamblino.CommandsLogics
                 };
 
                 var response = await _client.SendAsync(httpRequestMessage);
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning("Error during http request! Verify the top gg token!!!", response);
+                    return _messagesHelper.Error(
+                        "Invalid Top GG Token Provided by the bot administrator! Please contact him!");
+                }
                 var didUserVote = JsonConvert.DeserializeObject<Vote>(await response.Content.ReadAsStringAsync());
 
                 if (didUserVote.voted)

@@ -30,7 +30,13 @@ namespace SuperGamblinoTests.CommandsTests
                     Port = 1122,
                     Username = "<Username>"
                 },
-                ColorSettings = new ColorSettings {Info = InfoColor, Success = SuccessColor, Warning = WarningColor}
+                ColorSettings = new ColorSettings {Info = InfoColor, Success = SuccessColor, Warning = WarningColor},
+                BotSettings = new BotSettings()
+                {
+                    Prefix = "!",
+                    Token = "<bot token>",
+                    TopGgToken = "topggbottoken"
+                }
             };
             ;
         }
@@ -45,9 +51,9 @@ namespace SuperGamblinoTests.CommandsTests
             return new Mock<T>(GetLogger<T>(), GetConnectionString());
         }
 
-        public static IProtectedMock<HttpMessageHandler> GetHttpMessageHandler()
+        public static Mock<HttpMessageHandler> GetHttpMessageHandler()
         {
-            return new Mock<HttpMessageHandler>().Protected();
+            return new Mock<HttpMessageHandler>();
         }
 
         public static MessagesHelper GetMessages()
