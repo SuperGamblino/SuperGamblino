@@ -202,7 +202,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
         }
 
-        public async Task<bool> SetDateTime(ulong userId, string fieldName, DateTime time)
+        public virtual async Task<bool> SetDateTime(ulong userId, string fieldName, DateTime time)
         {
             //Here is no need to use EnsureUserCreated because this method is always called after GetDateTime
             await using var connection = new MySqlConnection(ConnectionString);
