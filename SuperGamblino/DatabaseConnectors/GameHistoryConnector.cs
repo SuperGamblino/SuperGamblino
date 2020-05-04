@@ -47,7 +47,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
         }
 
-        public async Task<bool> AddGameHistory(ulong userId, GameHistory history)
+        public virtual async Task<bool> AddGameHistory(ulong userId, GameHistory history)
         {
             await using var c = new MySqlConnection(ConnectionString);
             try

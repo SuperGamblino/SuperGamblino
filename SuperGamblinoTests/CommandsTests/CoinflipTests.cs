@@ -82,6 +82,8 @@ namespace SuperGamblinoTests.CommandsTests
             usersConnector.Setup(x => x.CommandGiveUserExp(0, It.IsAny<int>()))
                 .ReturnsAsync(new AddExpResult(false, 100000, 0, 0));
             var gameHistoryConnector = Helpers.GetDatabaseConnector<GameHistoryConnector>();
+            gameHistoryConnector.Setup(x => x.AddGameHistory(0, It.IsAny<GameHistory>()))
+                .ReturnsAsync(true);
             var logic = GetCoinflipCommandLogic(usersConnector.Object, gameHistoryConnector.Object);
 
             var result = await logic.PlayCoinflip(arguments, 0);
