@@ -6,9 +6,9 @@ namespace SuperGamblinoTests.HelpersTests
     public class BetSizeParserTests
     {
         [Theory]
-        [InlineData("1k",1000)]
-        [InlineData("5k",5000)]
-        [InlineData("1K",1000)]
+        [InlineData("1k", 1000)]
+        [InlineData("5k", 5000)]
+        [InlineData("1K", 1000)]
         [InlineData("5K", 5000)]
         [InlineData("5105k", 5105000)]
         [InlineData("999999999k", -1)] //Over int
@@ -17,7 +17,7 @@ namespace SuperGamblinoTests.HelpersTests
         public void CanParseKCorrectly(string input, int correct)
         {
             var parser = new BetSizeParser();
-            
+
             Assert.Equal(correct, parser.Parse(input));
         }
 
@@ -33,7 +33,7 @@ namespace SuperGamblinoTests.HelpersTests
         public void CanParseMCorrectly(string input, int correct)
         {
             var parser = new BetSizeParser();
-            
+
             Assert.Equal(correct, parser.Parse(input));
         }
 
@@ -48,7 +48,7 @@ namespace SuperGamblinoTests.HelpersTests
         public void CanParseBCorrectly(string input, int correct)
         {
             var parser = new BetSizeParser();
-            
+
             Assert.Equal(correct, parser.Parse(input));
         }
 
@@ -60,6 +60,7 @@ namespace SuperGamblinoTests.HelpersTests
             var parser = new BetSizeParser();
             Assert.Equal(correct, parser.Parse(input));
         }
+
         [Theory]
         [InlineData("1210212", 1210212)]
         public void CanParseWithoutAnySymbols(string input, int correct)
@@ -67,6 +68,7 @@ namespace SuperGamblinoTests.HelpersTests
             var parser = new BetSizeParser();
             Assert.Equal(correct, parser.Parse(input));
         }
+
         [Fact]
         public void CannotParseIncorrectText()
         {

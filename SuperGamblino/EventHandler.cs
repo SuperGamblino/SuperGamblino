@@ -12,17 +12,17 @@ namespace SuperGamblino
 {
     internal class EventHandler
     {
+        private readonly CoindropConnector _coindropConnector;
         private readonly Config _config;
         private readonly DiscordClient _discordClient;
-        private readonly CoindropConnector _coindropConnector;
-        private readonly Messages _messages;
+        private readonly MessagesHelper _messagesHelper;
 
-        public EventHandler(DiscordClient client, Config config, CoindropConnector coindropConnector, Messages messages)
+        public EventHandler(DiscordClient client, Config config, CoindropConnector coindropConnector, MessagesHelper messagesHelper)
         {
             _discordClient = client;
             _config = config;
             _coindropConnector = coindropConnector;
-            _messages = messages; 
+            _messagesHelper = messagesHelper;
         }
 
         internal Task OnReady(ReadyEventArgs e)
@@ -35,34 +35,31 @@ namespace SuperGamblino
         {
             if (!e.Author.IsBot)
             {
-                string sId = e.Message.Id.ToString();
-                int id = Convert.ToInt32(sId.Substring(sId.Length - 4, 4)) + 1; //1-10000
+                var sId = e.Message.Id.ToString();
+                var id = Convert.ToInt32(sId.Substring(sId.Length - 4, 4)) + 1; //1-10000
                 if (id <= 100) //1% chance
                 {
-                    bool med = id >= 65 && id <= 99;
-                    bool high = id == 100;
+                    var med = id >= 65 && id <= 99;
+                    var high = id == 100;
 
-                    if(med)
+                    if (med)
                     {
-                        int claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 100);
-                        await _messages.CoinDropAlert(e, claimId);
+                        var claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 100);
+                        await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId));
                     }
-                    if(high)
+
+                    if (high)
                     {
-                        int claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 350);
-                        await _messages.CoinDropAlert(e, claimId);
+                        var claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 350);
+                        await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId));
                     }
                     else
                     {
-                        int claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 25);
-                        await _messages.CoinDropAlert(e, claimId);
+                        var claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 25);
+                        await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId));
                     }
-
                 }
-                
             }
-               
-            
         }
 
         internal Task OnClientError(ClientErrorEventArgs e)
@@ -108,23 +105,16 @@ namespace SuperGamblino
 
         private string ParseFailedCheck(CheckBaseAttribute attr)
         {
-            switch (attr)
+            return attr switch
             {
-                case CooldownAttribute _:
-                    return "You cannot do that so often!";
-                case RequireOwnerAttribute _:
-                    return "Only the server owner can use that command!";
-                case RequirePermissionsAttribute _:
-                    return "You don't have permission to do that!";
-                case RequireRolesAttributeAttribute _:
-                    return "You do not have a required role!";
-                case RequireUserPermissionsAttribute _:
-                    return "You don't have permission to do that!";
-                case RequireNsfwAttribute _:
-                    return "This command can only be used in an NSFW channel!";
-                default:
-                    return "Unknown Discord API error occured, please try again later.";
-            }
+                CooldownAttribute _ => "You cannot do that so often!",
+                RequireOwnerAttribute _ => "Only the server owner can use that command!",
+                RequirePermissionsAttribute _ => "You don't have permission to do that!",
+                RequireRolesAttributeAttribute _ => "You do not have a required role!",
+                RequireUserPermissionsAttribute _ => "You don't have permission to do that!",
+                RequireNsfwAttribute _ => "This command can only be used in an NSFW channel!",
+                _ => "Unknown Discord API error occured, please try again later."
+            };
         }
     }
 }

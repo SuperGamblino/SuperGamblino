@@ -60,7 +60,7 @@ example config.json
 
 ```
 
-example config.env
+example bot-config.env
 ```dotenv
 Settings__BotSettings__Token=<bot token>
 Settings__BotSettings__TopGgToken=<top gg token>
@@ -71,6 +71,16 @@ Settings__ColorSettings__Warning=#bf1004
 Settings__DatabaseSettings__Address=172.17.0.1
 Settings__DatabaseSettings__Port=3306
 Settings__DatabaseSettings__Name=supergamblino
-Settings__DatabaseSettings__Username=<username to db>
-Settings__DatabaseSettings__Password=<password to db>
+Settings__DatabaseSettings__Username=user
+Settings__DatabaseSettings__Password=fish123
+```
+
+## When using docker compose use .env file below to set the database up
+
+example db-configuration.env
+```dotenv
+MYSQL_ROOT_PASSWORD=samplePassword
+MYSQL_DATABASE=supergamblino
+MYSQL_USER=user
+MYSQL_PASSWORD=fish123
 ```

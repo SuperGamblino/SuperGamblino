@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 
 namespace SuperGamblino.Helpers

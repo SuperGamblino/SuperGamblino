@@ -8,7 +8,7 @@ namespace SuperGamblinoTests.GamesTests
         [Fact]
         public void GetPointsFromResultTest1()
         {
-            var result = new Slots.SlotsResult()
+            var result = new Slots.SlotsResult
             {
                 ResultOne = Slots.SlotsEmote.THINKING,
                 ResultTwo = Slots.SlotsEmote.THINKING,
@@ -19,16 +19,16 @@ namespace SuperGamblinoTests.GamesTests
                 EmojiThree = ":gem:"
             };
             var correctReward = 78;
-            
+
             var actualReward = Slots.GetPointsFromResult(result, 100);
-            
+
             Assert.Equal(correctReward, actualReward);
         }
 
         [Fact]
         public void GetPointsFromResultTest2()
         {
-            var result = new Slots.SlotsResult()
+            var result = new Slots.SlotsResult
             {
                 ResultOne = Slots.SlotsEmote.GEM,
                 ResultTwo = Slots.SlotsEmote.GEM,

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SuperGamblino.Helpers
 {
     public class BetSizeParser
     {
-        private Dictionary<char, int> _conversations = new Dictionary<char, int>
+        private readonly Dictionary<char, int> _conversations = new Dictionary<char, int>
         {
             {'k', 1000},
             {'m', 1000000},
@@ -15,16 +14,13 @@ namespace SuperGamblino.Helpers
         public int Parse(string input)
         {
             var data = input.ToLower().Trim();
-            if (data.Contains("-"))
-            {
-                return -1;
-            }
-            int completeValue = 0;
-            int currentValue = 0;
+            if (data.Contains("-")) return -1;
+            var completeValue = 0;
+            var currentValue = 0;
             for (var i = 0; i < data.Length; i++)
             {
                 var c = data[i];
-                if (Char.IsLetter(c))
+                if (char.IsLetter(c))
                 {
                     if (_conversations.ContainsKey(c))
                     {
@@ -44,16 +40,10 @@ namespace SuperGamblino.Helpers
                 }
             }
 
-            if (currentValue != 0)
-            {
-                completeValue += currentValue;
-            }
+            if (currentValue != 0) completeValue += currentValue;
 
-            if (completeValue < 1)
-            {
-                return -1;
-            }
-            
+            if (completeValue < 1) return -1;
+
             return completeValue;
         }
     }

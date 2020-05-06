@@ -1,30 +1,24 @@
-﻿using DSharpPlus.CommandsNext;
-using SuperGamblino.GameObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 using SuperGamblino.DatabaseConnectors;
+using SuperGamblino.GameObjects;
 
 namespace SuperGamblino.Helpers
 {
-    class Exp
+    internal class Exp
     {
         private readonly UsersConnector _usersConnector;
 
-        public Exp (UsersConnector usersConnector)
+        public Exp(UsersConnector usersConnector)
         {
             _usersConnector = usersConnector;
         }
-        public async Task<AddExpResult> Give(CommandContext command, int bet)
+
+        public async Task<AddExpResult> Give(ulong userId, int bet)
         {
-            User user = await _usersConnector.GetUser(command.User.Id);
-            Random rnd = new Random();
-            int exp = rnd.Next(50, 125);
-            if (user.Level * 15 > bet)
-                return await _usersConnector.CommandGiveUserExp(command, 0);
-            else
-                return await _usersConnector.CommandGiveUserExp(command, exp);
+            var user = await _usersConnector.GetUser(userId);
+            var exp = new Random().Next(50, 125);
+            return await _usersConnector.CommandGiveUserExp(userId, user.Level * 15 > bet ? 0 : exp);
         }
     }
 }

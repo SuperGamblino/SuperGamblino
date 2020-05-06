@@ -1,17 +1,13 @@
 ﻿using System;
-using System.IO;
-using System.Text;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SuperGamblino.Commands;
 using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.Helpers;
-using SuperGamblino.Properties;
-using Microsoft.Extensions.Configuration;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace SuperGamblino
@@ -25,15 +21,6 @@ namespace SuperGamblino
                 .AddFilter("System", LogLevel.Warning)
                 .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
                 .AddConsole()).CreateLogger<Program>();
-
-            /*
-            if (!File.Exists("./config.json"))
-            {
-                logger.LogError(
-                    "There was no config.json file found so we created new default one. Please fill it up with info and start this bot again!");
-                File.WriteAllText("./config.json", Encoding.UTF8.GetString(Resources.defaultconfig));
-                Environment.Exit(1);
-            }*/
 
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("config.json", true, true)
@@ -50,12 +37,11 @@ namespace SuperGamblino
                 .AddInstance(logger)
                 .AddInstance(config)
                 .AddInstance(connectionString)
-                .Add<BlackjackConnector>()
-                .Add<GameHistoryConnector>()
-                .Add<CoindropConnector>()
-                .Add<UsersConnector>()
-                .Add<Messages>()
+                .AddInstance(new HttpClient())
+                .AddDatabaseConnectors()
+                .Add<MessagesHelper>()
                 .Add<BetSizeParser>()
+                .AddCommandLogics()
                 .Build();
             try
             {
@@ -75,8 +61,7 @@ namespace SuperGamblino
             var conf = dependencyCollection.GetDependency<Config>();
             var connectionString = dependencyCollection.GetDependency<ConnectionString>();
             var coinDrop = dependencyCollection.GetDependency<CoindropConnector>();
-            var msg = dependencyCollection.GetDependency<Messages>();
-
+            var msg = dependencyCollection.GetDependency<MessagesHelper>();
             var cfg = new DiscordConfiguration
             {
                 Token = conf.BotSettings.Token,
@@ -105,22 +90,7 @@ namespace SuperGamblino
 
 
             logger.LogInformation("Registering commands...");
-            //Initialize commands
-            commands.RegisterCommands<RouletteCommand>();
-            commands.RegisterCommands<CoinflipCommand>();
-            commands.RegisterCommands<SlotsCommand>();
-            // commands.RegisterCommands<SearchCommand>(); Removed for balance
-            commands.RegisterCommands<CreditsCommand>();
-            commands.RegisterCommands<GlobalTopCommand>();
-            commands.RegisterCommands<HourlyReward>();
-            commands.RegisterCommands<DailyReward>();
-            commands.RegisterCommands<Cooldown>();
-            commands.RegisterCommands<WorkReward>();
-            commands.RegisterCommands<GamesHistory>();
-            commands.RegisterCommands<ShowProfile>();
-            commands.RegisterCommands<VoteReward>();
-            commands.RegisterCommands<About>();
-            commands.RegisterCommands<CollectDrop>();
+            commands.AddCommands();
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
 
