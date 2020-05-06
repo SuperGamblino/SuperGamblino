@@ -7,6 +7,8 @@ This is a DSharpPlus open source discord gambling bot
 - Fill out MySQL connection properties in the config file (this will generate the first time the application runs) & the bot token.
 - Run the project
 
+Alternatively you can get the docker image from [DockerHub]( https://hub.docker.com/repository/docker/emil8250/supergamblino "DockerHub"). 
+
 ## Contribute
 Contributing to this project is really simple. 
 - First you head over to the [Issues page]( https://github.com/Emil8250/SuperGamblino/issues "Issues") and look for an issue you'd like to work on.
