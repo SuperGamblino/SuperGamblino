@@ -94,17 +94,22 @@ namespace SuperGamblino
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
 
+            bool connectedSuccessfully = false;
             logger.LogInformation("Starting the DB connection...");
-            try
+            while (!connectedSuccessfully)
             {
-                await DatabaseHelpers.SetupTables(connectionString.GetConnectionString());
-                await DatabaseHelpers.SetupProcedures(connectionString.GetConnectionString());
-                logger.LogInformation("DB loaded successfully.");
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Exception occured during DB connection creation!");
-                Environment.Exit(1);
+                try
+                {
+                    await DatabaseHelpers.SetupTables(connectionString.GetConnectionString());
+                    await DatabaseHelpers.SetupProcedures(connectionString.GetConnectionString());
+                    connectedSuccessfully = true;
+                    logger.LogInformation("DB loaded successfully.");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Couldn't connect to the DB! Waiting 15 seconds to retry...");
+                    Thread.Sleep(15000);
+                }
             }
 
             try
