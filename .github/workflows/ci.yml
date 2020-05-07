@@ -22,7 +22,7 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
   deploy:
     needs: [test]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository_owner == 'Emil8250/SuperGamblino'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'Emil8250/SuperGamblino'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
