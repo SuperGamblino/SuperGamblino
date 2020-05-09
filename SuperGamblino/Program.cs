@@ -94,10 +94,9 @@ namespace SuperGamblino
             commands.CommandErrored += eventHandler.OnCommandError;
             logger.LogInformation("All commands registered successfully.");
 
-            bool connectedSuccessfully = false;
+            var connectedSuccessfully = false;
             logger.LogInformation("Starting the DB connection...");
             while (!connectedSuccessfully)
-            {
                 try
                 {
                     await DatabaseHelpers.SetupTables(connectionString.GetConnectionString());
@@ -110,7 +109,6 @@ namespace SuperGamblino
                     logger.LogError(ex, "Couldn't connect to the DB! Waiting 15 seconds to retry...");
                     Thread.Sleep(15000);
                 }
-            }
 
             try
             {

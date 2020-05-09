@@ -5,7 +5,8 @@ namespace SuperGamblino.GameObjects
 {
     public class Work
     {
-        public static List<Job> Jobs { get; } = new List<Job>
+        //TODO Write Unit tests
+        private static IEnumerable<Job> Jobs { get; } = new List<Job>
         {
             new Job {Title = "Janitor", Cooldown = 6, Reward = 30, Level = 1},
             new Job {Title = "Super Market Assistant", Cooldown = 6, Reward = 45, Level = 4},

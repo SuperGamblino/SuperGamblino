@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DSharpPlus.Entities;
 using Moq;
 using SuperGamblino.CommandsLogics;
@@ -51,6 +52,27 @@ namespace SuperGamblinoTests.CommandsTests
                 result.Description);
         }
 
-        //TODO Write more tests
+        [Fact]
+        public async void CorrectValuesInTheOutput()
+        {
+            var date = DateTime.Now;
+            var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
+            usersConnector.Setup(x => x.GetDateTime(0, It.IsAny<string>()))
+                .ReturnsAsync(new DateTimeResult(true, date));
+            var logic = GetCooldownCommandLogic(usersConnector.Object);
+
+            var result = await logic.GetCooldowns(0);
+            var times = result.Description.Split('\n').SkipLast(1) //converts output result to TimeSpan[]
+                .Select(x => string.Join(':', x.Split(':').Skip(1)))
+                .Select(x => TimeSpan.Parse(x))
+                .ToArray();
+
+            Assert.Equal(new DiscordColor(Helpers.InfoColor), result.Color);
+            Assert.Equal(4, times.Length);
+            Assert.Equal(TimeSpan.FromHours(1).Subtract(TimeSpan.FromSeconds(1)), times[0]);
+            Assert.Equal(TimeSpan.FromDays(1).Subtract(TimeSpan.FromSeconds(1)), times[1]);
+            Assert.Equal(TimeSpan.FromHours(6).Subtract(TimeSpan.FromSeconds(1)), times[2]);
+            Assert.Equal(TimeSpan.FromHours(12).Subtract(TimeSpan.FromSeconds(1)), times[3]);
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace SuperGamblino.CommandsLogics
         private readonly Config _config;
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public VoteRewardCommandLogic(HttpClient client, UsersConnector usersConnector, Config config,
             MessagesHelper messagesHelper, ILogger logger)
@@ -51,6 +51,7 @@ namespace SuperGamblino.CommandsLogics
                     return _messagesHelper.Error(
                         "Invalid Top GG Token Provided by the bot administrator! Please contact him!");
                 }
+
                 var didUserVote = JsonConvert.DeserializeObject<Vote>(await response.Content.ReadAsStringAsync());
 
                 if (didUserVote.voted)

@@ -13,7 +13,7 @@ namespace SuperGamblino.DatabaseConnectors
         {
         }
 
-        public async Task<History> GetGameHistories(ulong userId)
+        public virtual async Task<IEnumerable<GameHistory>> GetGameHistories(ulong userId)
         {
             await using var c = new MySqlConnection(ConnectionString);
             try
@@ -21,8 +21,6 @@ namespace SuperGamblino.DatabaseConnectors
                 var command = new MySqlCommand($"SELECT * FROM history WHERE user_id = {userId}", c);
                 await c.OpenAsync();
                 var reader = await command.ExecuteReaderAsync();
-                var history = new History();
-                history.UserId = userId;
                 var list = new List<GameHistory>();
                 while (await reader.ReadAsync())
                     list.Add(new GameHistory
@@ -31,9 +29,7 @@ namespace SuperGamblino.DatabaseConnectors
                         HasWon = await reader.GetFieldValueAsync<bool>(2),
                         CoinsDifference = await reader.GetFieldValueAsync<int>(3)
                     });
-
-                history.GameHistories = list;
-                return history;
+                return list;
             }
             catch (Exception ex)
             {

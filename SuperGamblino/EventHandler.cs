@@ -17,7 +17,8 @@ namespace SuperGamblino
         private readonly DiscordClient _discordClient;
         private readonly MessagesHelper _messagesHelper;
 
-        public EventHandler(DiscordClient client, Config config, CoindropConnector coindropConnector, MessagesHelper messagesHelper)
+        public EventHandler(DiscordClient client, Config config, CoindropConnector coindropConnector,
+            MessagesHelper messagesHelper)
         {
             _discordClient = client;
             _config = config;
