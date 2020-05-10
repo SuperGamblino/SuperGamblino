@@ -19,7 +19,7 @@ namespace SuperGamblino.CommandsLogics
         public async Task<DiscordEmbed> GetGameHistory(ulong userId)
         {
             var history = await _gameHistoryConnector.GetGameHistories(userId);
-            var text = string.Join("\n", history.GameHistories
+            var text = string.Join("\n", history
                 .TakeLast(10).Select(x => $"{x.GameName} | {(x.HasWon ? "Won" : "Lost")} | {x.CoinsDifference}")
                 .ToArray());
             return _messagesHelper.Information(text, "GameHistory");

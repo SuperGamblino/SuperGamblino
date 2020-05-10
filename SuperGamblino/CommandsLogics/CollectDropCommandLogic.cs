@@ -23,7 +23,8 @@ namespace SuperGamblino.CommandsLogics
         {
             var arguments = argument.ToUpper().TrimStart().Split(' ');
 
-            if (arguments.Length != 1) return _messagesHelper.InvalidArguments(new[] {"<Claim Id>"}, "Collect", "Collect");
+            if (arguments.Length != 1)
+                return _messagesHelper.InvalidArguments(new[] {"<Claim Id>"}, "Collect", "Collect");
 
             try
             {

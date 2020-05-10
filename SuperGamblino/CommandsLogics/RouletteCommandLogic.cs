@@ -14,7 +14,8 @@ namespace SuperGamblino.CommandsLogics
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public RouletteCommandLogic(UsersConnector usersConnector, BetSizeParser betSizeParser, MessagesHelper messagesHelper,
+        public RouletteCommandLogic(UsersConnector usersConnector, BetSizeParser betSizeParser,
+            MessagesHelper messagesHelper,
             GameHistoryConnector gameHistoryConnector)
         {
             _usersConnector = usersConnector;
@@ -131,7 +132,8 @@ namespace SuperGamblino.CommandsLogics
                     await _usersConnector.CommandGetUserCredits(userId));
             }
 
-            return _messagesHelper.InvalidArguments(new[] {"<Red|Black|Odd|Even|Number> <Bet>"}, "!roulette", "Roulette");
+            return _messagesHelper.InvalidArguments(new[] {"<Red|Black|Odd|Even|Number> <Bet>"}, "!roulette",
+                "Roulette");
         }
     }
 }

@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
 using static SuperGamblino.GameObjects.Work;
 

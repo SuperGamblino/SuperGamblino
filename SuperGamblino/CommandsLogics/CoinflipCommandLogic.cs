@@ -27,7 +27,8 @@ namespace SuperGamblino.CommandsLogics
         {
             var arguments = argument.ToUpper().TrimStart().Split(' ');
 
-            if (arguments.Length != 2) return _messagesHelper.InvalidArguments(new[] {"<Head|Tail>", "<Bet>"}, "CoinFlip");
+            if (arguments.Length != 2)
+                return _messagesHelper.InvalidArguments(new[] {"<Head|Tail>", "<Bet>"}, "CoinFlip");
 
             var option = arguments[0] == "HEAD" || arguments[0] == "TAIL" ? arguments[0] : "";
             var amount = arguments[1].Trim();

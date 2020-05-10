@@ -313,7 +313,7 @@ namespace SuperGamblino.DatabaseConnectors
             }
         }
 
-        public async Task<List<User>> CommandGetGlobalTop()
+        public virtual async Task<List<User>> CommandGetGlobalTop()
         {
             var discordUsers = new List<User>();
             await using (var c = new MySqlConnection(ConnectionString))

@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Moq.Protected;
 using SuperGamblino;
 using SuperGamblino.DatabaseConnectors;
 
@@ -31,7 +30,7 @@ namespace SuperGamblinoTests.CommandsTests
                     Username = "<Username>"
                 },
                 ColorSettings = new ColorSettings {Info = InfoColor, Success = SuccessColor, Warning = WarningColor},
-                BotSettings = new BotSettings()
+                BotSettings = new BotSettings
                 {
                     Prefix = "!",
                     Token = "<bot token>",
