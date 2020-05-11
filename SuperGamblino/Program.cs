@@ -14,6 +14,7 @@ namespace SuperGamblino
 {
     internal class Program
     {
+        private bool _isContainerized = false;
         private static void Main(string[] args)
         {
             var logger = LoggerFactory.Create(builder => builder
@@ -21,12 +22,11 @@ namespace SuperGamblino
                 .AddFilter("System", LogLevel.Warning)
                 .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
                 .AddConsole()).CreateLogger<Program>();
-
+            
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("config.json", true, true)
                 .AddEnvironmentVariables()
                 .Build();
-
             var config = new Config();
 
             configuration.Bind("Settings", config);
@@ -45,7 +45,10 @@ namespace SuperGamblino
                 .Build();
             try
             {
-                new Program().MainAsync(dependencies).GetAwaiter().GetResult();
+                new Program()
+                {
+                    _isContainerized = configuration.GetValue<bool>("DOTNET_RUNNING_IN_CONTAINER")
+                }.MainAsync(dependencies).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
@@ -96,6 +99,11 @@ namespace SuperGamblino
 
             var connectedSuccessfully = false;
             logger.LogInformation("Starting the DB connection...");
+            if (_isContainerized)
+            {
+                logger.LogInformation("Detected docker environment! App will wait 10 seconds to give time to MySql DB to start up.");
+                Thread.Sleep(10_000);
+            }
             while (!connectedSuccessfully)
                 try
                 {
