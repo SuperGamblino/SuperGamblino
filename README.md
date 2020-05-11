@@ -26,7 +26,7 @@
  ## Discussion and question
  For easier discussion, questions and feedback, please join our [Discord Server](https://discord.gg/eDwDwVY).
  
- ## Best Contributors
+ ## Top Contributors
  [![Made by Emil8250](https://img.shields.io/badge/Created%20By-Emil8250-green?style=for-the-badge)](https://github.com/Emil8250)
  [![KanarekLife](https://img.shields.io/badge/Created%20By-KanarekLife-yellow?style=for-the-badge)](https://github.com/KanarekLife)
  [![MrStaneh](https://img.shields.io/badge/Created%20By-MrStaneh-red?style=for-the-badge)](https://github.com/mrstaneh)
