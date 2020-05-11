@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Moq;
 using Moq.Protected;
+using SuperGamblino;
 using SuperGamblino.CommandsLogics;
 using SuperGamblino.DatabaseConnectors;
 using SuperGamblino.GameObjects;
@@ -16,9 +17,9 @@ namespace SuperGamblinoTests.CommandsTests
     public class VoteRewardTests
     {
         private VoteRewardCommandLogic GetVoteRewardCommandLogic(HttpMessageHandler httpMessageHandler,
-            UsersConnector usersConnector)
+            UsersConnector usersConnector, Config config = null)
         {
-            return new VoteRewardCommandLogic(new HttpClient(httpMessageHandler), usersConnector, Helpers.GetConfig(),
+            return new VoteRewardCommandLogic(new HttpClient(httpMessageHandler), usersConnector, config ?? Helpers.GetConfig(),
                 Helpers.GetMessages(), Helpers.GetLogger<VoteRewardTests>());
         }
 
@@ -140,6 +141,22 @@ namespace SuperGamblinoTests.CommandsTests
             Assert.Equal("TopGGVote", result.Title);
         }
 
-        //TODO Write unit tests (sample of httpclient mocking => https://stackoverflow.com/questions/57091410/unable-to-mock-httpclient-postasync-in-unit-tests)
+        [Fact]
+        public async void GetInfoWhenTopGgFunctionalityIsTurnedOff()
+        {
+            var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
+            var config = Helpers.GetConfig();
+            config.BotSettings.TopGgToken = null;
+            var logic = GetVoteRewardCommandLogic(GetHttpClient(false), usersConnector.Object, config);
+
+            var result = await logic.Vote(0);
+            
+            Assert.Equal("TopGGVote", result.Title);
+            Assert.Equal(new DiscordColor(Helpers.InfoColor), result.Color);
+            Assert.Equal("Top GG Token functionality is disabled on this server :disappointed:. Contact bots admin to turn it on :slight_smile:.",
+                result.Description);
+        }
+
+        //sample of httpclient mocking => https://stackoverflow.com/questions/57091410/unable-to-mock-httpclient-postasync-in-unit-tests
     }
 }
