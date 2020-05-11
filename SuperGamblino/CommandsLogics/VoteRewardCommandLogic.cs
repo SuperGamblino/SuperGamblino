@@ -31,6 +31,12 @@ namespace SuperGamblino.CommandsLogics
         public async Task<DiscordEmbed> Vote(ulong userId)
         {
             const int reward = 400;
+            if (_config.BotSettings.TopGgToken == null)
+            {
+                return _messagesHelper.Information(
+                    "Top GG Token functionality is disabled on this server :disappointed:. Contact bots admin to turn it on :slight_smile:.",
+                    "TopGGVote");
+            }
             var result = await _usersConnector.GetDateTime(userId, "last_vote_reward");
             if (result.Successful)
             {
