@@ -27,6 +27,13 @@ namespace SuperGamblino
                 .AddEnvironmentVariables()
                 .Build();
 
+            if (!configuration.GetSection("Settings").Exists())
+            {
+                logger.LogError("Couldn't find any settings! Checkout our github to find out how to configure this bot!");
+                Thread.Sleep(30); //Without it logger don't have enough time to display the error to console
+                Environment.Exit(1);
+            }
+            
             var config = new Config();
 
             configuration.Bind("Settings", config);
