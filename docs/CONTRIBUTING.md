@@ -1,4 +1,5 @@
-﻿## Contributing
+﻿[Back to README](../README.md)
+## Contributing
 ### You want to work on something?
 - Head into [Issues page]( https://github.com/Emil8250/SuperGamblino/issues "Issues") and look for something for you.
 ### You have an idea for something?

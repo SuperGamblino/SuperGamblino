@@ -1,4 +1,5 @@
-﻿## Commands
+﻿[Back to README](../README.md)
+## Commands
 ### Default prefix is `!` so call commands like this `!command`!
 ### Currently available commands:
 - `about` - Get information about the bot statistics.
@@ -16,3 +17,6 @@
 - `coinflip` - Coinflip game.
 - `roulette` - A classic roulette game.
 - `slots` - Slots game.
+
+[![Made by Emil8250](https://img.shields.io/badge/MadeBy-Emil8250-green?style=for-the-badge)](https://github.com/Emil8250)
+[![Made by KanarekLife](https://img.shields.io/badge/MadeBy-KanarekLife-yellow?style=for-the-badge)](https://github.com/KanarekLife)

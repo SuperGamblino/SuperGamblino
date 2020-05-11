@@ -1,5 +1,5 @@
 # SuperGamblino
-Open source DSharpPlus based discord gambling bot.
+❤ Open source ❤ DSharpPlus based discord gambling bot.
 
 ![MadeWithLove](https://forthebadge.com/images/featured/featured-built-with-love.svg)
 
@@ -19,8 +19,14 @@ Open source DSharpPlus based discord gambling bot.
 
 ![gif presentation how bot works](docs/media/presentation.gif)
 
-## [How to contribute?](docs/CONTRIBUTING.md)
-## [How to deploy?](docs/DEPLOYMENT.md)
+## [💻Check out all available commands!](docs/COMMANDS.md)
+## [✋How to contribute?](docs/CONTRIBUTING.md)
+## [🖥️How to deploy?](docs/DEPLOYMENT.md)
 
  ## Discussion and question
  For easier discussion, questions and feedback, please join our [Discord Server](https://discord.gg/eDwDwVY).
+ 
+ ## Best Contributors
+ [![Made by Emil8250](https://img.shields.io/badge/Created%20By-Emil8250-green?style=for-the-badge)](https://github.com/Emil8250)
+ [![KanarekLife](https://img.shields.io/badge/Created%20By-KanarekLife-yellow?style=for-the-badge)](https://github.com/KanarekLife)
+ [![MrStaneh](https://img.shields.io/badge/Created%20By-MrStaneh-red?style=for-the-badge)](https://github.com/mrstaneh)

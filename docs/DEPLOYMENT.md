@@ -1,4 +1,5 @@
-﻿## Deployment
+﻿[Back to README](../README.md)
+## Deployment
 ### Using docker-compose to host with MySql server
 ![Deployment gif](media/deployment.gif)
 1. Create `docker-compose.yml` file with following content:
