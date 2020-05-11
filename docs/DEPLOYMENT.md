@@ -22,6 +22,7 @@
           - Settings__BotSettings__TopGgToken=<top gg token>
           - Settings__BotSettings__Prefix=!
           - Settings__ColorSettings__Info=#439ff0
+          - Settings__ColorSettings__Success=#4beb50
           - Settings__ColorSettings__Warning=#bf1004
           - Settings__DatabaseSettings__Address=172.17.0.1
           - Settings__DatabaseSettings__Port=3306
@@ -60,6 +61,7 @@
               - Settings__BotSettings__TopGgToken=<top gg token>
               - Settings__BotSettings__Prefix=!
               - Settings__ColorSettings__Info=#439ff0
+              - Settings__ColorSettings__Success=#4beb50
               - Settings__ColorSettings__Warning=#bf1004
               - Settings__DatabaseSettings__Address=172.17.0.1
               - Settings__DatabaseSettings__Port=3306
