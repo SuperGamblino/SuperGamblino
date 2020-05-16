@@ -12,11 +12,12 @@ namespace SuperGamblino.Infrastructure
         {
             var connectionString = serviceProvider.GetRequiredService<ConnectionString>();
             var logger = serviceProvider.GetRequiredService<ILogger<DatabaseConnectionController>>();
+            logger.LogInformation($"[{nameof(DatabaseConnectionController)}] - Ready for work.");
             while (true)
             {
                 if (!await DatabaseHelpers.CheckConnection(connectionString))
                 {
-                    logger.LogCritical("Database connection failed!!!");
+                    logger.LogCritical($"[{nameof(DatabaseConnectionController)}] - Database connection failed! Shutting the app down.");
                     token.Cancel();
                     break;
                 }

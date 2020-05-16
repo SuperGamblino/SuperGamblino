@@ -69,41 +69,28 @@ namespace SuperGamblino
                 cancellationToken.Cancel();
             };
             
-            logger.LogInformation("Setting up the DB...");
+            logger.LogInformation($"Setting up the DB...");
             
             if (_serviceProvider.GetRequiredService<Config>().IsContainerized)
             {
-                logger.LogInformation($"[{nameof(DiscordBot)}] - App is containerized. - Giving some ahead time for DB to kick in...");
+                logger.LogInformation("App is containerized. - Giving some ahead time for DB to kick in...");
                 await Task.Delay(10_000);
             }
             
             var connectionString = _serviceProvider.GetRequiredService<ConnectionString>();
+            
             try
             {
-                while (true)
-                {
-                    try
-                    {
-                        await DatabaseHelpers.SetupTables(connectionString);
-                        await DatabaseHelpers.SetupProcedures(connectionString);
-                        break;
-                    }
-                    catch (Exception)
-                    {
-                        logger.LogCritical("Couldn't connect to DB!");
-                        await Task.Delay(10_000, cancellationToken.Token);
-                    }
-                }
+                await DatabaseHelpers.SetupTables(connectionString);
+                await DatabaseHelpers.SetupProcedures(connectionString);
+                logger.LogInformation("DB is set up.");
             }
-            catch (OperationCanceledException)
+            catch (Exception)
             {
                 await Exit(ExitCodes.COULD_NOT_CONNECT_TO_DB,
-                    "Operation of connecting to DB was cancelled by the user.");
+                    "Couldn't connect to DB! Check your connection..");
             }
 
-
-            logger.LogInformation("DB is set up.");
-            
             try
             {
                 await Task.WhenAll(new Task[]
