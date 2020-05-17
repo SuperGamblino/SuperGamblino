@@ -18,6 +18,7 @@ namespace SuperGamblino.Discord
         private readonly Config _config;
         private readonly DiscordClient _discordClient;
         private readonly SuperGamblino.Messages.MessagesHelper _messagesHelper;
+        private Random _random = new Random();
 
         public EventHandler(DiscordClient client, Config config, CoindropConnector coindropConnector,
             SuperGamblino.Messages.MessagesHelper messagesHelper)
@@ -37,21 +38,23 @@ namespace SuperGamblino.Discord
                 {
                     var med = id >= 65 && id <= 99;
                     var high = id == 100;
-
+                    
+                    var claimId = _random.Next(1000, 9999);
+                    
                     if (med)
                     {
-                        var claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 100);
+                        await _coindropConnector.AddCoindrop(e.Channel.Id, claimId,100);
                         await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId).ToDiscordEmbed());
                     }
 
                     if (high)
                     {
-                        var claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 350);
+                        await _coindropConnector.AddCoindrop(e.Channel.Id, claimId, 350);
                         await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId).ToDiscordEmbed());
                     }
                     else
                     {
-                        var claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, 25);
+                       await _coindropConnector.AddCoindrop(e.Channel.Id, claimId, 25);
                         await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId).ToDiscordEmbed());
                     }
                 }

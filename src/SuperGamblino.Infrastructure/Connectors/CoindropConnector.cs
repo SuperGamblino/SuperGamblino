@@ -14,16 +14,13 @@ namespace SuperGamblino.Infrastructure.Connectors
 {
     public class CoindropConnector : DatabaseConnector
     {
-        public CoindropConnector(ILogger<CoindropConnector> logger, ConnectionString connectionString, IMemoryCache memoryCache) : base(logger, connectionString)
+        public CoindropConnector(ILogger<CoindropConnector> logger, ConnectionString connectionString, IMemoryCache memoryCache) : base(logger, connectionString, memoryCache)
         {
         }
 
-        public async Task<int> AddCoindrop(ulong channelId, int coinReward)
+        public async Task<int> AddCoindrop(ulong channelId, int claimId, int coinReward)
         {
             await using var connection = new MySqlConnection(ConnectionString);
-            //TODO Should it be here?
-            var rand = new Random();
-            var claimId = rand.Next(1000, 9999);
             try
             {
                 await connection.InsertAsync(new CoinDrop()

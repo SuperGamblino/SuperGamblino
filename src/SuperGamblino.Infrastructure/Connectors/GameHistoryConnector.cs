@@ -15,17 +15,24 @@ namespace SuperGamblino.Infrastructure.Connectors
 {
     public class GameHistoryConnector : DatabaseConnector
     {
-        public GameHistoryConnector(ILogger<GameHistoryConnector> logger, ConnectionString connectionString, IMemoryCache memoryCache) : base(logger, connectionString)
+        private const string GameHistoriesKey = "GameHistoryConnector-GetGameHistories";
+        public GameHistoryConnector(ILogger<GameHistoryConnector> logger, ConnectionString connectionString, IMemoryCache memoryCache) : base(logger, connectionString, memoryCache)
         {
         }
 
         public virtual async Task<IEnumerable<GameHistory>> GetGameHistories(ulong userId)
         {
+            if (MemoryCache.TryGetValue(GameHistoriesKey + userId, out IEnumerable<GameHistory> gameHistories))
+            {
+                return gameHistories;
+            }
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
                 await connection.OpenAsync();
-                return await connection.GetAllAsync<GameHistory>();
+                var result = (await connection.GetAllAsync<GameHistory>()).AsList();
+                MemoryCache.Set(GameHistoriesKey, result);
+                return result;
             }
             catch (Exception ex)
             {
@@ -41,6 +48,7 @@ namespace SuperGamblino.Infrastructure.Connectors
 
         public virtual async Task<bool> AddGameHistory(GameHistory history)
         {
+            MemoryCache.Remove(GameHistoriesKey);
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {

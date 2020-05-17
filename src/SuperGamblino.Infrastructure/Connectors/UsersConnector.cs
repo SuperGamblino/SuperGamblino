@@ -17,17 +17,18 @@ namespace SuperGamblino.Infrastructure.Connectors
 {
     public class UsersConnector : DatabaseConnector
     {
-        private readonly IMemoryCache _cache;
         private const string CheckIfUserExistsKey = "UsersConnector-CheckIfUserExists-";
-        public UsersConnector(ILogger<UsersConnector> logger, ConnectionString connectionString, IMemoryCache cache) : base(logger, connectionString)
+        private const string GetCreditsKey = "UsersConnector-GetCredits-";
+        private const string GetUserKey = "UsersConnector-GetUser-";
+        private const string GlobalTopKey = "UsersConnector-GlobalTop";
+        public UsersConnector(ILogger<UsersConnector> logger, ConnectionString connectionString, IMemoryCache cache) : base(logger, connectionString, cache)
         {
-            _cache = cache;
             logger.LogInformation("Created UsersConnector!");
         }
         
         private async Task<bool> CheckIfUserExists(ulong userId)
         {
-            if (_cache.TryGetValue(CheckIfUserExistsKey + userId, out bool exist))
+            if (MemoryCache.TryGetValue(CheckIfUserExistsKey + userId, out bool exist))
             {
                 return exist;
             }
@@ -38,7 +39,7 @@ namespace SuperGamblino.Infrastructure.Connectors
                 var doExists = (await connection.QueryAsync<bool>(
                     "SELECT EXISTS(SELECT * FROM Users WHERE Id = @UserId)",
                     new {UserId = userId})).SingleOrDefault();
-                _cache.Set(CheckIfUserExistsKey + userId, doExists, TimeSpan.FromSeconds(10));
+                MemoryCache.Set(CheckIfUserExistsKey + userId, doExists, TimeSpan.FromSeconds(10));
                 return doExists;
             }
             catch (Exception ex)
@@ -61,7 +62,7 @@ namespace SuperGamblino.Infrastructure.Connectors
                 {
                     await connection.OpenAsync();
                     await connection.InsertAsync(new User(userId));
-                    _cache.Remove(CheckIfUserExistsKey+userId);
+                    MemoryCache.Remove(CheckIfUserExistsKey+userId);
                 }
                 catch (Exception ex)
                 {
@@ -77,6 +78,7 @@ namespace SuperGamblino.Infrastructure.Connectors
 
         public virtual async Task GiveCredits(ulong userId, int credits)
         {
+            MemoryCache.Remove(GetCreditsKey+userId);
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
@@ -99,6 +101,7 @@ namespace SuperGamblino.Infrastructure.Connectors
         
         public virtual async Task<bool> TakeCredits(ulong userId, int credits)
         {
+            MemoryCache.Remove(GetCreditsKey+userId);
             if (await GetCredits(userId) < credits) return false;
             await GiveCredits(userId, credits * -1);
             return true;
@@ -112,13 +115,19 @@ namespace SuperGamblino.Infrastructure.Connectors
         /// <returns>Number of credits or -1 if exception occured</returns>
         public virtual async Task<int> GetCredits(ulong userId)
         {
+            if (MemoryCache.TryGetValue(GetCreditsKey + userId, out int credits))
+            {
+                return credits;
+            }
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
                 await EnsureUserCreated(userId);
                 await connection.OpenAsync();
-                return (await connection.QueryAsync<int>("SELECT Credits FROM Users WHERE Id = @userId", new {userId}))
+                var balance = (await connection.QueryAsync<int>("SELECT Credits FROM Users WHERE Id = @userId", new {userId}))
                     .Single();
+                MemoryCache.Set(GetCreditsKey + userId, balance, TimeSpan.FromSeconds(5));
+                return balance;
             }
             catch (Exception ex)
             {
@@ -133,12 +142,18 @@ namespace SuperGamblino.Infrastructure.Connectors
 
         public virtual async Task<User> GetUser(ulong userId)
         {
+            if (MemoryCache.TryGetValue(GetUserKey + userId, out User user))
+            {
+                return user;
+            }
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
                 await EnsureUserCreated(userId);
                 await connection.OpenAsync();
-                return await connection.GetAsync<User>(userId);
+                var result = await connection.GetAsync<User>(userId);
+                MemoryCache.Set(GetUserKey + user, result, TimeSpan.FromSeconds(5));
+                return result;
             }
             catch (Exception ex)
             {
@@ -153,6 +168,7 @@ namespace SuperGamblino.Infrastructure.Connectors
 
         public virtual async Task UpdateUser(User user)
         {
+            MemoryCache.Remove(GetUserKey+user);
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
@@ -198,11 +214,18 @@ namespace SuperGamblino.Infrastructure.Connectors
         public virtual async Task<IEnumerable<User>> CommandGetGlobalTop()
         {
             const string procedure = "get_top_users";
+
+            if (MemoryCache.TryGetValue(GlobalTopKey, out IEnumerable<User> users))
+            {
+                return users;
+            }
             
             await using var connection = new MySqlConnection(ConnectionString);
 
             await connection.OpenAsync();
-            return await connection.QueryAsync<User>(procedure, commandType: CommandType.StoredProcedure);
+            var result = (await connection.QueryAsync<User>(procedure, commandType: CommandType.StoredProcedure)).AsList();
+            MemoryCache.Set(GlobalTopKey, result, TimeSpan.FromMinutes(5));
+            return result;
         }
     }
 }

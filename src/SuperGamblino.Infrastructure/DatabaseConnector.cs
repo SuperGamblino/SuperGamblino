@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using SuperGamblino.Core;
 using SuperGamblino.Core.Configuration;
 
@@ -8,10 +9,12 @@ namespace SuperGamblino.Infrastructure
     {
         protected readonly string ConnectionString;
         protected readonly ILogger Logger;
+        protected readonly IMemoryCache MemoryCache;
 
-        public DatabaseConnector(ILogger logger, ConnectionString connectionString)
+        public DatabaseConnector(ILogger logger, ConnectionString connectionString, IMemoryCache memoryCache)
         {
             Logger = logger;
+            MemoryCache = memoryCache;
             ConnectionString = connectionString.GetConnectionString();
         }
     }
