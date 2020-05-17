@@ -63,7 +63,7 @@ namespace SuperGamblino.Commands.Tests
                         .ReturnsAsync(new User()
                         {
                             Id = 0,
-                            LastDailyReward = DateTime.Now
+                            LastHourlyReward = DateTime.Now
                         });
                     var logic = GetHourlyRewardCommandLogic(usersConnector.Object);
         

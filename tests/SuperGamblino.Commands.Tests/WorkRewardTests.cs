@@ -65,8 +65,7 @@ namespace SuperGamblino.Commands.Tests
 
             Assert.Equal(Helpers.SuccessColor, result.Color);
             Assert.Equal("WorkReward", result.Title);
-            Assert.Equal($"You've gained {amountOfCredits} credits!", result.Description);
-            Assert.NotEqual(0, amountOfCredits);
+            Assert.Matches(@"You've gained ([^\\s]+) credits!", result.Description);
         }
 
         [Fact]
