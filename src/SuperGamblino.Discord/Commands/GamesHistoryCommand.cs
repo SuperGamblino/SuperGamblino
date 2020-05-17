@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class GamesHistoryCommand : BaseCommandModule
     {
-        private readonly GameHistoryCommandLogic _logic;
+        private readonly GameHistoryCommand _logic;
 
-        public GamesHistoryCommand(GameHistoryCommandLogic logic)
+        public GamesHistoryCommand(GameHistoryCommand logic)
         {
             _logic = logic;
         }

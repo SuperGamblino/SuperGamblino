@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Threading.Tasks;
 using SuperGamblino.Core.CommandsObjects;
+using SuperGamblino.Core.Entities;
 using SuperGamblino.Core.Helpers;
 using SuperGamblino.Infrastructure.Connectors;
-using SuperGamblino.Infrastructure.DatabasesObjects;
+using SuperGamblino.Infrastructure.DatabaseObjects;
 using SuperGamblino.Messages;
 
-namespace SuperGamblino.Commands
+namespace SuperGamblino.Commands.Commands
 {
-    public class CoinflipCommandLogic
+    public class CoinflipCommand
     {
         private readonly BetSizeParser _betSizeParser;
         private readonly GameHistoryConnector _gameHistoryConnector;
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public CoinflipCommandLogic(UsersConnector usersConnector, BetSizeParser betSizeParser,
+        public CoinflipCommand(UsersConnector usersConnector, BetSizeParser betSizeParser,
             GameHistoryConnector gameHistoryConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
@@ -39,15 +40,15 @@ namespace SuperGamblino.Commands
 
             var bet = amount switch
             {
-                "ALL" => await _usersConnector.CommandGetUserCredits(userId),
-                "HALF" => await _usersConnector.CommandGetUserCredits(userId) / 2,
+                "ALL" => await _usersConnector.GetCredits(userId),
+                "HALF" => await _usersConnector.GetCredits(userId) / 2,
                 _ => _betSizeParser.Parse(arguments[1])
             };
 
             if (bet == -1)
                 return _messagesHelper.Error("Check your arguments (whether bet size does not equal 0 for example)!");
 
-            if (await _usersConnector.CommandSubsctractCredits(userId, bet))
+            if (await _usersConnector.TakeCredits(userId, bet))
             {
                 var rnd = new Random();
                 var hasWon = (Convert.ToBoolean(rnd.Next(0, 2)) ? "HEAD" : "TAIL") == option;
@@ -55,20 +56,21 @@ namespace SuperGamblino.Commands
                 var expHelper = new Exp(_usersConnector);
                 var expResult = await expHelper.Give(userId, bet);
 
-                if (hasWon) await _usersConnector.CommandGiveCredits(userId, bet * 2);
+                if (hasWon) await _usersConnector.GiveCredits(userId, bet * 2);
 
                 var embed = hasWon
-                    ? _messagesHelper.WinInformation(bet, "CoinFlip")
-                    : _messagesHelper.LoseInformation(bet, "CoinFlip");
+                    ? _messagesHelper.WinInformation(bet, title: "CoinFlip")
+                    : _messagesHelper.LoseInformation(bet, title: "CoinFlip");
 
-                _messagesHelper.AddCoinsBalanceInformation(embed, await _usersConnector.CommandGetUserCredits(userId));
+                _messagesHelper.AddCoinsBalanceInformation(embed, await _usersConnector.GetCredits(userId));
                 if (expResult.DidUserLevelUp) embed = _messagesHelper.AddLevelUpMessage(embed);
 
-                await _gameHistoryConnector.AddGameHistory(userId, new GameHistory
+                await _gameHistoryConnector.AddGameHistory(new GameHistory
                 {
                     GameName = "coinflip",
                     HasWon = hasWon,
-                    CoinsDifference = hasWon ? bet : bet * -1
+                    CoinsDifference = hasWon ? bet : bet * -1,
+                    UserId = userId
                 });
 
                 return embed;

@@ -1,6 +1,6 @@
 ﻿﻿using System;
 
- namespace SuperGamblino.Infrastructure.DatabasesObjects
+ namespace SuperGamblino.Infrastructure.DatabaseObjects
 {
     public class DateTimeResult
     {

@@ -56,21 +56,21 @@ namespace SuperGamblino.Messages
             return Warning(desc, title);
         }
 
-        public Message CommandCalledTooEarly(TimeSpan timeLeft, string command, string title = DefaultTitle)
+        public Message CommandCalledTooEarly(TimeSpan? timeLeft, string command, string title = DefaultTitle)
         {
             return Warning(
                 $"You've tried to execute command '{command}' before it was ready! Command will be ready in {timeLeft:hh\\:mm\\:ss}",
                 title);
         }
 
-        public Message WinInformation(int earnedCred, string title = DefaultTitle)
+        public Message WinInformation(int earnedCred, string info = null, string title = DefaultTitle)
         {
-            return Success($"You've won {earnedCred} credits!", title);
+            return Success($"{info}\nYou've won {earnedCred} credits!", title);
         }
 
-        public Message LoseInformation(int bet, string title = DefaultTitle)
+        public Message LoseInformation(int bet, string info = null, string title = DefaultTitle)
         {
-            return Warning($"You've lost {bet} credits!",
+            return Warning($"{info}\nYou've lost {bet} credits!",
                 title);
         }
 

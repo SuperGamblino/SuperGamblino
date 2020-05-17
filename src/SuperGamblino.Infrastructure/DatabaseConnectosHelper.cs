@@ -13,7 +13,6 @@ namespace SuperGamblino.Infrastructure
         public static IServiceCollection AddDatabaseConnectors(this IServiceCollection serviceCollection)
         {
             return serviceCollection
-                .AddTransient<BlackjackConnector>()
                 .AddTransient<GameHistoryConnector>()
                 .AddTransient<CoindropConnector>()
                 .AddTransient<UsersConnector>();

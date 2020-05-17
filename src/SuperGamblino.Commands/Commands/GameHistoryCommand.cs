@@ -3,14 +3,14 @@ using System.Threading.Tasks;
 using SuperGamblino.Infrastructure.Connectors;
 using SuperGamblino.Messages;
 
-namespace SuperGamblino.Commands
+namespace SuperGamblino.Commands.Commands
 {
-    public class GameHistoryCommandLogic
+    public class GameHistoryCommand
     {
         private readonly GameHistoryConnector _gameHistoryConnector;
         private readonly MessagesHelper _messagesHelper;
 
-        public GameHistoryCommandLogic(GameHistoryConnector gameHistoryConnector, MessagesHelper messagesHelper)
+        public GameHistoryCommand(GameHistoryConnector gameHistoryConnector, MessagesHelper messagesHelper)
         {
             _gameHistoryConnector = gameHistoryConnector;
             _messagesHelper = messagesHelper;

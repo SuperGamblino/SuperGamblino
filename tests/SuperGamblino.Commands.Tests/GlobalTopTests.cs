@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Moq;
+using SuperGamblino.Commands.Commands;
 using SuperGamblino.Core.Entities;
 using SuperGamblino.Infrastructure.Connectors;
 using Xunit;
@@ -8,9 +9,9 @@ namespace SuperGamblino.Commands.Tests
 {
     public class GlobalTopTests
     {
-        private GlobalTopCommandLogic GetGlobalTopCommandLogic(UsersConnector usersConnector)
+        private GlobalTopCommand GetGlobalTopCommandLogic(UsersConnector usersConnector)
         {
-            return new GlobalTopCommandLogic(usersConnector, Helpers.GetLogger<GlobalTopCommandLogic>(),
+            return new GlobalTopCommand(usersConnector, Helpers.GetLogger<GlobalTopCommand>(),
                 Helpers.GetMessages());
         }
 

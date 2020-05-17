@@ -1,4 +1,5 @@
 ﻿using Moq;
+using SuperGamblino.Commands.Commands;
 using SuperGamblino.Infrastructure.Connectors;
 using Xunit;
 
@@ -6,10 +7,10 @@ namespace SuperGamblino.Commands.Tests
 {
     public class CoinDropCollectingTests
     {
-        private CollectDropCommandLogic GetCollectDropCommandLogic(CoindropConnector coindropConnector,
+        private CollectDropCommand GetCollectDropCommandLogic(CoindropConnector coindropConnector,
             UsersConnector usersConnector)
         {
-            return new CollectDropCommandLogic(Helpers.GetMessages(), coindropConnector, usersConnector);
+            return new CollectDropCommand(Helpers.GetMessages(), coindropConnector, usersConnector);
         }
 
         [Theory]
@@ -31,15 +32,10 @@ namespace SuperGamblino.Commands.Tests
         [Fact]
         public async void DoesCollectingWork()
         {
-            var earned = 0;
             var coinDropConnector = Helpers.GetDatabaseConnector<CoindropConnector>();
             coinDropConnector.Setup(x => x.CollectCoinDrop(0, 4453)).ReturnsAsync(100);
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.CommandGiveCredits(0, It.IsAny<int>())).ReturnsAsync((ulong uId, int y) =>
-            {
-                earned += y;
-                return earned;
-            });
+            usersConnector.Setup(x => x.GiveCredits(0, It.IsAny<int>()));
             var logic = GetCollectDropCommandLogic(coinDropConnector.Object, usersConnector.Object);
 
             var result = await logic.Collect("4453", 0, 0, "test-user");
@@ -48,7 +44,6 @@ namespace SuperGamblino.Commands.Tests
             Assert.Contains("Congratulations, the CoinDrop has been collected!\n**Reward**", result.Description);
             Assert.Equal("CoinDropCollected", result.Title);
             Assert.Contains("Collected by", result.Footer);
-            Assert.Equal(100, earned);
         }
 
         [Fact]

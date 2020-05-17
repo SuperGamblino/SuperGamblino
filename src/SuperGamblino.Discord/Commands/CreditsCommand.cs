@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class CreditsCommand : BaseCommandModule
     {
-        private readonly CreditsCommandLogic _logic;
+        private readonly SuperGamblino.Commands.Commands.CreditsCommand _logic;
 
-        public CreditsCommand(CreditsCommandLogic logic)
+        public CreditsCommand(SuperGamblino.Commands.Commands.CreditsCommand logic)
         {
             _logic = logic;
         }

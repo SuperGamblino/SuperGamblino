@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00697" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.4" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.4" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.4" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />

@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class CollectDropCommand : BaseCommandModule
     {
-        private readonly CollectDropCommandLogic _logic;
+        private readonly SuperGamblino.Commands.Commands.CollectDropCommand _logic;
 
-        public CollectDropCommand(CollectDropCommandLogic logic)
+        public CollectDropCommand(SuperGamblino.Commands.Commands.CollectDropCommand logic)
         {
             _logic = logic;
         }

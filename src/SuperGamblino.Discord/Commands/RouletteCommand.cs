@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class RouletteCommand : BaseCommandModule
     {
-        private readonly RouletteCommandLogic _logic;
+        private readonly SuperGamblino.Commands.Commands.RouletteCommand _logic;
 
-        public RouletteCommand(RouletteCommandLogic logic)
+        public RouletteCommand(SuperGamblino.Commands.Commands.RouletteCommand logic)
         {
             _logic = logic;
         }

@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class VoteRewardCommand : BaseCommandModule
     {
-        private readonly VoteRewardCommandLogic _logic;
+        private readonly SuperGamblino.Commands.Commands.VoteRewardCommand _logic;
 
-        public VoteRewardCommand(VoteRewardCommandLogic logic)
+        public VoteRewardCommand(SuperGamblino.Commands.Commands.VoteRewardCommand logic)
         {
             _logic = logic;
         }

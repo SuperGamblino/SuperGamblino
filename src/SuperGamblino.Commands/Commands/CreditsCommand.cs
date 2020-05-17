@@ -2,14 +2,14 @@
 using SuperGamblino.Infrastructure.Connectors;
 using SuperGamblino.Messages;
 
-namespace SuperGamblino.Commands
+namespace SuperGamblino.Commands.Commands
 {
-    public class CreditsCommandLogic
+    public class CreditsCommand
     {
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public CreditsCommandLogic(UsersConnector usersConnector, MessagesHelper messagesHelper)
+        public CreditsCommand(UsersConnector usersConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
             _messagesHelper = messagesHelper;
@@ -17,7 +17,7 @@ namespace SuperGamblino.Commands
 
         public async Task<Message> GetCurrentCreditStatus(ulong userId)
         {
-            var credits = await _usersConnector.CommandGetUserCredits(userId);
+            var credits = await _usersConnector.GetCredits(userId);
             return _messagesHelper.AddCoinsBalanceInformation(_messagesHelper.Information(""), credits);
         }
     }

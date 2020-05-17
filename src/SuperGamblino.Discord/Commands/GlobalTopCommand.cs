@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class GlobalTopCommand : BaseCommandModule
     {
-        private readonly GlobalTopCommandLogic _logic;
+        private readonly SuperGamblino.Commands.Commands.GlobalTopCommand _logic;
 
-        public GlobalTopCommand(GlobalTopCommandLogic logic)
+        public GlobalTopCommand(SuperGamblino.Commands.Commands.GlobalTopCommand logic)
         {
             _logic = logic;
         }

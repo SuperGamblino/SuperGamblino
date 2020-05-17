@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     public class SlotsCommand : BaseCommandModule
     {
-        private readonly SlotsCommandLogic _logic;
+        private readonly SuperGamblino.Commands.Commands.SlotsCommand _logic;
 
-        public SlotsCommand(SlotsCommandLogic logic)
+        public SlotsCommand(SuperGamblino.Commands.Commands.SlotsCommand logic)
         {
             _logic = logic;
         }

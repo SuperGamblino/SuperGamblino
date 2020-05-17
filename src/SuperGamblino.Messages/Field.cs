@@ -2,11 +2,6 @@
 {
     public class Field
     {
-        public Field()
-        {
-            
-        }
-
         public Field(string name, string value)
         {
             Name = name;

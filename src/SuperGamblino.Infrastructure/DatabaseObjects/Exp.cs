@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using SuperGamblino.Core.CommandsObjects;
 using SuperGamblino.Infrastructure.Connectors;
 
-namespace SuperGamblino.Infrastructure.DatabasesObjects
+namespace SuperGamblino.Infrastructure.DatabaseObjects
 {
     public class Exp
     {

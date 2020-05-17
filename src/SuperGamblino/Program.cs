@@ -17,7 +17,7 @@ namespace SuperGamblino
 {
     internal class Program
     {
-        private static ServiceProvider _serviceProvider;
+        private static IServiceProvider _serviceProvider;
 
         private static Task ConfigureServices()
         {
@@ -40,13 +40,14 @@ namespace SuperGamblino
                         .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
                         .AddConsole();
                 })
+                .AddMemoryCache()
                 .AddSingleton(configuration)
                 .AddSingleton(connectionString)
                 .AddTransient<MessagesHelper>()
                 .AddTransient<BetSizeParser>()
                 .AddTransient<HttpClient>()
                 .AddDatabaseConnectors()
-                .AddCommandLogics()
+                .AddCommands()
                 .BuildServiceProvider();
             return Task.CompletedTask;
         }
@@ -95,7 +96,7 @@ namespace SuperGamblino
             {
                 await Task.WhenAll(new Task[]
                 {
-                    Task.Run(() => DiscordBot.DiscordMainAsync(_serviceProvider, cancellationToken.Token),
+                    Task.Run(() => DiscordBot.DiscordMainAsync(_serviceProvider, cancellationToken),
                         cancellationToken.Token),
                     Task.Run(() => DatabaseConnectionController.ControlDatabaseConnection(_serviceProvider, cancellationToken),
                         cancellationToken.Token)

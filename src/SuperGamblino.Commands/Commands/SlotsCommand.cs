@@ -1,21 +1,22 @@
 ﻿using System.Threading.Tasks;
 using SuperGamblino.Core.CommandsObjects;
+using SuperGamblino.Core.Entities;
 using SuperGamblino.Core.GamesObjects;
 using SuperGamblino.Core.Helpers;
 using SuperGamblino.Infrastructure.Connectors;
-using SuperGamblino.Infrastructure.DatabasesObjects;
+using SuperGamblino.Infrastructure.DatabaseObjects;
 using SuperGamblino.Messages;
 
-namespace SuperGamblino.Commands
+namespace SuperGamblino.Commands.Commands
 {
-    public class SlotsCommandLogic
+    public class SlotsCommand
     {
         private readonly BetSizeParser _betSizeParser;
         private readonly GameHistoryConnector _gameHistoryConnector;
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public SlotsCommandLogic(UsersConnector usersConnector, BetSizeParser betSizeParser,
+        public SlotsCommand(UsersConnector usersConnector, BetSizeParser betSizeParser,
             GameHistoryConnector gameHistoryConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
@@ -31,12 +32,12 @@ namespace SuperGamblino.Commands
             {
                 var bet = argument[0].Trim() switch
                 {
-                    "ALL" => await _usersConnector.CommandGetUserCredits(userId),
-                    "HALF" => await _usersConnector.CommandGetUserCredits(userId) / 2,
+                    "ALL" => await _usersConnector.GetCredits(userId),
+                    "HALF" => await _usersConnector.GetCredits(userId) / 2,
                     _ => _betSizeParser.Parse(argument[0])
                 };
                 if (bet == -1) return _messagesHelper.InvalidArguments(new[] {"slots <Bet>"}, "!slots", "Slots");
-                if (await _usersConnector.CommandSubsctractCredits(userId, bet))
+                if (await _usersConnector.TakeCredits(userId, bet))
                 {
                     var hasWon = false;
 
@@ -53,16 +54,17 @@ namespace SuperGamblino.Commands
                             message = "\n" + "JACKPOT!!! You won " + pointsResult + " points!";
                         else if (Slots.IsDouble(result))
                             message = "\n" + "DOUBLE! You won " + pointsResult + " points!";
-                        await _usersConnector.CommandGiveCredits(userId, pointsResult + bet);
+                        await _usersConnector.GiveCredits(userId, pointsResult + bet);
                     }
 
                     var expHelper = new Exp(_usersConnector);
                     var expResult = await expHelper.Give(userId, bet);
-                    await _gameHistoryConnector.AddGameHistory(userId, new GameHistory
+                    await _gameHistoryConnector.AddGameHistory(new GameHistory
                     {
                         GameName = "slots",
                         HasWon = hasWon,
-                        CoinsDifference = hasWon ? pointsResult : bet * -1
+                        CoinsDifference = hasWon ? pointsResult : bet * -1,
+                        UserId = userId
                     });
                     return _messagesHelper.AddCoinsBalanceAndExpInformation(hasWon
                             ? _messagesHelper.Success(
@@ -70,7 +72,7 @@ namespace SuperGamblino.Commands
                                 result.EmojiThree
                                 + message, "Roulette")
                             : _messagesHelper.LoseInformation(bet, "Roulette"), expResult,
-                        await _usersConnector.CommandGetUserCredits(userId));
+                        await _usersConnector.GetCredits(userId));
                 }
 
                 return _messagesHelper.NotEnoughCredits("Roulette");

@@ -1,26 +1,24 @@
 ﻿using System;
 using Moq;
+using SuperGamblino.Commands.Commands;
 using SuperGamblino.Core.Entities;
 using SuperGamblino.Infrastructure.Connectors;
-using SuperGamblino.Infrastructure.DatabasesObjects;
+using SuperGamblino.Infrastructure.DatabaseObjects;
 using Xunit;
 
 namespace SuperGamblino.Commands.Tests
 {
     public class WorkRewardTests
     {
-        private WorkRewardCommandLogic GetWorkRewardCommandLogic(UsersConnector usersConnector)
+        private WorkRewardCommand GetWorkRewardCommandLogic(UsersConnector usersConnector)
         {
-            return new WorkRewardCommandLogic(Helpers.GetMessages(), usersConnector);
+            return new WorkRewardCommand(Helpers.GetMessages(), usersConnector);
         }
 
         [Fact]
         public async void GiveRewardOnFirstUser()
         {
-            var amountOfCredits = 0;
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, It.IsAny<string>()))
-                .ReturnsAsync(new DateTimeResult(true, null));
             usersConnector.Setup(x => x.GetUser(0))
                 .ReturnsAsync(new User
                 {
@@ -29,20 +27,18 @@ namespace SuperGamblino.Commands.Tests
                     Experience = 1200,
                     LastDailyReward = null,
                     LastHourlyReward = null,
+                    LastWorkReward = null,
                     Level = 6
                 });
-            usersConnector.Setup(x => x.CommandGiveCredits(0, It.IsAny<int>()))
-                .Callback((ulong user, int credits) => { amountOfCredits += credits; });
-            usersConnector.Setup(x => x.SetDateTime(0, It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(true);
+            usersConnector.Setup(x => x.GiveCredits(0, It.IsAny<int>()));
+            usersConnector.Setup(x => x.UpdateUser(It.IsAny<User>()));
             var logic = GetWorkRewardCommandLogic(usersConnector.Object);
 
             var result = await logic.GetWorkReward(0);
 
             Assert.Equal(Helpers.SuccessColor, result.Color);
             Assert.Equal("WorkReward", result.Title);
-            Assert.Equal($"You've gained {amountOfCredits} credits!", result.Description);
-            Assert.NotEqual(0, amountOfCredits);
+            Assert.Matches(@"You've gained ([^\s]+) credits!", result.Description);
         }
 
         [Fact]
@@ -50,8 +46,6 @@ namespace SuperGamblino.Commands.Tests
         {
             var amountOfCredits = 0;
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, It.IsAny<string>()))
-                .ReturnsAsync(new DateTimeResult(true, new DateTime(2020, 1, 1)));
             usersConnector.Setup(x => x.GetUser(0))
                 .ReturnsAsync(new User
                 {
@@ -60,12 +54,12 @@ namespace SuperGamblino.Commands.Tests
                     Experience = 1200,
                     LastDailyReward = null,
                     LastHourlyReward = null,
+                    LastWorkReward = new DateTime(2020, 1, 1),
                     Level = 6
                 });
-            usersConnector.Setup(x => x.CommandGiveCredits(0, It.IsAny<int>()))
+            usersConnector.Setup(x => x.GiveCredits(0, It.IsAny<int>()))
                 .Callback((ulong user, int credits) => { amountOfCredits += credits; });
-            usersConnector.Setup(x => x.SetDateTime(0, It.IsAny<string>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(true);
+            usersConnector.Setup(x => x.UpdateUser(It.IsAny<User>()));
             var logic = GetWorkRewardCommandLogic(usersConnector.Object);
 
             var result = await logic.GetWorkReward(0);
@@ -80,8 +74,6 @@ namespace SuperGamblino.Commands.Tests
         public async void InformAboutCallingCommandTooEarly()
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, It.IsAny<string>()))
-                .ReturnsAsync(new DateTimeResult(true, DateTime.Now));
             usersConnector.Setup(x => x.GetUser(0))
                 .ReturnsAsync(new User
                 {
@@ -90,6 +82,7 @@ namespace SuperGamblino.Commands.Tests
                     Experience = 1200,
                     LastDailyReward = null,
                     LastHourlyReward = null,
+                    LastWorkReward = DateTime.Now,
                     Level = 6
                 });
             var logic = GetWorkRewardCommandLogic(usersConnector.Object);
@@ -101,30 +94,6 @@ namespace SuperGamblino.Commands.Tests
             Assert.Matches(
                 "You've tried to execute command '!work' before it was ready! Command will be ready in ([^\\s]+)",
                 result.Description);
-        }
-
-        [Fact]
-        public async void InformAboutProblemsWithDb()
-        {
-            var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, It.IsAny<string>()))
-                .ReturnsAsync(new DateTimeResult(false, null));
-            usersConnector.Setup(x => x.GetUser(0))
-                .ReturnsAsync(new User
-                {
-                    Id = 0,
-                    Credits = 250,
-                    Experience = 1200,
-                    LastDailyReward = null,
-                    LastHourlyReward = null,
-                    Level = 6
-                });
-            var logic = GetWorkRewardCommandLogic(usersConnector.Object);
-
-            var result = await logic.GetWorkReward(0);
-
-            Assert.Equal(Helpers.WarningColor, result.Color);
-            Assert.Equal("Some problem with DB occured!", result.Description);
         }
     }
 }

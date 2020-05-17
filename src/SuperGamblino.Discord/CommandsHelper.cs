@@ -22,6 +22,7 @@ namespace SuperGamblino.Discord
             commands.RegisterCommands<VoteRewardCommand>();
             commands.RegisterCommands<AboutCommand>();
             commands.RegisterCommands<CollectDropCommand>();
+            commands.RegisterCommands<CountDEBUGCommand>();
         }
     }
 }

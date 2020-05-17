@@ -3,24 +3,25 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using SuperGamblino.Core.Configuration;
+using SuperGamblino.Core.GamesObjects;
 using SuperGamblino.Infrastructure.Connectors;
 using SuperGamblino.Messages;
-using Newtonsoft.Json;
-using SuperGamblino.Core.GamesObjects;
 
-namespace SuperGamblino.Commands
+namespace SuperGamblino.Commands.Commands
 {
-    public class VoteRewardCommandLogic
+    public class VoteRewardCommand
     {
         private readonly HttpClient _client;
         private readonly Config _config;
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
-        private readonly ILogger<VoteRewardCommandLogic> _logger;
+        private readonly ILogger<VoteRewardCommand> _logger;
+        const int Reward = 400;
 
-        public VoteRewardCommandLogic(HttpClient client, UsersConnector usersConnector, Config config,
-            MessagesHelper messagesHelper, ILogger<VoteRewardCommandLogic> logger)
+        public VoteRewardCommand(HttpClient client, UsersConnector usersConnector, Config config,
+            MessagesHelper messagesHelper, ILogger<VoteRewardCommand> logger)
         {
             _client = client;
             _usersConnector = usersConnector;
@@ -31,17 +32,15 @@ namespace SuperGamblino.Commands
 
         public async Task<Message> Vote(ulong userId)
         {
-            const int reward = 400;
             if (_config.BotSettings.TopGgToken == null)
             {
                 return _messagesHelper.Information(
                     "Top GG Token functionality is disabled on this server :disappointed:. Contact bots admin to turn it on :slight_smile:.",
                     "TopGGVote");
             }
-            var result = await _usersConnector.GetDateTime(userId, "last_vote_reward");
-            if (result.Successful)
-            {
-                var httpRequestMessage = new HttpRequestMessage
+            
+            var user = await _usersConnector.GetUser(userId);
+            var httpRequestMessage = new HttpRequestMessage
                 {
                     Method = HttpMethod.Get,
                     RequestUri = new Uri($"https://top.gg/api/bots/688160933574475800/check?userId={userId}"),
@@ -63,29 +62,28 @@ namespace SuperGamblino.Commands
 
                 if (didUserVote.Voted)
                 {
-                    if (result.DateTime.HasValue)
+                    if (user.LastVoteReward.HasValue)
                     {
-                        var timeSpan = DateTime.Now - result.DateTime.Value;
+                        var timeSpan = DateTime.Now - user.LastVoteReward.Value;
                         if (timeSpan >= TimeSpan.FromHours(12))
                         {
-                            await _usersConnector.CommandGiveCredits(userId, reward);
-                            await _usersConnector.SetDateTime(userId, "last_vote_reward", DateTime.Now);
-                            return _messagesHelper.CreditsGain(reward, "TopGGVote");
+                            user.Credits += Reward;
+                            user.LastVoteReward = DateTime.Now;
+                            await _usersConnector.UpdateUser(user);
+                            return _messagesHelper.CreditsGain(Reward, "TopGGVote");
                         }
 
                         return _messagesHelper.CommandCalledTooEarly(TimeSpan.FromHours(12) - timeSpan, "!vote",
                             "TopGGVote");
                     }
 
-                    await _usersConnector.CommandGiveCredits(userId, reward);
-                    await _usersConnector.SetDateTime(userId, "last_vote_reward", DateTime.Now);
-                    return _messagesHelper.CreditsGain(reward, "TopGGVote");
+                    user.Credits += Reward;
+                    user.LastVoteReward = DateTime.Now;
+                    await _usersConnector.UpdateUser(user);
+                    return _messagesHelper.CreditsGain(Reward, "TopGGVote");
                 }
 
                 return _messagesHelper.NotVotedYet();
-            }
-
-            return _messagesHelper.Error("Some problem with DB occured!");
         }
     }
 }

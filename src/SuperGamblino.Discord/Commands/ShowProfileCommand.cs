@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class ShowProfileCommand : BaseCommandModule
     {
-        private readonly ShowProfileCommandLogic _logic;
+        private readonly SuperGamblino.Commands.Commands.ShowProfileCommand _logic;
 
-        public ShowProfileCommand(ShowProfileCommandLogic logic)
+        public ShowProfileCommand(SuperGamblino.Commands.Commands.ShowProfileCommand logic)
         {
             _logic = logic;
         }

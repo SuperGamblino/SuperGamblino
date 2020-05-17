@@ -1,12 +1,12 @@
 ﻿﻿using SuperGamblino.Messages;
 
- namespace SuperGamblino.Commands
+ namespace SuperGamblino.Commands.Commands
 {
-    public class AboutCommandLogic
+    public class AboutCommand
     {
         private readonly MessagesHelper _messagesHelper;
 
-        public AboutCommandLogic(MessagesHelper messagesHelper)
+        public AboutCommand(MessagesHelper messagesHelper)
         {
             _messagesHelper = messagesHelper;
         }

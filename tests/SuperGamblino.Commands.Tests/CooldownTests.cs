@@ -2,37 +2,19 @@
 using System.Linq;
 using DSharpPlus.Entities;
 using Moq;
+using SuperGamblino.Commands.Commands;
+using SuperGamblino.Core.Entities;
 using SuperGamblino.Infrastructure.Connectors;
-using SuperGamblino.Infrastructure.DatabasesObjects;
+using SuperGamblino.Infrastructure.DatabaseObjects;
 using Xunit;
 
 namespace SuperGamblino.Commands.Tests
 {
     public class CooldownTests
     {
-        private CooldownCommandLogic GetCooldownCommandLogic(UsersConnector usersConnector)
+        private CooldownCommand GetCooldownCommandLogic(UsersConnector usersConnector)
         {
-            return new CooldownCommandLogic(usersConnector, Helpers.GetMessages());
-        }
-
-        [Theory]
-        [InlineData("last_hourly_reward")]
-        [InlineData("last_daily_reward")]
-        [InlineData("last_work_reward")]
-        [InlineData("last_vote_reward")]
-        public async void ReportsProblemWhenCannotGetValueFromDb(string fieldName)
-        {
-            var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, It.IsAny<string>()))
-                .ReturnsAsync((ulong id, string s) =>
-                    s != fieldName ? new DateTimeResult(true, null) : new DateTimeResult(false, null));
-
-            var logic = GetCooldownCommandLogic(usersConnector.Object);
-
-            var result = await logic.GetCooldowns(0);
-
-            Assert.Equal(Helpers.WarningColor, result.Color);
-            Assert.Equal("Some problem with DB occured!!!", result.Description);
+            return new CooldownCommand(usersConnector, Helpers.GetMessages());
         }
 
         [Fact]
@@ -40,8 +22,14 @@ namespace SuperGamblino.Commands.Tests
         {
             var date = new DateTime(2020, 1, 1, 16, 0, 0);
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, It.IsAny<string>()))
-                .ReturnsAsync(new DateTimeResult(true, date));
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            {
+                Id = 0,
+                LastDailyReward = DateTime.Now,
+                LastHourlyReward = DateTime.Now,
+                LastVoteReward = DateTime.Now,
+                LastWorkReward = DateTime.Now
+            });
             var logic = GetCooldownCommandLogic(usersConnector.Object);
 
             var result = await logic.GetCooldowns(0);
@@ -54,10 +42,15 @@ namespace SuperGamblino.Commands.Tests
         [Fact]
         public async void CorrectValuesInTheOutput()
         {
-            var date = DateTime.Now;
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, It.IsAny<string>()))
-                .ReturnsAsync(new DateTimeResult(true, date));
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            {
+                Id = 0,
+                LastDailyReward = DateTime.Now,
+                LastHourlyReward = DateTime.Now,
+                LastVoteReward = DateTime.Now,
+                LastWorkReward = DateTime.Now
+            });
             var logic = GetCooldownCommandLogic(usersConnector.Object);
 
             var result = await logic.GetCooldowns(0);

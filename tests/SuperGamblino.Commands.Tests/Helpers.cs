@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SuperGamblino.Core.Configuration;
@@ -48,7 +49,7 @@ namespace SuperGamblino.Commands.Tests
 
         public static Mock<T> GetDatabaseConnector<T>() where T : DatabaseConnector
         {
-            return new Mock<T>(GetLogger<T>(), GetConnectionString());
+            return new Mock<T>(GetLogger<T>(), GetConnectionString(), new MemoryCache(new MemoryCacheOptions()));
         }
 
         public static Mock<HttpMessageHandler> GetHttpMessageHandler()

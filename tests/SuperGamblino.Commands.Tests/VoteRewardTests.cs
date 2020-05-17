@@ -6,20 +6,22 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Moq;
 using Moq.Protected;
+using SuperGamblino.Commands.Commands;
 using SuperGamblino.Core.Configuration;
+using SuperGamblino.Core.Entities;
 using SuperGamblino.Infrastructure.Connectors;
-using SuperGamblino.Infrastructure.DatabasesObjects;
+using SuperGamblino.Infrastructure.DatabaseObjects;
 using Xunit;
 
 namespace SuperGamblino.Commands.Tests
 {
     public class VoteRewardTests
     {
-        private VoteRewardCommandLogic GetVoteRewardCommandLogic(HttpMessageHandler httpMessageHandler,
+        private VoteRewardCommand GetVoteRewardCommandLogic(HttpMessageHandler httpMessageHandler,
             UsersConnector usersConnector, Config config = null)
         {
-            return new VoteRewardCommandLogic(new HttpClient(httpMessageHandler), usersConnector, config ?? Helpers.GetConfig(),
-                Helpers.GetMessages(), Helpers.GetLogger<VoteRewardCommandLogic>());
+            return new VoteRewardCommand(new HttpClient(httpMessageHandler), usersConnector, config ?? Helpers.GetConfig(),
+                Helpers.GetMessages(), Helpers.GetLogger<VoteRewardCommand>());
         }
 
         private HttpMessageHandler GetHttpClient(bool voted, HttpStatusCode statusCode = HttpStatusCode.OK)
@@ -40,8 +42,11 @@ namespace SuperGamblino.Commands.Tests
         {
             var httpMessageHandler = GetHttpClient(false);
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, "last_vote_reward"))
-                .ReturnsAsync(new DateTimeResult(true, DateTime.Now.Subtract(TimeSpan.FromDays(5))));
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            {
+                Id = 0,
+                LastVoteReward = DateTime.Now.Subtract(TimeSpan.FromDays(5))
+            });
             var logic = GetVoteRewardCommandLogic(httpMessageHandler, usersConnector.Object);
 
             var result = await logic.Vote(0);
@@ -58,8 +63,11 @@ namespace SuperGamblino.Commands.Tests
         {
             var httpMessageHandler = GetHttpClient(false, HttpStatusCode.Unauthorized);
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, "last_vote_reward"))
-                .ReturnsAsync(new DateTimeResult(true, DateTime.Now.Subtract(TimeSpan.FromDays(5))));
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            {
+                Id = 0,
+                LastVoteReward = DateTime.Now.Subtract(TimeSpan.FromDays(5))
+            });
             var logic = GetVoteRewardCommandLogic(httpMessageHandler, usersConnector.Object);
 
             var result = await logic.Vote(0);
@@ -74,8 +82,11 @@ namespace SuperGamblino.Commands.Tests
         {
             var httpMessageHandler = GetHttpClient(true);
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, "last_vote_reward"))
-                .ReturnsAsync(new DateTimeResult(true, DateTime.Now));
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            {
+                Id = 0,
+                LastVoteReward = DateTime.Now
+            });
             var logic = GetVoteRewardCommandLogic(httpMessageHandler, usersConnector.Object);
 
             var result = await logic.Vote(0);
@@ -88,30 +99,16 @@ namespace SuperGamblino.Commands.Tests
         }
 
         [Fact]
-        public async void GetsErrorOnDBError()
-        {
-            var httpMessageHandler = GetHttpClient(true);
-            var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, "last_vote_reward"))
-                .ReturnsAsync(new DateTimeResult(false, null));
-            var logic = GetVoteRewardCommandLogic(httpMessageHandler, usersConnector.Object);
-
-            var result = await logic.Vote(0);
-
-            Assert.Equal(Helpers.WarningColor, result.Color);
-            Assert.Equal("Some problem with DB occured!", result.Description);
-        }
-
-        [Fact]
         public async void GiveCreditsOnLaterVote()
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, "last_vote_reward"))
-                .ReturnsAsync(new DateTimeResult(true, DateTime.Now.Subtract(TimeSpan.FromDays(5))));
-            usersConnector.Setup(x => x.CommandGiveCredits(0, It.IsAny<int>()))
-                .ReturnsAsync((ulong id, int cred) => cred);
-            usersConnector.Setup(x => x.SetDateTime(0, "last_vote_reward", It.IsAny<DateTime>()))
-                .ReturnsAsync(true);
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            {
+                Id = 0,
+                LastVoteReward = DateTime.Now.Subtract(TimeSpan.FromDays(5))
+            });
+            usersConnector.Setup(x => x.GiveCredits(0, It.IsAny<int>()));
+            usersConnector.Setup(x => x.UpdateUser(It.IsAny<User>()));
             var logic = GetVoteRewardCommandLogic(GetHttpClient(true), usersConnector.Object);
 
             var result = await logic.Vote(0);
@@ -125,12 +122,13 @@ namespace SuperGamblino.Commands.Tests
         public async void GivesCreditsOnFirstVote()
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetDateTime(0, "last_vote_reward"))
-                .ReturnsAsync(new DateTimeResult(true, null));
-            usersConnector.Setup(x => x.CommandGiveCredits(0, It.IsAny<int>()))
-                .ReturnsAsync((ulong id, int cred) => cred);
-            usersConnector.Setup(x => x.SetDateTime(0, "last_vote_reward", It.IsAny<DateTime>()))
-                .ReturnsAsync(true);
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            {
+                Id = 0,
+                LastVoteReward = null
+            });
+            usersConnector.Setup(x => x.GiveCredits(0, It.IsAny<int>()));
+            usersConnector.Setup(x => x.UpdateUser(It.IsAny<User>()));
             var logic = GetVoteRewardCommandLogic(GetHttpClient(true), usersConnector.Object);
 
             var result = await logic.Vote(0);

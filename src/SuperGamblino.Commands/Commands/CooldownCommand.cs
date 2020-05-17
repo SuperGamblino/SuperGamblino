@@ -5,32 +5,33 @@ using SuperGamblino.Core.CommandsObjects;
 using SuperGamblino.Infrastructure.Connectors;
 using SuperGamblino.Messages;
 
-namespace SuperGamblino.Commands
+namespace SuperGamblino.Commands.Commands
 {
-    public class CooldownCommandLogic
+    public class CooldownCommand
     {
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public CooldownCommandLogic(UsersConnector usersConnector, MessagesHelper messagesHelper)
+        public CooldownCommand(UsersConnector usersConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
             _messagesHelper = messagesHelper;
         }
-
+        
+        //TODO Clean it up!!!
+        //TODO Test it up!!!
         public async Task<Message> GetCooldowns(ulong userId)
         {
-            var curLhr = await _usersConnector.GetDateTime(userId, "last_hourly_reward");
-            var curLdr = await _usersConnector.GetDateTime(userId, "last_daily_reward");
-            var curLwr = await _usersConnector.GetDateTime(userId, "last_work_reward");
-            var curLvr = await _usersConnector.GetDateTime(userId, "last_vote_reward");
+            var user = await _usersConnector.GetUser(userId);
+            var curLhr = user.LastHourlyReward;
+            var curLdr = user.LastDailyReward;
+            var curLwr = user.LastWorkReward;;
+            var curLvr = user.LastVoteReward;;
             var cooldownObjects = new List<CooldownObject>();
-
-            if (curLhr.Successful && curLdr.Successful && curLwr.Successful && curLvr.Successful)
-            {
-                if (curLhr.DateTime.HasValue)
+            
+                if (curLhr.HasValue)
                 {
-                    var timeSpan = DateTime.Now - curLhr.DateTime.Value;
+                    var timeSpan = DateTime.Now - curLhr.Value;
                     cooldownObjects.Add(timeSpan >= TimeSpan.FromHours(1)
                         ? new CooldownObject("Hourly")
                         : new CooldownObject("Hourly", TimeSpan.FromHours(1) - timeSpan));
@@ -40,9 +41,9 @@ namespace SuperGamblino.Commands
                     cooldownObjects.Add(new CooldownObject("Hourly"));
                 }
 
-                if (curLdr.DateTime.HasValue)
+                if (curLdr.HasValue)
                 {
-                    var timeSpan = DateTime.Now - curLdr.DateTime.Value;
+                    var timeSpan = DateTime.Now - curLdr.Value;
                     cooldownObjects.Add(timeSpan >= TimeSpan.FromDays(1)
                         ? new CooldownObject("Daily")
                         : new CooldownObject("Daily", TimeSpan.FromDays(1) - timeSpan));
@@ -52,9 +53,9 @@ namespace SuperGamblino.Commands
                     cooldownObjects.Add(new CooldownObject("Daily"));
                 }
 
-                if (curLwr.DateTime.HasValue)
+                if (curLwr.HasValue)
                 {
-                    var timeSpan = DateTime.Now - curLwr.DateTime.Value;
+                    var timeSpan = DateTime.Now - curLwr.Value;
                     cooldownObjects.Add(timeSpan >= TimeSpan.FromHours(6)
                         ? new CooldownObject("Work")
                         : new CooldownObject("Work", TimeSpan.FromHours(6) - timeSpan));
@@ -64,9 +65,9 @@ namespace SuperGamblino.Commands
                     cooldownObjects.Add(new CooldownObject("Work"));
                 }
 
-                if (curLvr.DateTime.HasValue)
+                if (curLvr.HasValue)
                 {
-                    var timeSpan = DateTime.Now - curLvr.DateTime.Value;
+                    var timeSpan = DateTime.Now - curLvr.Value;
                     cooldownObjects.Add(timeSpan >= TimeSpan.FromHours(12)
                         ? new CooldownObject("Vote")
                         : new CooldownObject("Vote", TimeSpan.FromHours(12) - timeSpan));
@@ -78,8 +79,5 @@ namespace SuperGamblino.Commands
 
                 return _messagesHelper.ListCurrentCooldowns(cooldownObjects, "Cooldowns");
             }
-
-            return _messagesHelper.Error("Some problem with DB occured!!!");
-        }
     }
 }

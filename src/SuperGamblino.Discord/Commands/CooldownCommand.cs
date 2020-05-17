@@ -2,16 +2,17 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class CooldownCommand : BaseCommandModule
     {
-        private readonly CooldownCommandLogic _cooldownCommandLogic;
+        private readonly SuperGamblino.Commands.Commands.CooldownCommand _cooldownCommand;
 
-        public CooldownCommand(CooldownCommandLogic cooldownCommandLogic)
+        public CooldownCommand(SuperGamblino.Commands.Commands.CooldownCommand cooldownCommand)
         {
-            _cooldownCommandLogic = cooldownCommandLogic;
+            _cooldownCommand = cooldownCommand;
         }
 
         [Command("cooldown")]
@@ -20,7 +21,7 @@ namespace SuperGamblino.Discord.Commands
         [Description("Shows the current command cooldowns. This command takes no arguments.")]
         public async Task OnExecute(CommandContext command)
         {
-            await command.RespondAsync("", false, await _cooldownCommandLogic.GetCooldowns(command.User.Id).ToDiscordEmbed());
+            await command.RespondAsync("", false, await _cooldownCommand.GetCooldowns(command.User.Id).ToDiscordEmbed());
         }
     }
 }

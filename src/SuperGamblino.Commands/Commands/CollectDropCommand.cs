@@ -3,15 +3,15 @@ using System.Threading.Tasks;
 using SuperGamblino.Infrastructure.Connectors;
 using SuperGamblino.Messages;
 
-namespace SuperGamblino.Commands
+namespace SuperGamblino.Commands.Commands
 {
-    public class CollectDropCommandLogic
+    public class CollectDropCommand
     {
         private readonly CoindropConnector _coindropConnector;
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public CollectDropCommandLogic(MessagesHelper messagesHelper, CoindropConnector coindropConnector,
+        public CollectDropCommand(MessagesHelper messagesHelper, CoindropConnector coindropConnector,
             UsersConnector usersConnector)
         {
             _messagesHelper = messagesHelper;
@@ -32,7 +32,7 @@ namespace SuperGamblino.Commands
                 var reward = await _coindropConnector.CollectCoinDrop(channelId, collectId);
                 if (reward != 0)
                 {
-                    await _usersConnector.CommandGiveCredits(userId, reward);
+                    await _usersConnector.GiveCredits(userId, reward);
                     return _messagesHelper.CoinDropSuccessful(reward, username);
                 }
 

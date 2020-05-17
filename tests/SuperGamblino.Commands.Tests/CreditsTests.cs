@@ -1,4 +1,5 @@
 ﻿using Moq;
+using SuperGamblino.Commands.Commands;
 using SuperGamblino.Infrastructure.Connectors;
 using Xunit;
 
@@ -6,9 +7,9 @@ namespace SuperGamblino.Commands.Tests
 {
     public class CreditsTests
     {
-        private CreditsCommandLogic GetCreditsCommandLogic(UsersConnector usersConnector)
+        private CreditsCommand GetCreditsCommandLogic(UsersConnector usersConnector)
         {
-            return new CreditsCommandLogic(usersConnector, Helpers.GetMessages());
+            return new CreditsCommand(usersConnector, Helpers.GetMessages());
         }
 
         [Theory]
@@ -18,7 +19,7 @@ namespace SuperGamblino.Commands.Tests
         public async void IsCorrectAmountDisplayed(int amount)
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.CommandGetUserCredits(0)).ReturnsAsync(amount);
+            usersConnector.Setup(x => x.GetCredits(0)).ReturnsAsync(amount);
             var logic = GetCreditsCommandLogic(usersConnector.Object);
 
             var result = await logic.GetCurrentCreditStatus(0);

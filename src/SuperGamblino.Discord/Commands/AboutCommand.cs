@@ -2,16 +2,17 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class AboutCommand : BaseCommandModule
     {
-        private readonly AboutCommandLogic _aboutCommandLogic;
+        private readonly SuperGamblino.Commands.Commands.AboutCommand _aboutCommand;
 
-        public AboutCommand(AboutCommandLogic aboutCommandLogic)
+        public AboutCommand(SuperGamblino.Commands.Commands.AboutCommand aboutCommand)
         {
-            _aboutCommandLogic = aboutCommandLogic;
+            _aboutCommand = aboutCommand;
         }
 
         [Command("about")]
@@ -20,7 +21,7 @@ namespace SuperGamblino.Discord.Commands
         public async Task OnExecute(CommandContext command)
         {
             var guildCount = command.Client.Guilds.Count;
-            await command.RespondAsync("", false, _aboutCommandLogic.GetAboutInfo(guildCount).ToDiscordEmbed());
+            await command.RespondAsync("", false, _aboutCommand.GetAboutInfo(guildCount).ToDiscordEmbed());
         }
     }
 }

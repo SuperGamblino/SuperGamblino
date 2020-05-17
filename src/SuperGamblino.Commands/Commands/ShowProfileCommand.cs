@@ -3,14 +3,14 @@ using SuperGamblino.Core.GamesObjects;
 using SuperGamblino.Infrastructure.Connectors;
 using SuperGamblino.Messages;
 
-namespace SuperGamblino.Commands
+namespace SuperGamblino.Commands.Commands
 {
-    public class ShowProfileCommandLogic
+    public class ShowProfileCommand
     {
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public ShowProfileCommandLogic(UsersConnector usersConnector, MessagesHelper messagesHelper)
+        public ShowProfileCommand(UsersConnector usersConnector, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
             _messagesHelper = messagesHelper;

@@ -1,5 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using Moq;
+using SuperGamblino.Commands.Commands;
 using SuperGamblino.Core.CommandsObjects;
 using SuperGamblino.Core.Entities;
 using SuperGamblino.Core.Helpers;
@@ -10,10 +11,10 @@ namespace SuperGamblino.Commands.Tests
 {
     public class CoinflipTests
     {
-        private CoinflipCommandLogic GetCoinflipCommandLogic(UsersConnector usersConnector,
+        private CoinflipCommand GetCoinflipCommandLogic(UsersConnector usersConnector,
             GameHistoryConnector gameHistoryConnector)
         {
-            return new CoinflipCommandLogic(usersConnector, new BetSizeParser(), gameHistoryConnector,
+            return new CoinflipCommand(usersConnector, new BetSizeParser(), gameHistoryConnector,
                 Helpers.GetMessages());
         }
 
@@ -57,7 +58,7 @@ namespace SuperGamblino.Commands.Tests
         public async void DoesReturnCorrectAnswerOnLackOfCredits(string arguments, int amount)
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.CommandSubsctractCredits(0, amount)).ReturnsAsync(false);
+            usersConnector.Setup(x => x.TakeCredits(0, amount)).ReturnsAsync(false);
             var gameHistoryConnector = Helpers.GetDatabaseConnector<GameHistoryConnector>();
             var logic = GetCoinflipCommandLogic(usersConnector.Object, gameHistoryConnector.Object);
 
@@ -72,9 +73,9 @@ namespace SuperGamblino.Commands.Tests
         public async void DoesPlayingWorks(string arguments, int amount)
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.CommandSubsctractCredits(0, amount)).ReturnsAsync(true);
-            usersConnector.Setup(x => x.CommandGiveCredits(0, amount * 2)).ReturnsAsync(0);
-            usersConnector.Setup(x => x.CommandGetUserCredits(0)).ReturnsAsync(1000);
+            usersConnector.Setup(x => x.TakeCredits(0, amount)).ReturnsAsync(true);
+            usersConnector.Setup(x => x.GiveCredits(0, amount * 2));
+            usersConnector.Setup(x => x.GetCredits(0)).ReturnsAsync(1000);
             usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Level = 10
@@ -82,12 +83,12 @@ namespace SuperGamblino.Commands.Tests
             usersConnector.Setup(x => x.CommandGiveUserExp(0, It.IsAny<int>()))
                 .ReturnsAsync(new AddExpResult(false, 100000, 0, 0));
             var gameHistoryConnector = Helpers.GetDatabaseConnector<GameHistoryConnector>();
-            gameHistoryConnector.Setup(x => x.AddGameHistory(0, It.IsAny<GameHistory>()))
+            gameHistoryConnector.Setup(x => x.AddGameHistory(It.IsAny<GameHistory>()))
                 .ReturnsAsync(true);
             var logic = GetCoinflipCommandLogic(usersConnector.Object, gameHistoryConnector.Object);
 
             var result = await logic.PlayCoinflip(arguments, 0);
-            Assert.Matches("^You've (won|lost) ([^\\s]+) credits!$", result.Description);
+            Assert.Matches("^\nYou've (won|lost) ([^\\s]+) credits!$", result.Description);
             Assert.Equal("CoinFlip", result.Title);
         }
     }

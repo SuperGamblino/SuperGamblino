@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class CoinflipCommand : BaseCommandModule
     {
-        private readonly CoinflipCommandLogic _logic;
+        private readonly SuperGamblino.Commands.Commands.CoinflipCommand _logic;
 
-        public CoinflipCommand(CoinflipCommandLogic logic)
+        public CoinflipCommand(SuperGamblino.Commands.Commands.CoinflipCommand logic)
         {
             _logic = logic;
         }
@@ -23,7 +24,7 @@ namespace SuperGamblino.Discord.Commands
         {
             var arguments = command.RawArgumentString;
             var userId = command.User.Id;
-            await command.RespondAsync("", false, await _logic.PlayCoinflip(arguments, userId).ToDiscordEmbed());
+            var message = await command.RespondAsync("", false, await _logic.PlayCoinflip(arguments, userId).ToDiscordEmbed());
         }
     }
 }

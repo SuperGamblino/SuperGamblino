@@ -4,15 +4,15 @@ using Microsoft.Extensions.Logging;
 using SuperGamblino.Infrastructure.Connectors;
 using SuperGamblino.Messages;
 
-namespace SuperGamblino.Commands
+namespace SuperGamblino.Commands.Commands
 {
-    public class GlobalTopCommandLogic
+    public class GlobalTopCommand
     {
-        private readonly ILogger<GlobalTopCommandLogic> _logger;
+        private readonly ILogger<GlobalTopCommand> _logger;
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public GlobalTopCommandLogic(UsersConnector usersConnector, ILogger<GlobalTopCommandLogic> logger, MessagesHelper messagesHelper)
+        public GlobalTopCommand(UsersConnector usersConnector, ILogger<GlobalTopCommand> logger, MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
             _logger = logger;

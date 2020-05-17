@@ -1,14 +1,15 @@
-﻿using SuperGamblino.Core.Helpers;
+﻿using SuperGamblino.Commands.Commands;
+using SuperGamblino.Core.Helpers;
 using SuperGamblino.Infrastructure.Connectors;
 
 namespace SuperGamblino.Commands.Tests
 {
     public class RouletteTests
     {
-        private RouletteCommandLogic GetRouletteCommandLogic(UsersConnector usersConnector,
+        private RouletteCommand GetRouletteCommandLogic(UsersConnector usersConnector,
             GameHistoryConnector gameHistoryConnector)
         {
-            return new RouletteCommandLogic(usersConnector, new BetSizeParser(), Helpers.GetMessages(),
+            return new RouletteCommand(usersConnector, new BetSizeParser(), Helpers.GetMessages(),
                 gameHistoryConnector);
         }
 

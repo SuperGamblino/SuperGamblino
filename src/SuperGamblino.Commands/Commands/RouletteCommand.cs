@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Threading.Tasks;
 using SuperGamblino.Core.CommandsObjects;
+using SuperGamblino.Core.Entities;
 using SuperGamblino.Core.GamesObjects;
 using SuperGamblino.Core.Helpers;
 using SuperGamblino.Infrastructure.Connectors;
-using SuperGamblino.Infrastructure.DatabasesObjects;
+using SuperGamblino.Infrastructure.DatabaseObjects;
 using SuperGamblino.Messages;
 
-namespace SuperGamblino.Commands
+namespace SuperGamblino.Commands.Commands
 {
-    public class RouletteCommandLogic
+    public class RouletteCommand
     {
         private readonly BetSizeParser _betSizeParser;
         private readonly GameHistoryConnector _gameHistoryConnector;
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public RouletteCommandLogic(UsersConnector usersConnector, BetSizeParser betSizeParser,
+        public RouletteCommand(UsersConnector usersConnector, BetSizeParser betSizeParser,
             MessagesHelper messagesHelper,
             GameHistoryConnector gameHistoryConnector)
         {
@@ -38,20 +39,22 @@ namespace SuperGamblino.Commands
             {
                 isNumber = int.TryParse(argument[0], out nmbGuess);
                 if (argument[1].Trim() == "ALL")
-                    nmbBet = await _usersConnector.CommandGetUserCredits(userId);
+                    nmbBet = await _usersConnector.GetCredits(userId);
                 else if (argument[1].Trim() == "HALF")
-                    nmbBet = await _usersConnector.CommandGetUserCredits(userId) / 2;
+                    nmbBet = await _usersConnector.GetCredits(userId) / 2;
                 else
                     nmbBet = _betSizeParser.Parse(argument[1]);
             }
 
+            var selectedOption = argument[0].ToUpper();
+
             var credWon = 0;
             if (nmbBet != -1)
             {
-                var curCred = await _usersConnector.CommandGetUserCredits(userId);
+                var curCred = await _usersConnector.GetCredits(userId);
                 if (curCred < nmbBet)
                     return _messagesHelper.NotEnoughCredits("Roulette");
-                await _usersConnector.CommandSubsctractCredits(userId, nmbBet);
+                await _usersConnector.TakeCredits(userId, nmbBet);
 
                 var rewardMulti = 0;
                 var hasWon = false;
@@ -72,7 +75,7 @@ namespace SuperGamblino.Commands
                 }
                 else
                 {
-                    switch (argument[0].ToUpper())
+                    switch (selectedOption)
                     {
                         case "RED":
                             if (result.Color.ToUpper() == "RED")
@@ -112,26 +115,27 @@ namespace SuperGamblino.Commands
                     }
                 }
 
-                await _gameHistoryConnector.AddGameHistory(userId, new GameHistory
+                await _gameHistoryConnector.AddGameHistory(new GameHistory
                 {
                     GameName = "roulette",
                     HasWon = hasWon,
-                    CoinsDifference = credWon
+                    CoinsDifference = credWon,
+                    UserId = userId
                 });
                 Message responseBuilder;
                 if (hasWon)
                 {
                     credWon = nmbBet * rewardMulti;
-                    await _usersConnector.CommandGiveCredits(userId, credWon);
-                    responseBuilder = _messagesHelper.WinInformation(credWon, "Roulette");
+                    await _usersConnector.GiveCredits(userId, credWon);
+                    responseBuilder = _messagesHelper.WinInformation(credWon,$"Result: {result.OddOrEven} {result.Color} {result.Number} | Your bet: {selectedOption}","Roulette");
                 }
                 else
                 {
-                    responseBuilder = _messagesHelper.LoseInformation(nmbBet, "Roulette");
+                    responseBuilder = _messagesHelper.LoseInformation(nmbBet,$"Result: {result.OddOrEven} {result.Color} {result.Number} | Your bet: {selectedOption}", "Roulette");
                 }
 
                 return _messagesHelper.AddCoinsBalanceAndExpInformation(responseBuilder, expResult,
-                    await _usersConnector.CommandGetUserCredits(userId));
+                    await _usersConnector.GetCredits(userId));
             }
 
             return _messagesHelper.InvalidArguments(new[] {"<Red|Black|Odd|Even|Number> <Bet>"}, "!roulette",

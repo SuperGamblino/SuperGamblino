@@ -1,6 +1,8 @@
 ﻿using DSharpPlus.Entities;
 using Moq;
+using SuperGamblino.Commands.Commands;
 using SuperGamblino.Core.CommandsObjects;
+using SuperGamblino.Core.Entities;
 using SuperGamblino.Infrastructure.Connectors;
 using Xunit;
 
@@ -8,9 +10,9 @@ namespace SuperGamblino.Commands.Tests
 {
     public class GamesHistoryTests
     {
-        private GameHistoryCommandLogic GetGameHistoryCommandLogic(GameHistoryConnector gameHistoryConnector)
+        private GameHistoryCommand GetGameHistoryCommandLogic(GameHistoryConnector gameHistoryConnector)
         {
-            return new GameHistoryCommandLogic(gameHistoryConnector, Helpers.GetMessages());
+            return new GameHistoryCommand(gameHistoryConnector, Helpers.GetMessages());
         }
 
         [Fact]

@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SuperGamblino.Commands;
+using SuperGamblino.Commands.Commands;
 
 namespace SuperGamblino.Discord.Commands
 {
     internal class HourlyRewardCommand : BaseCommandModule
     {
-        private readonly HourlyRewardCommandLogic _logic;
+        private readonly SuperGamblino.Commands.Commands.HourlyRewardCommand _logic;
 
-        public HourlyRewardCommand(HourlyRewardCommandLogic logic)
+        public HourlyRewardCommand(SuperGamblino.Commands.Commands.HourlyRewardCommand logic)
         {
             _logic = logic;
         }

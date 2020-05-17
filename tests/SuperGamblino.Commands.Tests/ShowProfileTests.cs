@@ -1,5 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using Moq;
+using SuperGamblino.Commands.Commands;
 using SuperGamblino.Core.Entities;
 using SuperGamblino.Infrastructure.Connectors;
 using Xunit;
@@ -8,9 +9,9 @@ namespace SuperGamblino.Commands.Tests
 {
     public class ShowProfileTests
     {
-        private ShowProfileCommandLogic GetShowProfileCommandLogic(UsersConnector usersConnector)
+        private ShowProfileCommand GetShowProfileCommandLogic(UsersConnector usersConnector)
         {
-            return new ShowProfileCommandLogic(usersConnector, Helpers.GetMessages());
+            return new ShowProfileCommand(usersConnector, Helpers.GetMessages());
         }
 
         [Fact]
