@@ -162,7 +162,7 @@ namespace SuperGamblino.Infrastructure.Connectors
             }
             catch (Exception ex)
             {
-                Logger.LogError("Exception occured while executing UpdateUser method in Database class!");
+                Logger.LogError(ex, "Exception occured while executing UpdateUser method in Database class!");
             }
             finally
             {
