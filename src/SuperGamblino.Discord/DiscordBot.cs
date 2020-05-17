@@ -49,7 +49,6 @@ namespace SuperGamblino.Discord
                     serviceProvider.GetRequiredService<Messages.MessagesHelper>());
 
                 client.MessageCreated += eventHandlers.MessageCreated;
-                client.ClientErrored += eventHandlers.OnClientError;
 
                 logger.LogInformation($"[{nameof(DiscordBot)}] - Event handlers registered.");
 

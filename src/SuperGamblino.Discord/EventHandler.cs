@@ -61,11 +61,6 @@ namespace SuperGamblino.Discord
             }
         }
 
-        internal Task OnClientError(ClientErrorEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         internal Task OnCommandError(CommandErrorEventArgs e)
         {
             switch (e.Exception)
