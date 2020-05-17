@@ -17,9 +17,9 @@
             THINKING = 1
         }
 
-        private const int BET_DIVIDER = 8;
-        private const int JACKPOT_MULTIPLIER = 10;
-        private const int DOUBLE_MULTIPLIER = 3;
+        private const int BetDivider = 8;
+        private const int JackpotMultiplier = 10;
+        private const int DoubleMultiplier = 3;
 
         public static SlotsResult GetResult()
         {
@@ -106,11 +106,11 @@
 
             if (IsJackpot(result))
                 points = ((int) result.ResultOne + (int) result.ResultTwo + (int) result.ResultThree) *
-                         JACKPOT_MULTIPLIER;
+                         JackpotMultiplier;
             else if (result.ResultOne == result.ResultTwo)
-                points = ((int) result.ResultOne + (int) result.ResultTwo) * DOUBLE_MULTIPLIER;
+                points = ((int) result.ResultOne + (int) result.ResultTwo) * DoubleMultiplier;
             else if (result.ResultTwo == result.ResultThree)
-                points = ((int) result.ResultTwo + (int) result.ResultThree) * DOUBLE_MULTIPLIER;
+                points = ((int) result.ResultTwo + (int) result.ResultThree) * DoubleMultiplier;
 
             if (points > 0)
                 return PointMultiplier(points, betAmount);
@@ -119,7 +119,7 @@
 
         public static int PointMultiplier(int currentPoints, int betAmount)
         {
-            return currentPoints + currentPoints * (int) Math.Floor((decimal) (betAmount / BET_DIVIDER));
+            return currentPoints + currentPoints * (int) Math.Floor((decimal) (betAmount / BetDivider));
         }
 
         public class SlotsResult

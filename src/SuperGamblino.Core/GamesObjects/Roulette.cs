@@ -4,7 +4,7 @@
 {
     public class Roulette
     {
-        private Result result = new Result();
+        private Result _result = new Result();
 
         public static Result GetResult(int nmb)
         {
