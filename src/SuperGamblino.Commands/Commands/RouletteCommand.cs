@@ -5,7 +5,6 @@ using SuperGamblino.Core.Entities;
 using SuperGamblino.Core.GamesObjects;
 using SuperGamblino.Core.Helpers;
 using SuperGamblino.Infrastructure.Connectors;
-using SuperGamblino.Infrastructure.DatabaseObjects;
 using SuperGamblino.Messages;
 
 namespace SuperGamblino.Commands.Commands
@@ -60,9 +59,8 @@ namespace SuperGamblino.Commands.Commands
                 var hasWon = false;
                 var random = new Random();
                 var number = random.Next(0, 37);
-                var expHelper = new Exp(_usersConnector);
-
-                var expResult = await expHelper.Give(userId, nmbBet);
+                var exp = ExpHelpers.CalculateBet((await _usersConnector.GetUser(userId)).Level, nmbBet);
+                var expResult = await _usersConnector.CommandGiveUserExp(userId, exp);
                 var result = Roulette.GetResult(number);
 
                 if (isNumber)

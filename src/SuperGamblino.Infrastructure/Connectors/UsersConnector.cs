@@ -12,7 +12,6 @@ using MySql.Data.MySqlClient;
 using SuperGamblino.Core.CommandsObjects;
 using SuperGamblino.Core.Configuration;
 using SuperGamblino.Core.Entities;
-using SuperGamblino.Infrastructure.DatabaseObjects;
 
 namespace SuperGamblino.Infrastructure.Connectors
 {

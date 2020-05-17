@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using SuperGamblino.Core.Configuration;
+using SuperGamblino.Infrastructure.Connectors;
 
 namespace SuperGamblino.Infrastructure
 {
@@ -43,6 +45,19 @@ namespace SuperGamblino.Infrastructure
             {
                 return false;
             }
+        }
+        
+        /// <summary>
+        ///     Should be called AFTER ConnectionString service and Logger service
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddDatabaseConnectors(this IServiceCollection serviceCollection)
+        {
+            return serviceCollection
+                .AddTransient<GameHistoryConnector>()
+                .AddTransient<CoindropConnector>()
+                .AddTransient<UsersConnector>();
         }
     }
 }

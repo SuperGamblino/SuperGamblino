@@ -5,7 +5,6 @@ using Moq;
 using SuperGamblino.Commands.Commands;
 using SuperGamblino.Core.Entities;
 using SuperGamblino.Infrastructure.Connectors;
-using SuperGamblino.Infrastructure.DatabaseObjects;
 using Xunit;
 
 namespace SuperGamblino.Commands.Tests
