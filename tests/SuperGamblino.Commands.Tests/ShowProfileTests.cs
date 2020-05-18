@@ -33,11 +33,11 @@ namespace SuperGamblino.Commands.Tests
 
             Assert.Equal(Helpers.InfoColor, result.Color);
             Assert.Equal("User profile - S@mpleUser", result.Title);
-            Assert.Equal("**Credits: **100\n" +
-                         "**Level: **4\n" +
-                         "**Current exp: **250\n" +
-                         "**Job title: **Super Market Assistant\n" +
-                         "**Job salery: ** 45\n" +
+            Assert.Equal("**Credits: ** 100\n" +
+                         "**Level: ** 4\n" +
+                         "**Current exp: ** 250\n" +
+                         "**Job title: ** Super Market Assistant\n" +
+                         "**Job salary: ** 45\n" +
                          "**Job cooldown: ** 6\n" +
                          "**Minimum bet: ** 60", result.Description);
         }

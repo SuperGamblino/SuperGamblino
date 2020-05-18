@@ -70,12 +70,12 @@ namespace SuperGamblino.Commands.Commands
                             ? _messagesHelper.Success(
                                 "You've won!\nResult: " + result.EmojiOne + " " + result.EmojiTwo + " " +
                                 result.EmojiThree
-                                + message, "Roulette")
-                            : _messagesHelper.LoseInformation(bet, "Roulette"), expResult,
+                                + message, "Slots")
+                            : _messagesHelper.LoseInformation(bet, "Slots"), expResult,
                         await _usersConnector.GetCredits(userId));
                 }
 
-                return _messagesHelper.NotEnoughCredits("Roulette");
+                return _messagesHelper.NotEnoughCredits("Slots");
             }
 
             return _messagesHelper.InvalidArguments(new[] {"slots <Bet>"}, "!slots", "Slots");

@@ -51,8 +51,8 @@ namespace SuperGamblino.Messages
 
         public Message InvalidArguments(IEnumerable<string> arguments, string command, string title = DefaultTitle)
         {
-            var desc = $"Invalid arguments!\nUse the following {command} ";
-            desc = arguments.Aggregate(desc, (current, arg) => current + arg + ",").Remove(desc.Length - 1, 1);
+            var desc = $"Invalid arguments!\nUse the following {command}: ";
+            desc = new string(arguments.Aggregate(desc, (current, arg) => current + arg + " ").SkipLast(1).ToArray());
             return Warning(desc, title);
         }
 
@@ -143,11 +143,11 @@ namespace SuperGamblino.Messages
 
         public Message GetProfile(User user, Work.Job job, string username)
         {
-            return Information($"**Credits: **{user.Credits}\n" +
-                               $"**Level: **{user.Level}\n" +
-                               $"**Current exp: **{user.Experience}\n" +
-                               $"**Job title: **{job.Title}\n" +
-                               $"**Job salery: ** {job.Reward}\n" +
+            return Information($"**Credits: ** {user.Credits}\n" +
+                               $"**Level: ** {user.Level}\n" +
+                               $"**Current exp: ** {user.Experience}\n" +
+                               $"**Job title: ** {job.Title}\n" +
+                               $"**Job salary: ** {job.Reward}\n" +
                                $"**Job cooldown: ** {job.Cooldown}\n" +
                                $"**Minimum bet: ** {user.Level * 15}", $"User profile - {username}");
         }
