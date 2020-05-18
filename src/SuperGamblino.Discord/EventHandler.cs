@@ -36,27 +36,9 @@ namespace SuperGamblino.Discord
                 var id = Convert.ToInt32(sId.Substring(sId.Length - 4, 4)) + 1; //1-10000
                 if (id <= 100) //1% chance
                 {
-                    var med = id >= 65 && id <= 99;
-                    var high = id == 100;
-                    
-                    var claimId = _random.Next(1000, 9999);
-                    
-                    if (med)
-                    {
-                        await _coindropConnector.AddCoindrop(e.Channel.Id, claimId,100);
-                        await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId).ToDiscordEmbed());
-                    }
-
-                    if (high)
-                    {
-                        await _coindropConnector.AddCoindrop(e.Channel.Id, claimId, 350);
-                        await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId).ToDiscordEmbed());
-                    }
-                    else
-                    {
-                       await _coindropConnector.AddCoindrop(e.Channel.Id, claimId, 25);
-                        await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId).ToDiscordEmbed());
-                    }
+                    var reward = id >= 65 ? 25 : 100;
+                    var claimId = await _coindropConnector.AddCoindrop(e.Channel.Id, _random.Next(1000, 9999), reward);
+                    await e.Message.RespondAsync("", false, _messagesHelper.CoinDropAlert(claimId).ToDiscordEmbed());
                 }
             }
         }
