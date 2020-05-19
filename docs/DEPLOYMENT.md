@@ -18,17 +18,17 @@
       bot:
         image: "emil8250/supergamblino"
         environment:
-          - Settings__BotSettings__Token=<bot token>
-          - Settings__BotSettings__TopGgToken=<top gg token>
-          - Settings__BotSettings__Prefix=!
-          - Settings__ColorSettings__Info=#439ff0
-          - Settings__ColorSettings__Success=#4beb50
-          - Settings__ColorSettings__Warning=#bf1004
-          - Settings__DatabaseSettings__Address=172.17.0.1
-          - Settings__DatabaseSettings__Port=3306
-          - Settings__DatabaseSettings__Name=<database name>
-          - Settings__DatabaseSettings__Username=<database username>
-          - Settings__DatabaseSettings__Password=<database password>
+          - BotSettings__Token=<bot token>
+          - BotSettings__TopGgToken=<top gg token>
+          - BotSettings__Prefix=!
+          - ColorSettings__Info=#439ff0
+          - ColorSettings__Success=#4beb50
+          - ColorSettings__Warning=#bf1004
+          - DatabaseSettings__Address=172.17.0.1
+          - DatabaseSettings__Port=3306
+          - DatabaseSettings__Name=<database name>
+          - DatabaseSettings__Username=<database username>
+          - DatabaseSettings__Password=<database password>
     ```
 2. Install [`docker-compose`](https://docs.docker.com/compose/install/)
 3. Run bot by going into `docker-compose.yml` location and running:
@@ -57,17 +57,17 @@
           bot:
             build: .
             environment:
-              - Settings__BotSettings__Token=<bot token>
-              - Settings__BotSettings__TopGgToken=<top gg token>
-              - Settings__BotSettings__Prefix=!
-              - Settings__ColorSettings__Info=#439ff0
-              - Settings__ColorSettings__Success=#4beb50
-              - Settings__ColorSettings__Warning=#bf1004
-              - Settings__DatabaseSettings__Address=172.17.0.1
-              - Settings__DatabaseSettings__Port=3306
-              - Settings__DatabaseSettings__Name=<database name>
-              - Settings__DatabaseSettings__Username=<database username>
-              - Settings__DatabaseSettings__Password=<database password>
+              - BotSettings__Token=<bot token>
+              - BotSettings__TopGgToken=<top gg token>
+              - BotSettings__Prefix=!
+              - ColorSettings__Info=#439ff0
+              - ColorSettings__Success=#4beb50
+              - ColorSettings__Warning=#bf1004
+              - DatabaseSettings__Address=172.17.0.1
+              - DatabaseSettings__Port=3306
+              - DatabaseSettings__Name=<database name>
+              - DatabaseSettings__Username=<database username>
+              - DatabaseSettings__Password=<database password>
     ```
 3. Install [`docker-compose`](https://docs.docker.com/compose/install/)
 4. Run bot by going into `docker-compose.yml` location and running:
@@ -90,26 +90,24 @@
  7. Create `config.json` file with following content:
      ```json
      {
-     	"Settings" : {
-     		"BotSettings": {
-     			"Token": "<bot token>",
-                 "TopGgToken": "<top gg token>",
-     			"Prefix": "!"
-     		},
-     		"ColorSettings": {
-     			"Info": "#439ff0",
-     			"Success": "#4beb50",
-     			"Warning": "#bf1004"
-     		},
-     		"DatabaseSettings": {
-     			"Address": "<database address>",
-     			"Port": 3306,
-     			"Name": "<database name>",
-     			"Username": "<database username>",
-     			"Password": "<database password>"
-     		}	
-     	}
-     }
+     	"BotSettings": {
+     		"Token": "<bot token>",
+        "TopGgToken": "<top gg token>",
+     		"Prefix": "!"
+     	},
+     	"ColorSettings": {
+     		"Info": "#439ff0",
+     		"Success": "#4beb50",
+     		"Warning": "#bf1004"
+     	},
+     	"DatabaseSettings": {
+     		"Address": "<database address>",
+     		"Port": 3306,
+     		"Name": "<database name>",
+     		"Username": "<database username>",
+     		"Password": "<database password>"
+     	}	
+    }
      ```
  8. Run the bot with:
     ```sh
