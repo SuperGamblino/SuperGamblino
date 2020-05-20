@@ -20,9 +20,19 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+  versioning:
+    needs: [test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'SuperGamblino/SuperGamblino'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Bump version and push tag
+        uses: hennejg/github-tag-action@v4.1.jh5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
   deploy:
     needs: [test]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'Emil8250/SuperGamblino'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'SuperGamblino/SuperGamblino'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
