@@ -90,24 +90,24 @@
  7. Create `config.json` file with following content:
      ```json
      {
-     	"BotSettings": {
-     		"Token": "<bot token>",
+      "BotSettings": {
+        "Token": "<bot token>",
         "TopGgToken": "<top gg token>",
-     		"Prefix": "!"
-     	},
-     	"ColorSettings": {
-     		"Info": "#439ff0",
-     		"Success": "#4beb50",
-     		"Warning": "#bf1004"
-     	},
-     	"DatabaseSettings": {
-     		"Address": "<database address>",
-     		"Port": 3306,
-     		"Name": "<database name>",
-     		"Username": "<database username>",
-     		"Password": "<database password>"
-     	}	
+        "Prefix": "!"
+    },
+      "ColorSettings": {
+        "Info": "#439ff0",
+        "Success": "#4beb50",
+        "Warning": "#bf1004"
+    },
+      "DatabaseSettings": {
+        "Address": "<database address>",
+        "Port": 3306,
+        "Name": "<database name>",
+        "Username": "<database username>",
+        "Password": "<database password>"
     }
+}
      ```
  8. Run the bot with:
     ```sh
