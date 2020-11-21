@@ -24,7 +24,7 @@ namespace SuperGamblino.Discord
         {
             return ToDiscordEmbed(await message);
         }
-        
+
         //Do this require 'builder = builder.AddField' or 'builder.AddField' is enough?
         private static DiscordEmbedBuilder WithFields(this DiscordEmbedBuilder builder, IEnumerable<Field> fields)
         {

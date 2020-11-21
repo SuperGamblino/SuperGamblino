@@ -1,6 +1,6 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
- namespace SuperGamblino.Core.Helpers
+namespace SuperGamblino.Core.Helpers
 {
     public class BetSizeParser
     {

@@ -7,7 +7,7 @@ namespace SuperGamblino.Discord.Commands
 {
     public class CountDEBUGCommand : BaseCommandModule
     {
-        private SuperGamblino.Commands.Commands.CountDEBUGCommand _logic;
+        private readonly SuperGamblino.Commands.Commands.CountDEBUGCommand _logic;
 
         public CountDEBUGCommand(SuperGamblino.Commands.Commands.CountDEBUGCommand logic)
         {
@@ -17,7 +17,7 @@ namespace SuperGamblino.Discord.Commands
         [Command("count")]
         public async Task OnExecute(CommandContext context)
         {
-            var message = new Message()
+            var message = new Message
             {
                 Description = "preparing...",
                 Color = "#439ff0"

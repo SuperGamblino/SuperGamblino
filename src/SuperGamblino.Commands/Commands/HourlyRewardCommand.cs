@@ -7,7 +7,7 @@ namespace SuperGamblino.Commands.Commands
 {
     public class HourlyRewardCommand
     {
-        const int Reward = 20;
+        private const int Reward = 20;
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
@@ -34,7 +34,7 @@ namespace SuperGamblino.Commands.Commands
                 return _messagesHelper.CommandCalledTooEarly(TimeSpan.FromDays(1) - timeSpan, "!hourly",
                     "HourlyReward");
             }
-            
+
             user.Credits += Reward;
             user.LastHourlyReward = DateTime.Now;
             await _usersConnector.UpdateUser(user);

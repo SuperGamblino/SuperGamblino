@@ -1,7 +1,5 @@
-﻿using DSharpPlus.Entities;
-using Moq;
+﻿using Moq;
 using SuperGamblino.Commands.Commands;
-using SuperGamblino.Core.CommandsObjects;
 using SuperGamblino.Core.Entities;
 using SuperGamblino.Infrastructure.Connectors;
 using Xunit;

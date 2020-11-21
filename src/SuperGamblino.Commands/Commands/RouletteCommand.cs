@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SuperGamblino.Core.CommandsObjects;
 using SuperGamblino.Core.Entities;
 using SuperGamblino.Core.GamesObjects;
 using SuperGamblino.Core.Helpers;
@@ -125,11 +124,15 @@ namespace SuperGamblino.Commands.Commands
                 {
                     credWon = nmbBet * rewardMulti;
                     await _usersConnector.GiveCredits(userId, credWon);
-                    responseBuilder = _messagesHelper.WinInformation(credWon,$"Result: {result.OddOrEven} {result.Color} {result.Number} | Your bet: {selectedOption}","Roulette");
+                    responseBuilder = _messagesHelper.WinInformation(credWon,
+                        $"Result: {result.OddOrEven} {result.Color} {result.Number} | Your bet: {selectedOption}",
+                        "Roulette");
                 }
                 else
                 {
-                    responseBuilder = _messagesHelper.LoseInformation(nmbBet,$"Result: {result.OddOrEven} {result.Color} {result.Number} | Your bet: {selectedOption}", "Roulette");
+                    responseBuilder = _messagesHelper.LoseInformation(nmbBet,
+                        $"Result: {result.OddOrEven} {result.Color} {result.Number} | Your bet: {selectedOption}",
+                        "Roulette");
                 }
 
                 return _messagesHelper.AddCoinsBalanceAndExpInformation(responseBuilder, expResult,

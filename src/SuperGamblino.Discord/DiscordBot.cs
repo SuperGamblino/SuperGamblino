@@ -9,31 +9,31 @@ using Microsoft.Extensions.Logging;
 using SuperGamblino.Core.Configuration;
 using SuperGamblino.Infrastructure;
 using SuperGamblino.Infrastructure.Connectors;
-using LogLevel = DSharpPlus.LogLevel;
 
 namespace SuperGamblino.Discord
 {
     public class DiscordBot
     {
-        public static async Task DiscordMainAsync(IServiceProvider serviceProvider, CancellationTokenSource cancellationToken)
+        public static async Task DiscordMainAsync(IServiceProvider serviceProvider,
+            CancellationTokenSource cancellationToken)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<DiscordBot>>();
             var configuration = serviceProvider.GetRequiredService<Config>();
             logger.LogInformation($"[{nameof(DiscordBot)}] - Client is starting...");
-            
+
             var discordConfiguration = new DiscordConfiguration
             {
                 Token = configuration.BotSettings.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
-                LogLevel = LogLevel.Info
+                MinimumLogLevel = LogLevel.Information
             };
-            
-            var commandsConfiguration = new CommandsNextConfiguration()
+
+            var commandsConfiguration = new CommandsNextConfiguration
             {
                 CaseSensitive = false,
                 Services = serviceProvider,
-                StringPrefixes = new []
+                StringPrefixes = new[]
                 {
                     configuration.BotSettings.Prefix
                 }
@@ -65,13 +65,10 @@ namespace SuperGamblino.Discord
                     $"[{nameof(DiscordBot)}] - Finished registering commands...");
 
 
-
                 logger.LogInformation($"[{nameof(DiscordBot)}] - Verifying DB connection...");
 
                 if (!await DatabaseHelpers.CheckConnection(serviceProvider.GetRequiredService<ConnectionString>()))
-                {
                     throw new Exception("Verification of DB connection was unsuccessful!");
-                }
 
                 logger.LogInformation($"[{nameof(DiscordBot)}] - DB connection verification successful.");
 

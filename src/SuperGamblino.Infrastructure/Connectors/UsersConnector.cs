@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Dapper.Contrib;
 using Dapper.Contrib.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -21,17 +20,16 @@ namespace SuperGamblino.Infrastructure.Connectors
         private const string GetCreditsKey = "UsersConnector-GetCredits-";
         private const string GetUserKey = "UsersConnector-GetUser-";
         private const string GlobalTopKey = "UsersConnector-GlobalTop";
-        public UsersConnector(ILogger<UsersConnector> logger, ConnectionString connectionString, IMemoryCache cache) : base(logger, connectionString, cache)
+
+        public UsersConnector(ILogger<UsersConnector> logger, ConnectionString connectionString, IMemoryCache cache) :
+            base(logger, connectionString, cache)
         {
             logger.LogInformation("Created UsersConnector!");
         }
-        
+
         private async Task<bool> CheckIfUserExists(ulong userId)
         {
-            if (MemoryCache.TryGetValue(CheckIfUserExistsKey + userId, out bool exist))
-            {
-                return exist;
-            }
+            if (MemoryCache.TryGetValue(CheckIfUserExistsKey + userId, out bool exist)) return exist;
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
@@ -44,7 +42,8 @@ namespace SuperGamblino.Infrastructure.Connectors
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex,"Exception occured while executing CheckIfUserExist method in UsersConnector class!");
+                Logger.LogError(ex,
+                    "Exception occured while executing CheckIfUserExist method in UsersConnector class!");
                 return false;
             }
             finally
@@ -52,7 +51,7 @@ namespace SuperGamblino.Infrastructure.Connectors
                 await connection.CloseAsync();
             }
         }
-        
+
         private async Task EnsureUserCreated(ulong userId)
         {
             if (!await CheckIfUserExists(userId))
@@ -62,7 +61,7 @@ namespace SuperGamblino.Infrastructure.Connectors
                 {
                     await connection.OpenAsync();
                     await connection.InsertAsync(new User(userId));
-                    MemoryCache.Remove(CheckIfUserExistsKey+userId);
+                    MemoryCache.Remove(CheckIfUserExistsKey + userId);
                 }
                 catch (Exception ex)
                 {
@@ -78,7 +77,7 @@ namespace SuperGamblino.Infrastructure.Connectors
 
         public virtual async Task GiveCredits(ulong userId, int credits)
         {
-            MemoryCache.Remove(GetCreditsKey+userId);
+            MemoryCache.Remove(GetCreditsKey + userId);
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
@@ -98,33 +97,30 @@ namespace SuperGamblino.Infrastructure.Connectors
                 await connection.CloseAsync();
             }
         }
-        
+
         public virtual async Task<bool> TakeCredits(ulong userId, int credits)
         {
-            MemoryCache.Remove(GetCreditsKey+userId);
+            MemoryCache.Remove(GetCreditsKey + userId);
             if (await GetCredits(userId) < credits) return false;
             await GiveCredits(userId, credits * -1);
             return true;
-
         }
-        
+
         /// <summary>
-        /// Gets user credits
+        ///     Gets user credits
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>Number of credits or -1 if exception occured</returns>
         public virtual async Task<int> GetCredits(ulong userId)
         {
-            if (MemoryCache.TryGetValue(GetCreditsKey + userId, out int credits))
-            {
-                return credits;
-            }
+            if (MemoryCache.TryGetValue(GetCreditsKey + userId, out int credits)) return credits;
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
                 await EnsureUserCreated(userId);
                 await connection.OpenAsync();
-                var balance = (await connection.QueryAsync<int>("SELECT Credits FROM Users WHERE Id = @userId", new {userId}))
+                var balance =
+                    (await connection.QueryAsync<int>("SELECT Credits FROM Users WHERE Id = @userId", new {userId}))
                     .Single();
                 MemoryCache.Set(GetCreditsKey + userId, balance, TimeSpan.FromSeconds(5));
                 return balance;
@@ -142,10 +138,7 @@ namespace SuperGamblino.Infrastructure.Connectors
 
         public virtual async Task<User> GetUser(ulong userId)
         {
-            if (MemoryCache.TryGetValue(GetUserKey + userId, out User user))
-            {
-                return user;
-            }
+            if (MemoryCache.TryGetValue(GetUserKey + userId, out User user)) return user;
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
@@ -168,7 +161,7 @@ namespace SuperGamblino.Infrastructure.Connectors
 
         public virtual async Task UpdateUser(User user)
         {
-            MemoryCache.Remove(GetUserKey+user);
+            MemoryCache.Remove(GetUserKey + user);
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
@@ -185,45 +178,43 @@ namespace SuperGamblino.Infrastructure.Connectors
                 await connection.CloseAsync();
             }
         }
-        
+
         public virtual async Task<AddExpResult> CommandGiveUserExp(ulong userId, int exp)
         {
             const string procedure = "give_user_exp";
-            
+
             await EnsureUserCreated(userId);
-            
+
             var parameters = new DynamicParameters();
-            
+
             parameters.Add("given_exp", exp);
             parameters.Add("cur_user_id", userId);
             parameters.Add("did_level_increase", direction: ParameterDirection.Output, dbType: DbType.Byte);
             parameters.Add("cur_exp_needed", direction: ParameterDirection.Output);
             parameters.Add("cur_exp", direction: ParameterDirection.Output);
-            
+
             await using var connection = new MySqlConnection(ConnectionString);
-            
+
             await connection.OpenAsync();
             await connection.ExecuteAsync(procedure, parameters, commandType: CommandType.StoredProcedure);
-            
+
             var didLevelIncrease = Convert.ToBoolean(parameters.Get<byte>("did_level_increase"));
             var curExpNeeded = parameters.Get<int>("cur_exp_needed");
             var curExp = parameters.Get<int>("cur_exp");
-            return new AddExpResult(didLevelIncrease,curExpNeeded, curExp, exp);
+            return new AddExpResult(didLevelIncrease, curExpNeeded, curExp, exp);
         }
 
         public virtual async Task<IEnumerable<User>> CommandGetGlobalTop()
         {
             const string procedure = "get_top_users";
 
-            if (MemoryCache.TryGetValue(GlobalTopKey, out IEnumerable<User> users))
-            {
-                return users;
-            }
-            
+            if (MemoryCache.TryGetValue(GlobalTopKey, out IEnumerable<User> users)) return users;
+
             await using var connection = new MySqlConnection(ConnectionString);
 
             await connection.OpenAsync();
-            var result = (await connection.QueryAsync<User>(procedure, commandType: CommandType.StoredProcedure)).AsList();
+            var result =
+                (await connection.QueryAsync<User>(procedure, commandType: CommandType.StoredProcedure)).AsList();
             MemoryCache.Set(GlobalTopKey, result, TimeSpan.FromMinutes(5));
             return result;
         }

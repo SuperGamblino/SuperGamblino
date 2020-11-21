@@ -1,6 +1,6 @@
-﻿﻿using System;
+﻿using System;
 
- namespace SuperGamblino.Core.CommandsObjects
+namespace SuperGamblino.Core.CommandsObjects
 {
     public class CooldownObject
     {

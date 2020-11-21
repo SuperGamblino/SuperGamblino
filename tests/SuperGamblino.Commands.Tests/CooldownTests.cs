@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using DSharpPlus.Entities;
 using Moq;
 using SuperGamblino.Commands.Commands;
 using SuperGamblino.Core.Entities;
@@ -21,7 +20,7 @@ namespace SuperGamblino.Commands.Tests
         {
             var date = new DateTime(2020, 1, 1, 16, 0, 0);
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Id = 0,
                 LastDailyReward = DateTime.Now,
@@ -42,7 +41,7 @@ namespace SuperGamblino.Commands.Tests
         public async void CorrectValuesInTheOutput()
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Id = 0,
                 LastDailyReward = DateTime.Now,

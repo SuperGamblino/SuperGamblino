@@ -9,6 +9,7 @@ namespace SuperGamblino.Messages
         {
             Fields = new List<Field>();
         }
+
         public string Title { get; set; }
         public string Author { get; set; }
         public string Color { get; set; }
@@ -18,23 +19,23 @@ namespace SuperGamblino.Messages
 
         public event EventHandler OnUpdate;
         public event EventHandler OnDelete;
-        
+
         /// <summary>
-        /// Updates message via event when its set up
+        ///     Updates message via event when its set up
         /// </summary>
         public void Update()
         {
             OnUpdate?.Invoke(this, EventArgs.Empty);
         }
-        
+
         /// <summary>
-        /// Deletes message via event when its set up
+        ///     Deletes message via event when its set up
         /// </summary>
         public void Delete()
         {
             OnDelete?.Invoke(this, EventArgs.Empty);
         }
-        
+
 
         public Message AddField(string key, string value)
         {

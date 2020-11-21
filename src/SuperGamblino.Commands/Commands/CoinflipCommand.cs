@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SuperGamblino.Core.CommandsObjects;
 using SuperGamblino.Core.Entities;
 using SuperGamblino.Core.Helpers;
 using SuperGamblino.Infrastructure.Connectors;
@@ -51,7 +50,7 @@ namespace SuperGamblino.Commands.Commands
             {
                 var rnd = new Random();
                 var hasWon = (Convert.ToBoolean(rnd.Next(0, 2)) ? "HEAD" : "TAIL") == option;
-                
+
                 var exp = ExpHelpers.CalculateBet((await _usersConnector.GetUser(userId)).Level, bet);
                 var expResult = await _usersConnector.CommandGiveUserExp(userId, exp);
 

@@ -1,4 +1,4 @@
-﻿﻿namespace SuperGamblino.Core.CommandsObjects
+﻿namespace SuperGamblino.Core.CommandsObjects
 {
     public class AddExpResult
     {
