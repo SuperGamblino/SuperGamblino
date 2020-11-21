@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using SuperGamblino.Core.CommandsObjects;
 using SuperGamblino.Core.Entities;
 using SuperGamblino.Core.GamesObjects;
 using SuperGamblino.Core.Helpers;
@@ -58,7 +57,7 @@ namespace SuperGamblino.Commands.Commands
 
                     var exp = ExpHelpers.CalculateBet((await _usersConnector.GetUser(userId)).Level, bet);
                     var expResult = await _usersConnector.CommandGiveUserExp(userId, exp);
-                    
+
                     await _gameHistoryConnector.AddGameHistory(new GameHistory
                     {
                         GameName = "slots",

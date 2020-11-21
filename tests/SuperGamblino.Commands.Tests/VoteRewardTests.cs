@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using DSharpPlus.Entities;
 using Moq;
 using Moq.Protected;
 using SuperGamblino.Commands.Commands;
@@ -19,7 +18,8 @@ namespace SuperGamblino.Commands.Tests
         private VoteRewardCommand GetVoteRewardCommandLogic(HttpMessageHandler httpMessageHandler,
             UsersConnector usersConnector, Config config = null)
         {
-            return new VoteRewardCommand(new HttpClient(httpMessageHandler), usersConnector, config ?? Helpers.GetConfig(),
+            return new VoteRewardCommand(new HttpClient(httpMessageHandler), usersConnector,
+                config ?? Helpers.GetConfig(),
                 Helpers.GetMessages(), Helpers.GetLogger<VoteRewardCommand>());
         }
 
@@ -41,7 +41,7 @@ namespace SuperGamblino.Commands.Tests
         {
             var httpMessageHandler = GetHttpClient(false);
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Id = 0,
                 LastVoteReward = DateTime.Now.Subtract(TimeSpan.FromDays(5))
@@ -62,7 +62,7 @@ namespace SuperGamblino.Commands.Tests
         {
             var httpMessageHandler = GetHttpClient(false, HttpStatusCode.Unauthorized);
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Id = 0,
                 LastVoteReward = DateTime.Now.Subtract(TimeSpan.FromDays(5))
@@ -81,7 +81,7 @@ namespace SuperGamblino.Commands.Tests
         {
             var httpMessageHandler = GetHttpClient(true);
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Id = 0,
                 LastVoteReward = DateTime.Now
@@ -101,7 +101,7 @@ namespace SuperGamblino.Commands.Tests
         public async void GiveCreditsOnLaterVote()
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Id = 0,
                 LastVoteReward = DateTime.Now.Subtract(TimeSpan.FromDays(5))
@@ -121,7 +121,7 @@ namespace SuperGamblino.Commands.Tests
         public async void GivesCreditsOnFirstVote()
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Id = 0,
                 LastVoteReward = null
@@ -146,10 +146,11 @@ namespace SuperGamblino.Commands.Tests
             var logic = GetVoteRewardCommandLogic(GetHttpClient(false), usersConnector.Object, config);
 
             var result = await logic.Vote(0);
-            
+
             Assert.Equal("TopGGVote", result.Title);
             Assert.Equal(Helpers.InfoColor, result.Color);
-            Assert.Equal("Top GG Token functionality is disabled on this server :disappointed:. Contact bots admin to turn it on :slight_smile:.",
+            Assert.Equal(
+                "Top GG Token functionality is disabled on this server :disappointed:. Contact bots admin to turn it on :slight_smile:.",
                 result.Description);
         }
 

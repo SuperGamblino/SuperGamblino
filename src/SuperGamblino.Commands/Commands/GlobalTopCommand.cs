@@ -12,7 +12,8 @@ namespace SuperGamblino.Commands.Commands
         private readonly MessagesHelper _messagesHelper;
         private readonly UsersConnector _usersConnector;
 
-        public GlobalTopCommand(UsersConnector usersConnector, ILogger<GlobalTopCommand> logger, MessagesHelper messagesHelper)
+        public GlobalTopCommand(UsersConnector usersConnector, ILogger<GlobalTopCommand> logger,
+            MessagesHelper messagesHelper)
         {
             _usersConnector = usersConnector;
             _logger = logger;

@@ -6,7 +6,6 @@ using Dapper.Contrib.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
-using SuperGamblino.Core;
 using SuperGamblino.Core.Configuration;
 using SuperGamblino.Core.Entities;
 
@@ -14,7 +13,8 @@ namespace SuperGamblino.Infrastructure.Connectors
 {
     public class CoindropConnector : DatabaseConnector
     {
-        public CoindropConnector(ILogger<CoindropConnector> logger, ConnectionString connectionString, IMemoryCache memoryCache) : base(logger, connectionString, memoryCache)
+        public CoindropConnector(ILogger<CoindropConnector> logger, ConnectionString connectionString,
+            IMemoryCache memoryCache) : base(logger, connectionString, memoryCache)
         {
         }
 
@@ -23,7 +23,7 @@ namespace SuperGamblino.Infrastructure.Connectors
             await using var connection = new MySqlConnection(ConnectionString);
             try
             {
-                await connection.InsertAsync(new CoinDrop()
+                await connection.InsertAsync(new CoinDrop
                 {
                     ChannelId = channelId,
                     ClaimId = claimId

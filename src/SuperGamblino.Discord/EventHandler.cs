@@ -6,6 +6,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using Microsoft.Extensions.Logging;
 using SuperGamblino.Core.Configuration;
 using SuperGamblino.Infrastructure.Connectors;
 
@@ -13,21 +14,21 @@ namespace SuperGamblino.Discord
 {
     internal class EventHandler
     {
-        
         private readonly CoindropConnector _coindropConnector;
         private readonly Config _config;
         private readonly DiscordClient _discordClient;
-        private readonly SuperGamblino.Messages.MessagesHelper _messagesHelper;
-        private Random _random = new Random();
+        private readonly Messages.MessagesHelper _messagesHelper;
+        private readonly Random _random = new Random();
 
         public EventHandler(DiscordClient client, Config config, CoindropConnector coindropConnector,
-            SuperGamblino.Messages.MessagesHelper messagesHelper)
+            Messages.MessagesHelper messagesHelper)
         {
             _discordClient = client;
             _config = config;
             _coindropConnector = coindropConnector;
             _messagesHelper = messagesHelper;
         }
+
         internal async Task MessageCreated(MessageCreateEventArgs e)
         {
             if (!e.Author.IsBot)
@@ -66,7 +67,7 @@ namespace SuperGamblino.Discord
 
                 default:
                 {
-                    e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "SuperGamblino",
+                    e.Context.Client.Logger.LogError("SuperGamblino",
                         $"Exception occured: {e.Exception.GetType()}: {e.Exception}", DateTime.UtcNow);
                     DiscordEmbed error = new DiscordEmbedBuilder
                     {

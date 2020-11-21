@@ -1,5 +1,4 @@
 ﻿using DSharpPlus.CommandsNext;
-using SuperGamblino.Commands;
 using SuperGamblino.Discord.Commands;
 
 namespace SuperGamblino.Discord

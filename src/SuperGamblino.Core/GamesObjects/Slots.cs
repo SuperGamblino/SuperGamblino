@@ -1,6 +1,6 @@
-﻿﻿using System;
+﻿using System;
 
- namespace SuperGamblino.Core.GamesObjects
+namespace SuperGamblino.Core.GamesObjects
 {
     public static class Slots
     {

@@ -1,6 +1,6 @@
-﻿﻿using SuperGamblino.Messages;
+﻿using SuperGamblino.Messages;
 
- namespace SuperGamblino.Commands.Commands
+namespace SuperGamblino.Commands.Commands
 {
     public class AboutCommand
     {

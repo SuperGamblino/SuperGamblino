@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using SuperGamblino.Core;
 using SuperGamblino.Core.Configuration;
 
 namespace SuperGamblino.Infrastructure

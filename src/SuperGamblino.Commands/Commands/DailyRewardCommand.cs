@@ -35,7 +35,7 @@ namespace SuperGamblino.Commands.Commands
                 return _messagesHelper.CommandCalledTooEarly(TimeSpan.FromDays(1) - timeSpan, "!daily",
                     "DailyReward");
             }
-            
+
             user.LastDailyReward = DateTime.Now;
             user.Credits += Reward;
             await _usersConnector.UpdateUser(user);

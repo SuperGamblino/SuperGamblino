@@ -1,5 +1,4 @@
 ﻿using System;
-using DSharpPlus.Entities;
 using Moq;
 using SuperGamblino.Commands.Commands;
 using SuperGamblino.Core.Entities;
@@ -19,7 +18,7 @@ namespace SuperGamblino.Commands.Tests
         public async void GiveRewardOnFirstUser()
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Id = 0,
                 LastDailyReward = null
@@ -39,7 +38,7 @@ namespace SuperGamblino.Commands.Tests
         public async void GiveRewardOnLaterUse()
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
-            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User()
+            usersConnector.Setup(x => x.GetUser(0)).ReturnsAsync(new User
             {
                 Id = 0,
                 LastDailyReward = new DateTime(2020, 1, 1)
@@ -60,7 +59,7 @@ namespace SuperGamblino.Commands.Tests
         {
             var usersConnector = Helpers.GetDatabaseConnector<UsersConnector>();
             usersConnector.Setup(x => x.GetUser(0))
-                .ReturnsAsync(new User()
+                .ReturnsAsync(new User
                 {
                     Id = 0,
                     LastDailyReward = DateTime.Now

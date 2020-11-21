@@ -1,4 +1,4 @@
-﻿﻿namespace SuperGamblino.Core.Configuration
+﻿namespace SuperGamblino.Core.Configuration
 {
     public class Config
     {
@@ -11,10 +11,7 @@
 
         public bool IsValid()
         {
-            if (BotSettings == null || ColorSettings == null || DatabaseSettings == null)
-            {
-                return false;
-            }
+            if (BotSettings == null || ColorSettings == null || DatabaseSettings == null) return false;
 
             return BotSettings.IsValid() && ColorSettings.IsValid() && DatabaseSettings.IsValid();
         }
@@ -38,7 +35,7 @@
         public string Info { get; set; }
         public string Success { get; set; }
         public string Warning { get; set; }
-        
+
         internal bool IsValid()
         {
             return !(string.IsNullOrWhiteSpace(Info) ||
@@ -54,14 +51,14 @@
         public string Name { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
-        
+
         internal bool IsValid()
         {
             return !(string.IsNullOrWhiteSpace(Address) ||
                      string.IsNullOrWhiteSpace(Name) ||
                      string.IsNullOrWhiteSpace(Username));
         }
-        
+
         //TODO Maybe add here GetConnectionString instead of separate class?
     }
 }

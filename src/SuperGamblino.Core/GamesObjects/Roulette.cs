@@ -1,6 +1,6 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
- namespace SuperGamblino.Core.GamesObjects
+namespace SuperGamblino.Core.GamesObjects
 {
     public class Roulette
     {

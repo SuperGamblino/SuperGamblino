@@ -1,4 +1,4 @@
-﻿﻿namespace SuperGamblino.Core.Configuration
+﻿namespace SuperGamblino.Core.Configuration
 {
     public class ConnectionString
     {

@@ -21,7 +21,7 @@ namespace SuperGamblino.Messages
 
         public Message Success(string description, string title = DefaultTitle)
         {
-            return new Message()
+            return new Message
             {
                 Color = _config.ColorSettings.Success,
                 Description = description,
@@ -31,7 +31,7 @@ namespace SuperGamblino.Messages
 
         public Message Information(string description, string title = DefaultTitle)
         {
-            return new Message()
+            return new Message
             {
                 Color = _config.ColorSettings.Info,
                 Description = description,
@@ -41,7 +41,7 @@ namespace SuperGamblino.Messages
 
         public Message Warning(string description, string title = DefaultTitle)
         {
-            return new Message()
+            return new Message
             {
                 Color = _config.ColorSettings.Warning,
                 Description = description,
